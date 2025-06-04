@@ -45,9 +45,9 @@
   {% include "includes/footer.html" %}
 
 {% block extra_scripts %}
-{% load static %}
-<script src="{% static 'inventory/js/navbar.js' %}"></script>
-<script src="{% static 'inventory/js/order_modal.js' %}"></script>
+  {% load static %}
+  <script src="{% static 'inventory/js/navbar.js' %}"></script>
+  <script src="{% static 'inventory/js/order_modal.js' %}"></script>
 {% endblock %}
 </body>
 </html>
