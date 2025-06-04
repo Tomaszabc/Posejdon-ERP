@@ -125,15 +125,37 @@
                     <td class="px-4 py-2">{{ order.color }}</td>
                     <td class="px-4 py-2">{{ order.quantity_to_assemble }}</td>
                     <td class="px-4 py-2 text-center">
-                        <form method="post" action="{% url 'inventory:delete_order' order.id %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="text-red-600 font-bold hover:text-red-800" title="Usuń zamówienie" onclick="return confirm('Na pewno usunąć to zamówienie?')">✕</button>
-                        </form>
+                        <button type="button"
+                            class="text-red-600 font-bold hover:text-red-800 order-delete-btn"
+                            data-form-id="delete-form-{{ order.id }}"
+                            data-order-id="{{ order.id }}"
+                            data-order-diameter="{{ order.diameter }}"
+                            data-order-shape="{{ order.shape }}"
+                            data-order-size="{{ order.size }}"
+                            data-order-color="{{ order.color }}"
+                            data-order-qty="{{ order.quantity_to_assemble }}"
+                            title="Usuń zamówienie">✕</button>
+<form id="delete-form-{{ order.id }}" method="post" action="{% url 'inventory:delete_order' order.id %}" style="display:none;">
+    {% csrf_token %}
+</form>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+
     </div>
+    <!-- Custom modal for delete confirmation -->
+<div id="order-delete-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+  <div class="bg-white rounded-xl shadow-xl p-6 max-w-xs w-full text-center">
+    <h2 class="text-lg font-bold mb-4 text-gray-800">Potwierdź usunięcie</h2>
+    <p class="mb-4 text-gray-600" id="order-delete-message">Czy na pewno chcesz usunąć to zamówienie?</p>
+<div id="order-delete-details" class="mb-4 text-gray-700 font-semibold"></div>
+    <div class="flex justify-center gap-4">
+      <button id="order-delete-yes" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold">Usuń</button>
+      <button id="order-delete-no" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-bold">Anuluj</button>
+    </div>
+  </div>
+</div>
 {% endif %}
 {% endblock %}
