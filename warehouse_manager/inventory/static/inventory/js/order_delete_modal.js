@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const color = btn.getAttribute('data-order-color');
       const qty = btn.getAttribute('data-order-qty');
       // Wstaw szczegóły do modala
-      details.innerHTML = `ID${id} - ${diameter}/ ${shape}/ ${size}/ ${color}/ ${qty} szt.`;
+      details.innerHTML = `ID: ${id} - ${diameter}/ ${shape}/ ${size}/ ${color}/ ${qty} szt.`;
       modal.classList.remove('hidden');
     });
   });
