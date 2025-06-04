@@ -6,28 +6,28 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0001_initial'),
+        ("inventory", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='product',
-            old_name='kolor',
-            new_name='color',
+            model_name="product",
+            old_name="kolor",
+            new_name="color",
         ),
         migrations.RenameField(
-            model_name='product',
-            old_name='srednica',
-            new_name='diameter',
+            model_name="product",
+            old_name="srednica",
+            new_name="diameter",
         ),
         migrations.RenameField(
-            model_name='product',
-            old_name='ksztalt',
-            new_name='shape',
+            model_name="product",
+            old_name="ksztalt",
+            new_name="shape",
         ),
         migrations.RenameField(
-            model_name='product',
-            old_name='rozmiar',
-            new_name='size',
+            model_name="product",
+            old_name="rozmiar",
+            new_name="size",
         ),
     ]

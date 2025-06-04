@@ -6,20 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0002_rename_kolor_product_color_and_more'),
+        ("inventory", "0002_rename_kolor_product_color_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Order',
+            name="Order",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('diameter', models.CharField(max_length=10)),
-                ('shape', models.CharField(max_length=20)),
-                ('size', models.CharField(max_length=2)),
-                ('color', models.CharField(max_length=50)),
-                ('quantity_to_assemble', models.PositiveIntegerField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("diameter", models.CharField(max_length=10)),
+                ("shape", models.CharField(max_length=20)),
+                ("size", models.CharField(max_length=2)),
+                ("color", models.CharField(max_length=50)),
+                ("quantity_to_assemble", models.PositiveIntegerField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
             ],
         ),
     ]

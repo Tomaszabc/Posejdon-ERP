@@ -3,63 +3,67 @@
 {% block content %}
 <h1 class="text-2xl font-bold mb-6">Zamówienia do produkcji</h1>
 {% if orders %}
-    <table class="min-w-full bg-white rounded-xl shadow border mb-8">
-        <thead>
-            <tr>
-                <th class="px-4 py-2">Średnica</th>
-                <th class="px-4 py-2">Kształt</th>
-                <th class="px-4 py-2">Rozmiar</th>
-                <th class="px-4 py-2">Kolor</th>
-                <th class="px-4 py-2">Ilość</th>
-                <th class="px-4 py-2"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in orders %}
-            <tr class="border-t">
-                <td class="px-4 py-2">{{ order.diameter }}</td>
-                <td class="px-4 py-2">{{ order.shape }}</td>
-                <td class="px-4 py-2">{{ order.size }}</td>
-                <td class="px-4 py-2">{{ order.color }}</td>
-                <td class="px-4 py-2">{{ order.quantity_to_assemble }}</td>
-                <td class="px-4 py-2 text-center">
-                    <form method="post" style="display:inline;">
-                        {% csrf_token %}
-                        <input type="hidden" name="order_id" value="{{ order.id }}">
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-bold">Zatwierdź produkcję</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="overflow-x-auto rounded-xl">
+        <table class="min-w-full bg-white rounded-xl shadow border text-xs sm:text-sm">
+            <thead>
+                <tr>
+                    <th class="px-2 py-2 sm:px-4">Średnica</th>
+                    <th class="px-2 py-2 sm:px-4">Kształt</th>
+                    <th class="px-2 py-2 sm:px-4">Rozmiar</th>
+                    <th class="px-2 py-2 sm:px-4">Kolor</th>
+                    <th class="px-2 py-2 sm:px-4">Ilość</th>
+                    <th class="px-2 py-2 sm:px-4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr class="border-t">
+                    <td class="px-2 py-2 sm:px-4">{{ order.diameter }}</td>
+                    <td class="px-2 py-2 sm:px-4">{{ order.shape }}</td>
+                    <td class="px-2 py-2 sm:px-4">{{ order.size }}</td>
+                    <td class="px-2 py-2 sm:px-4">{{ order.color }}</td>
+                    <td class="px-2 py-2 sm:px-4">{{ order.quantity_to_assemble }}</td>
+                    <td class="px-2 py-2 sm:px-4 text-center">
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="order_id" value="{{ order.id }}">
+                            <button type="submit" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-2 py-1 sm:px-4 sm:py-2 rounded font-bold text-xs sm:text-base mt-1 sm:mt-0">
+                                Zatwierdź
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% else %}
     <p>Brak zamówień do produkcji.</p>
 {% endif %}
 
 {% if produced_orders %}
     <h2 class="text-xl font-bold mt-8 mb-4">Wyprodukowane produkty:</h2>
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white rounded-xl shadow border">
+    <div class="overflow-x-auto rounded-xl">
+        <table class="min-w-full bg-white rounded-xl shadow border text-xs sm:text-sm">
             <thead>
                 <tr>
-                    <th class="px-4 py-2">Średnica</th>
-                    <th class="px-4 py-2">Kształt</th>
-                    <th class="px-4 py-2">Rozmiar</th>
-                    <th class="px-4 py-2">Kolor</th>
-                    <th class="px-4 py-2">Ilość</th>
-                    <th class="px-4 py-2">Data produkcji</th>
+                    <th class="px-2 py-2 sm:px-4">Średnica</th>
+                    <th class="px-2 py-2 sm:px-4">Kształt</th>
+                    <th class="px-2 py-2 sm:px-4">Rozmiar</th>
+                    <th class="px-2 py-2 sm:px-4">Kolor</th>
+                    <th class="px-2 py-2 sm:px-4">Ilość</th>
+                    <th class="px-2 py-2 sm:px-4">Data produkcji</th>
                 </tr>
             </thead>
             <tbody>
                 {% for order in produced_orders %}
                 <tr class="border-t">
-                    <td class="px-4 py-2">{{ order.diameter }}</td>
-                    <td class="px-4 py-2">{{ order.shape }}</td>
-                    <td class="px-4 py-2">{{ order.size }}</td>
-                    <td class="px-4 py-2">{{ order.color }}</td>
-                    <td class="px-4 py-2">{{ order.quantity_to_assemble }}</td>
-                    <td class="px-4 py-2">{{ order.produced_at|date:"Y-m-d H:i" }}</td>
+                    <td class="px-2 py-2 sm:px-4">{{ order.diameter }}</td>
+                    <td class="px-2 py-2 sm:px-4">{{ order.shape }}</td>
+                    <td class="px-2 py-2 sm:px-4">{{ order.size }}</td>
+                    <td class="px-2 py-2 sm:px-4">{{ order.color }}</td>
+                    <td class="px-2 py-2 sm:px-4">{{ order.quantity_to_assemble }}</td>
+                    <td class="px-2 py-2 sm:px-4">{{ order.produced_at|date:"Y-m-d H:i" }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
