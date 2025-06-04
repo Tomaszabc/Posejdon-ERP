@@ -5,9 +5,9 @@ from .models import Product, Order
 from django.utils import timezone
 
 
-
 def index(request):
-    return render(request, 'inventory/index.html')
+    return render(request, "inventory/index.html")
+
 
 def product_order(request):
     diameters = [d[0] for d in Product.DIAMETER_CHOICES]
@@ -31,19 +31,25 @@ def product_order(request):
         except ValidationError as e:
             errors = e.message_dict  # <-- przekazujesz błędy
 
-    orders = Order.objects.order_by('-created_at')[:10]
-    return render(request, 'inventory/product_order.html', {
-        'diameters': diameters,
-        'shapes': shapes,
-        'sizes': sizes,
-        'colors': colors,
-        'orders': orders,
-        'errors': errors,  # <-- zawsze przekazujesz errors
-    })
+    orders = Order.objects.order_by("-created_at")[:10]
+    return render(
+        request,
+        "inventory/product_order.html",
+        {
+            "diameters": diameters,
+            "shapes": shapes,
+            "sizes": sizes,
+            "colors": colors,
+            "orders": orders,
+            "errors": errors,  # <-- zawsze przekazujesz errors
+        },
+    )
+
 
 @login_required
 def user_profile(request):
-    return render(request, 'account/user_profile.html')
+    return render(request, "account/user_profile.html")
+
 
 def delete_order(request, order_id):
     if request.method == "POST":
@@ -51,9 +57,12 @@ def delete_order(request, order_id):
         order.delete()
     return redirect("inventory:product_order")
 
+
 def product_production(request):
-    orders = Order.objects.filter(is_produced=False).order_by('created_at')
-    produced_orders = Order.objects.filter(is_produced=True).order_by('-produced_at')[:10]
+    orders = Order.objects.filter(is_produced=False).order_by("created_at")
+    produced_orders = Order.objects.filter(is_produced=True).order_by("-produced_at")[
+        :10
+    ]
     if request.method == "POST":
         order_id = request.POST.get("order_id")
         order = get_object_or_404(Order, id=order_id)
@@ -61,7 +70,11 @@ def product_production(request):
         order.produced_at = timezone.now()
         order.save()
         return redirect("inventory:product_production")
-    return render(request, "inventory/product_production.html", {
-        "orders": orders,
-        "produced_orders": produced_orders,
-    })
+    return render(
+        request,
+        "inventory/product_production.html",
+        {
+            "orders": orders,
+            "produced_orders": produced_orders,
+        },
+    )

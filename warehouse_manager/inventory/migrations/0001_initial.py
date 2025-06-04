@@ -8,38 +8,93 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('srednica', models.DecimalField(decimal_places=2, max_digits=6)),
-                ('ksztalt', models.CharField(choices=[('okrągły', 'Okrągły'), ('kwadratowy', 'Kwadratowy'), ('niestandardowy', 'Niestandardowy')], max_length=20)),
-                ('rozmiar', models.CharField(choices=[('S', 'S'), ('M', 'M'), ('L', 'L')], max_length=2)),
-                ('kolor', models.CharField(choices=[('W', 'W'), ('B', 'B'), ('G', 'G')], max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("srednica", models.DecimalField(decimal_places=2, max_digits=6)),
+                (
+                    "ksztalt",
+                    models.CharField(
+                        choices=[
+                            ("okrągły", "Okrągły"),
+                            ("kwadratowy", "Kwadratowy"),
+                            ("niestandardowy", "Niestandardowy"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "rozmiar",
+                    models.CharField(
+                        choices=[("S", "S"), ("M", "M"), ("L", "L")], max_length=2
+                    ),
+                ),
+                (
+                    "kolor",
+                    models.CharField(
+                        choices=[("W", "W"), ("B", "B"), ("G", "G")], max_length=50
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Supplier',
+            name="Supplier",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('contact_email', models.EmailField(max_length=254)),
-                ('phone_number', models.CharField(blank=True, max_length=20)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("contact_email", models.EmailField(max_length=254)),
+                ("phone_number", models.CharField(blank=True, max_length=20)),
             ],
         ),
         migrations.CreateModel(
-            name='Inventory',
+            name="Inventory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('stock_level', models.PositiveIntegerField(default=0)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='inventory.product')),
-                ('supplier', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='inventory.supplier')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("stock_level", models.PositiveIntegerField(default=0)),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="inventory.product",
+                    ),
+                ),
+                (
+                    "supplier",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="inventory.supplier",
+                    ),
+                ),
             ],
         ),
     ]
