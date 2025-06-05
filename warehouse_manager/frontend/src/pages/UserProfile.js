@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 
 export default function UserProfile({ user }) {
   const [profile, setProfile] = useState(null);
-  const [passwords, setPasswords] = useState({ old_password: "", new_password: "" });
+  const [passwords, setPasswords] = useState({
+    old_password: "",
+    new_password: "",
+    confirm_new_password: ""
+  });
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
@@ -24,18 +28,26 @@ export default function UserProfile({ user }) {
   const handlePasswordChange = async e => {
     e.preventDefault();
     setMsg("");
+    if (passwords.new_password !== passwords.confirm_new_password) {
+      setMsg("Nowe hasła nie są identyczne.");
+      return;
+    }
     const token = localStorage.getItem("access");
     const res = await fetch("http://localhost:8000/api/auth/password/change/", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(passwords)
-    });
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    old_password: passwords.old_password,
+    new_password1: passwords.new_password,
+    new_password2: passwords.confirm_new_password
+  })
+});
     if (res.ok) {
       setMsg("Hasło zostało zmienione.");
-      setPasswords({ old_password: "", new_password: "" });
+      setPasswords({ old_password: "", new_password: "", confirm_new_password: "" });
     } else {
       setMsg("Błąd zmiany hasła. Sprawdź stare hasło.");
     }
@@ -80,6 +92,17 @@ export default function UserProfile({ user }) {
                 type="password"
                 name="new_password"
                 value={passwords.new_password}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border rounded-lg"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm mb-1 text-gray-700">Powtórz nowe hasło</label>
+              <input
+                type="password"
+                name="confirm_new_password"
+                value={passwords.confirm_new_password}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 border rounded-lg"
