@@ -19,15 +19,51 @@ export default function Orders() {
   const [showModal, setShowModal] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState(null);
 
-  // Pobierz zamówienia z API po załadowaniu komponentu
+    const [dateFilter, setDateFilter] = useState({
+    startDate: "",
+    endDate: ""
+  });
+
+    const [filteredOrders, setFilteredOrders] = useState([]);
+
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/orders/")
       .then((res) => res.json())
       .then((data) => {
         setOrders(data);
+        setFilteredOrders(data);
       })
-      .catch(() => setOrders([]));
+      .catch(() => {
+        setOrders([]);
+        setFilteredOrders([]);
+      });
   }, []);
+
+    // Add filter handling function
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setDateFilter(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    const filtered = orders.filter(order => {
+      const orderDate = new Date(order.created_at);
+      const start = dateFilter.startDate ? new Date(dateFilter.startDate) : null;
+      const end = dateFilter.endDate ? new Date(dateFilter.endDate) : null;
+
+      if (start && end) {
+        return orderDate >= start && orderDate <= end;
+      } else if (start) {
+        return orderDate >= start;
+      } else if (end) {
+        return orderDate <= end;
+      }
+      return true;
+    });
+
+    setFilteredOrders(filtered);
+  };
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -208,41 +244,71 @@ function handleSubmit(e) {
         </form>
       </section>
 
-      {orders.length > 0 && (
-        <>
-          <h2 className="text-xl font-bold mt-8 mb-4">Ostatnie zamówienia:</h2>
+       {orders.length > 0 && (
+        <section className="mt-12 bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">Ostatnie zamówienia</h2>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Od daty</label>
+                <input
+                  type="date"
+                  name="startDate"
+                  value={dateFilter.startDate}
+                  onChange={handleFilterChange}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Do daty</label>
+                <input
+                  type="date"
+                  name="endDate"
+                  value={dateFilter.endDate}
+                  onChange={handleFilterChange}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white rounded-xl shadow border">
-              <thead>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-2">ID</th>
-                  <th className="px-4 py-2">Data utworzenia</th>
-                  <th className="px-4 py-2">Średnica</th>
-                  <th className="px-4 py-2">Kształt</th>
-                  <th className="px-4 py-2">Rozmiar</th>
-                  <th className="px-4 py-2">Kolor</th>
-                  <th className="px-4 py-2">Ilość</th>
-                  <th className="px-4 py-2"></th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data utworzenia</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Średnica</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kształt</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rozmiar</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kolor</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ilość</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Akcje</th>
                 </tr>
               </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id} className="border-t hover:bg-gray-100 transition-colors">
-                    <td className="px-4 py-2">{order.id}</td>
-                    <td className="px-4 py-2">{new Date(order.created_at).toLocaleString()}</td>
-                    <td className="px-4 py-2">{order.diameter}</td>
-                    <td className="px-4 py-2">{order.shape}</td>
-                    <td className="px-4 py-2">{order.size}</td>
-                    <td className="px-4 py-2">{order.color}</td>
-                    <td className="px-4 py-2">{order.quantity_to_assemble}</td>
-                    <td className="px-4 py-2 text-center">
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredOrders.map((order) => (
+                  <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(order.created_at).toLocaleString('pl-PL')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.diameter}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.shape}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.size}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.color}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.quantity_to_assemble}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         type="button"
-                        className="text-red-600 font-bold hover:text-red-800"
-                        title="Usuń zamówienie"
                         onClick={() => openDeleteModal(order)}
+                        className="text-red-600 hover:text-red-900 transition-colors"
+                        title="Usuń zamówienie"
                       >
-                        ✕
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                       </button>
                     </td>
                   </tr>
@@ -250,11 +316,11 @@ function handleSubmit(e) {
               </tbody>
             </table>
           </div>
-        </>
+        </section>
       )}
 
-            {/* MODAL USUWANIA */}
-        {showModal && orderToDelete && (
+      {/* Modal remains the same */}
+      {showModal && orderToDelete && (
         <OrderDeleteModal
           order={orderToDelete}
           onDelete={handleDelete}
@@ -264,4 +330,3 @@ function handleSubmit(e) {
     </div>
   );
 }
-   
