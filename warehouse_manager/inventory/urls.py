@@ -16,6 +16,7 @@ urlpatterns = [
     path("order/delete/<int:order_id>/", views.delete_order, name="delete_order"),
     path("product-production/", views.product_production, name="product_production"),
     path('api/', include(router.urls)),
+
     # Dodaj inne widoki jeśli są potrzebne:
     # path('products/', views.products, name='products'),
     # path('categories/', views.categories, name='categories'),
