@@ -1,8 +1,17 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-export default function Navbar({ user }) {
+export default function Navbar({ user, setUser }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  function handleLogout(e) {
+    e.preventDefault();
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    setUser && setUser(null);
+    navigate("/login");
+  }
 
   return (
     <>
@@ -18,10 +27,14 @@ export default function Navbar({ user }) {
                   <a href="/user" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
                     Moje konto: {user.username}
                   </a>
-                  {/* Dropdown and more links here */}
                   <Link to="/orders" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Zamówienia</Link>
                   <Link to="/production" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Produkcja</Link>
-                  <Link to="/logout" className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">Wyloguj</Link>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                  >
+                    Wyloguj
+                  </button>
                 </>
               )}
               {!user && (
@@ -52,7 +65,12 @@ export default function Navbar({ user }) {
               <a href="/user" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">{user.username}</a>
               <a href="/orders" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Zamówienia</a>
               <a href="/production" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Produkcja</a>
-              <a href="/logout" className="block px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700">Wyloguj</a>
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700"
+              >
+                Wyloguj
+              </button>
             </>
           ) : (
             <a href="/login" className="block px-4 py-2 rounded-lg bg-ocean-500 hover:bg-ocean-600">Zaloguj się</a>
