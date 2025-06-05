@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from .models import Product, Order
 from django.utils import timezone
+from django.contrib import messages
 
 
 def index(request):
@@ -27,6 +28,7 @@ def product_order(request):
         try:
             order.full_clean()
             order.save()
+            messages.success(request, "Zamówienie zostało dodane!")
             return redirect("inventory:product_order")
         except ValidationError as e:
             errors = e.message_dict  # <-- przekazujesz błędy
@@ -55,7 +57,8 @@ def delete_order(request, order_id):
     if request.method == "POST":
         order = get_object_or_404(Order, id=order_id)
         order.delete()
-    return redirect("inventory:product_order")
+        messages.success(request, "Zamówienie zostało usunięte!")
+    return redirect("inventory:product_order")  
 
 
 def product_production(request):

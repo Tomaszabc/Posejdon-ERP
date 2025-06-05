@@ -28,14 +28,12 @@
         }
     </script>
     {% load static %}
-<link rel="stylesheet" href="{% static 'inventory/css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'inventory/css/main.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
 <body class="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-blue-50">
 
   {% include "includes/navbar.html" %}
-
-
 
   <main class="flex-1 max-w-full sm:max-w-7xl mx-auto px-2 sm:px-4 pt-20 sm:pt-24 pb-8">
     {% block content %}
@@ -44,11 +42,36 @@
 
   {% include "includes/footer.html" %}
 
-{% block extra_scripts %}
-  {% load static %}
-  <script src="{% static 'inventory/js/navbar.js' %}"></script>
-  <script src="{% static 'inventory/js/order_modal.js' %}"></script>
-  <script src="{% static 'inventory/js/order_delete_modal.js' %}"></script>
-{% endblock %}
+  <!-- Toast notification (zawsze obecny w DOM) -->
+  <div id="toast-success" class="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+    <div class="bg-green-600 text-white px-6 py-4 rounded-xl shadow-lg text-lg font-semibold opacity-0 transition-opacity duration-500" id="toast-message">
+      <!-- Tu pojawi się komunikat -->
+    </div>
+  </div>
+
+  <!-- Skrypty -->
+  {% block extra_scripts %}
+    <script src="{% static 'inventory/js/navbar.js' %}"></script>
+    <script src="{% static 'inventory/js/order_modal.js' %}"></script>
+    <script src="{% static 'inventory/js/order_delete_modal.js' %}"></script>
+  {% endblock %}
+
+  <!-- Toast logic for Django messages -->
+  {% if messages %}
+  {% for message in messages %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const msg = document.getElementById('toast-message');
+        msg.textContent = "{{ message|escapejs }}";
+        msg.classList.remove('opacity-0');
+        msg.classList.add('opacity-100');
+        setTimeout(() => {
+          msg.classList.remove('opacity-100');
+          msg.classList.add('opacity-0');
+        }, 2000);
+      });
+    </script>
+  {% endfor %}
+{% endif %}
 </body>
 </html>
