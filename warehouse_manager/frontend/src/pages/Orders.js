@@ -3,9 +3,9 @@ import OrderDeleteModal from "../components/modals/OrderDeleteModal";
 
 export default function Orders() {
   const diameters = ["100", "125", "150"];
-  const shapes = ["okrągły", "kwadratowy"];
-  const sizes = ["mały", "średni", "duży"];
-  const colors = ["biały", "czarny", "szary"];
+  const shapes = ["Okrągły", "Kwadratowy"];
+  const sizes = ["M", "S", "D"];
+  const colors = ["B", "C", "G"];
   const [form, setForm] = useState({
     diameter: "",
     shape: "",
@@ -33,34 +33,36 @@ export default function Orders() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    let newErrors = [];
-    if (!form.diameter) newErrors.push('Pole "Średnica" jest wymagane.');
-    if (!form.shape) newErrors.push('Pole "Kształt" jest wymagane.');
-    if (!form.size) newErrors.push('Pole "Rozmiar" jest wymagane.');
-    if (!form.color) newErrors.push('Pole "Kolor" jest wymagane.');
-    if (!form.quantity_to_assemble) newErrors.push('Pole "Ilość do złożenia" jest wymagane.');
-    setErrors(newErrors);
-    if (newErrors.length === 0) {
-      fetch("http://127.0.0.1:8000/api/orders/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      })
-        .then((res) => res.json())
-        .then((newOrder) => {
-          setOrders([...orders, newOrder]);
-          setForm({
-            diameter: "",
-            shape: "",
-            size: "",
-            color: "",
-            quantity_to_assemble: "",
-          });
+function handleSubmit(e) {
+  e.preventDefault();
+  let newErrors = [];
+  if (!form.diameter) newErrors.push('Pole "Średnica" jest wymagane.');
+  if (!form.shape) newErrors.push('Pole "Kształt" jest wymagane.');
+  if (!form.size) newErrors.push('Pole "Rozmiar" jest wymagane.');
+  if (!form.color) newErrors.push('Pole "Kolor" jest wymagane.');
+  if (!form.quantity_to_assemble) newErrors.push('Pole "Ilość do złożenia" jest wymagane.');
+  setErrors(newErrors);
+  if (newErrors.length === 0) {
+    fetch("http://127.0.0.1:8000/api/orders/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        fetch("http://127.0.0.1:8000/api/orders/")
+          .then((res) => res.json())
+          .then((data) => setOrders(data));
+        setForm({
+          diameter: "",
+          shape: "",
+          size: "",
+          color: "",
+          quantity_to_assemble: "",
         });
-    }
+      });
   }
+}
 
   function openDeleteModal(order) {
     setOrderToDelete(order);
