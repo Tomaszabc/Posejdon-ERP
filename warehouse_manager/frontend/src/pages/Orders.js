@@ -4,7 +4,7 @@ import OrderDeleteModal from "../components/modals/OrderDeleteModal";
 export default function Orders() {
   const diameters = ["100", "125", "150"];
   const shapes = ["Okrągły", "Kwadratowy"];
-  const sizes = ["M", "S", "D"];
+  const sizes = ["S", "M", "L"];
   const colors = ["B", "C", "G"];
   const [form, setForm] = useState({
     diameter: "",
