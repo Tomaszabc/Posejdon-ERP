@@ -15,16 +15,18 @@ export default function Orders() {
   const [orders, setOrders] = useState([]);
   const [errors, setErrors] = useState([]);
 
+  const [showModal, setShowModal] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState(null);
+
   // Pobierz zamówienia z API po załadowaniu komponentu
-useEffect(() => {
-  fetch("http://127.0.0.1:8000/api/orders/")
-    .then((res) => res.json())
-    .then((data) => {
-      console.log("API data:", data);
-      setOrders(data);
-    })
-    .catch(() => setOrders([]));
-}, []);
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/orders/")
+      .then((res) => res.json())
+      .then((data) => {
+        setOrders(data);
+      })
+      .catch(() => setOrders([]));
+  }, []);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -40,8 +42,7 @@ useEffect(() => {
     if (!form.quantity_to_assemble) newErrors.push('Pole "Ilość do złożenia" jest wymagane.');
     setErrors(newErrors);
     if (newErrors.length === 0) {
-      // Wyślij zamówienie do API
-      fetch("/api/orders/", {
+      fetch("http://127.0.0.1:8000/api/orders/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -58,6 +59,30 @@ useEffect(() => {
           });
         });
     }
+  }
+
+  function openDeleteModal(order) {
+    setOrderToDelete(order);
+    setShowModal(true);
+  }
+
+  function closeDeleteModal() {
+    setShowModal(false);
+    setOrderToDelete(null);
+  }
+
+  function handleDelete() {
+    if (!orderToDelete) return;
+    fetch(`http://127.0.0.1:8000/api/orders/${orderToDelete.id}/`, {
+      method: "DELETE",
+    }).then((res) => {
+      if (res.ok) {
+        setOrders(orders.filter((o) => o.id !== orderToDelete.id));
+        closeDeleteModal();
+      } else {
+        alert("Błąd podczas usuwania zamówienia.");
+      }
+    });
   }
 
   return (
@@ -208,27 +233,14 @@ useEffect(() => {
                     <td className="px-4 py-2">{order.color}</td>
                     <td className="px-4 py-2">{order.quantity_to_assemble}</td>
                     <td className="px-4 py-2 text-center">
-                       <button
-                          type="button"
-                          className="text-red-600 font-bold hover:text-red-800"
-                          title="Usuń zamówienie"
-                          onClick={() => {
-                            if (window.confirm("Czy na pewno chcesz usunąć to zamówienie?")) {
-                              fetch(`http://127.0.0.1:8000/api/orders/${order.id}/`, {
-                                method: "DELETE",
-                              })
-                                .then((res) => {
-                                  if (res.ok) {
-                                    setOrders(orders.filter((o) => o.id !== order.id));
-                                  } else {
-                                    alert("Błąd podczas usuwania zamówienia.");
-                                  }
-                                });
-                            }
-                          }}
-                        >
-                          ✕
-                        </button>
+                      <button
+                        type="button"
+                        className="text-red-600 font-bold hover:text-red-800"
+                        title="Usuń zamówienie"
+                        onClick={() => openDeleteModal(order)}
+                      >
+                        ✕
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -236,6 +248,33 @@ useEffect(() => {
             </table>
           </div>
         </>
+      )}
+
+      {/* MODAL USUWANIA */}
+      {showModal && orderToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-xl p-6 max-w-xs w-full text-center">
+            <h2 className="text-lg font-bold mb-4 text-gray-800">Potwierdź usunięcie</h2>
+            <p className="mb-4 text-gray-600">Czy na pewno chcesz usunąć to zamówienie?</p>
+            <div className="mb-4 text-gray-700 font-semibold">
+              ID: {orderToDelete.id}, Średnica: {orderToDelete.diameter}, Kształt: {orderToDelete.shape}
+            </div>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={handleDelete}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold"
+              >
+                Usuń
+              </button>
+              <button
+                onClick={closeDeleteModal}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-bold"
+              >
+                Anuluj
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
