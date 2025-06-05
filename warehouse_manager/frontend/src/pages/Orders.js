@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import OrderDeleteModal from "../components/modals/OrderDeleteModal";
 
 export default function Orders() {
   const diameters = ["100", "125", "150"];
@@ -250,32 +251,15 @@ export default function Orders() {
         </>
       )}
 
-      {/* MODAL USUWANIA */}
-      {showModal && orderToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-xl shadow-xl p-6 max-w-xs w-full text-center">
-            <h2 className="text-lg font-bold mb-4 text-gray-800">Potwierdź usunięcie</h2>
-            <p className="mb-4 text-gray-600">Czy na pewno chcesz usunąć to zamówienie?</p>
-            <div className="mb-4 text-gray-700 font-semibold">
-              ID: {orderToDelete.id}, Średnica: {orderToDelete.diameter}, Kształt: {orderToDelete.shape}
-            </div>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={handleDelete}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold"
-              >
-                Usuń
-              </button>
-              <button
-                onClick={closeDeleteModal}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-bold"
-              >
-                Anuluj
-              </button>
-            </div>
-          </div>
-        </div>
+            {/* MODAL USUWANIA */}
+        {showModal && orderToDelete && (
+        <OrderDeleteModal
+          order={orderToDelete}
+          onDelete={handleDelete}
+          onCancel={closeDeleteModal}
+        />
       )}
     </div>
   );
 }
+   
