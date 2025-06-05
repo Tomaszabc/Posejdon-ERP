@@ -25,7 +25,7 @@ export default function Navbar({ user, setUser }) {
               {user && (
                 <>
                   <a href="/user" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
-                    Moje konto: {user.username}
+                    Moje konto: {user?.username || user?.user_id}
                   </a>
                   <Link to="/orders" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Zamówienia</Link>
                   <Link to="/production" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Produkcja</Link>
@@ -62,7 +62,9 @@ export default function Navbar({ user, setUser }) {
           <a href="/" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Strona główna</a>
           {user ? (
             <>
-              <a href="/user" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">{user.username}</a>
+              <a href="/user" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+  Moje konto: {user?.username || user?.user_id}
+</a>
               <a href="/orders" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Zamówienia</a>
               <a href="/production" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Produkcja</a>
               <button

@@ -13,16 +13,25 @@ function App() {
 
     // Sprawdź token po załadowaniu aplikacji
   useEffect(() => {
-    const token = localStorage.getItem("access");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setUser({ username: decoded.username || decoded.user_name || decoded.email || decoded.sub });
-      } catch {
-        setUser(null);
-      }
+  const token = localStorage.getItem("access");
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      // Pobierz dane użytkownika z API
+      fetch("http://localhost:8000/api/auth/user/", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
+})
+        .then(res => res.json())
+        .then(data => setUser({ username: data.username, email: data.email }))
+        .catch(() => setUser({ user_id: decoded.user_id }));
+    } catch {
+      setUser(null);
     }
-  }, []);
+  }
+}, []);
 
    return (
     <Router>
