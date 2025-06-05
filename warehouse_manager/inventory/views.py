@@ -4,7 +4,9 @@ from django.core.exceptions import ValidationError
 from .models import Product, Order
 from django.utils import timezone
 from django.contrib import messages
-
+from rest_framework import viewsets
+from .models import Order
+from .serializers import OrderSerializer
 
 def index(request):
     return render(request, "inventory/index.html")
@@ -81,3 +83,7 @@ def product_production(request):
             "produced_orders": produced_orders,
         },
     )
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all().order_by('-created_at')
+    serializer_class = OrderSerializer

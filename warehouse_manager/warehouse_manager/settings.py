@@ -11,9 +11,17 @@ DEBUG = os.getenv("DEBUG") == "True"
 DEBUG = True
 ALLOWED_HOSTS = ["posejdon.fly.dev", "127.0.0.1"]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # jeśli React działa lokalnie
+    # Dodaj tu inne domeny frontendu, jeśli masz (np. produkcyjne)
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
 # --------------------------------------
 # 1) Dodaj django.contrib.sites i allauth
 INSTALLED_APPS = [
+    "corsheaders",
     # domyślne Django:
     "django.contrib.admin",
     "django.contrib.auth",
@@ -34,12 +42,14 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "grappelli",
+    'rest_framework',
 ]
 # --------------------------------------
 
 SITE_ID = 1
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

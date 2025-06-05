@@ -1,6 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from rest_framework import routers
+from .views import OrderViewSet
+
+router = routers.DefaultRouter()
+router.register(r'orders', OrderViewSet)
 
 app_name = "inventory"
 
@@ -10,6 +15,7 @@ urlpatterns = [
     path("user/", views.user_profile, name="user_profile"),
     path("order/delete/<int:order_id>/", views.delete_order, name="delete_order"),
     path("product-production/", views.product_production, name="product_production"),
+    path('api/', include(router.urls)),
     # Dodaj inne widoki jeśli są potrzebne:
     # path('products/', views.products, name='products'),
     # path('categories/', views.categories, name='categories'),
