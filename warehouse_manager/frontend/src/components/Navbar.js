@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Navbar({ user }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -18,13 +19,13 @@ export default function Navbar({ user }) {
                     Moje konto: {user.username}
                   </a>
                   {/* Dropdown and more links here */}
-                  <a href="/orders" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Zamówienia</a>
-                  <a href="/production" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Produkcja</a>
-                  <a href="/logout" className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">Wyloguj</a>
+                  <Link to="/orders" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Zamówienia</Link>
+                  <Link to="/production" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Produkcja</Link>
+                  <Link to="/logout" className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">Wyloguj</Link>
                 </>
               )}
               {!user && (
-                <a href="/login" className="bg-ocean-500 hover:bg-ocean-600 text-white px-4 py-2 rounded-lg">Zaloguj się</a>
+                <Link to="/login" className="bg-ocean-500 hover:bg-ocean-600 text-white px-4 py-2 rounded-lg">Zaloguj się</Link>
               )}
             </div>
             {/* Hamburger */}
