@@ -208,14 +208,27 @@ useEffect(() => {
                     <td className="px-4 py-2">{order.color}</td>
                     <td className="px-4 py-2">{order.quantity_to_assemble}</td>
                     <td className="px-4 py-2 text-center">
-                      <button
-                        type="button"
-                        className="text-red-600 font-bold hover:text-red-800"
-                        title="Usuń zamówienie"
-                        onClick={() => setOrders(orders.filter(o => o.id !== order.id))}
-                      >
-                        ✕
-                      </button>
+                       <button
+                          type="button"
+                          className="text-red-600 font-bold hover:text-red-800"
+                          title="Usuń zamówienie"
+                          onClick={() => {
+                            if (window.confirm("Czy na pewno chcesz usunąć to zamówienie?")) {
+                              fetch(`http://127.0.0.1:8000/api/orders/${order.id}/`, {
+                                method: "DELETE",
+                              })
+                                .then((res) => {
+                                  if (res.ok) {
+                                    setOrders(orders.filter((o) => o.id !== order.id));
+                                  } else {
+                                    alert("Błąd podczas usuwania zamówienia.");
+                                  }
+                                });
+                            }
+                          }}
+                        >
+                          ✕
+                        </button>
                     </td>
                   </tr>
                 ))}
