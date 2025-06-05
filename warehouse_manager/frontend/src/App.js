@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import { jwtDecode } from "jwt-decode";
+import UserProfile from "./pages/UserProfile";
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
           <Routes>
             <Route path="/orders" element={<Orders />} />
             <Route path="/login" element={<Login setUser={setUser} />} />
+            <Route path="/user" element={<UserProfile user={user} />} />
             {/* ...inne trasy... */}
           </Routes>
         </main>
