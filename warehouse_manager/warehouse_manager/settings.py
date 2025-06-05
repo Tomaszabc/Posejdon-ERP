@@ -10,6 +10,16 @@ SECRET_KEY = os.getenv("SECRET_KEY", "tu_wklej_swoj_super_tajny_klucz")
 DEBUG = os.getenv("DEBUG") == "True"
 DEBUG = True
 ALLOWED_HOSTS = ['localhost', "posejdon.fly.dev", "127.0.0.1"]
+HEADLESS_ONLY = True
+
+HEADLESS_FRONTEND_URLS = {
+    "account_confirm_email": "http://localhost:3000",
+    "account_reset_password_from_key": "http://localhost:3000",
+    "account_signup": "http://localhost:3000",
+    "socialaccount_login_error": "http://localhost:3000",
+}
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]  # lub Twój port
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # jeśli React działa lokalnie
@@ -43,6 +53,8 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "grappelli",
     'rest_framework',
+    "dj_rest_auth",
+    'rest_framework.authtoken',
 ]
 # --------------------------------------
 

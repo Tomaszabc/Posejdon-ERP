@@ -10,6 +10,8 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("admin/", admin.site.urls),
     path("grappelli/", include("grappelli.urls")),
+    path("api/auth/", include("dj_rest_auth.urls")),
+    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
 ]
 
 admin.site.site_header = "E-Posejdon ERP – Panel administracyjny"
