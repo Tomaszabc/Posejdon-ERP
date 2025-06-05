@@ -15,23 +15,25 @@ export default function Orders() {
   });
   const [orders, setOrders] = useState([]);
   const [errors, setErrors] = useState([]);
-
   const [showModal, setShowModal] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState(null);
-
-    const [dateFilter, setDateFilter] = useState({
+  const [dateFilter, setDateFilter] = useState({
     startDate: "",
     endDate: ""
   });
-
-    const [filteredOrders, setFilteredOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const ORDERS_LIMIT = 100;
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/orders/")
       .then((res) => res.json())
       .then((data) => {
+        const sortedOrders = data.sort((a, b) => 
+          new Date(b.created_at) - new Date(a.created_at)
+        ).slice(0, ORDERS_LIMIT);
+        
         setOrders(data);
-        setFilteredOrders(data);
+        setFilteredOrders(sortedOrders);
       })
       .catch(() => {
         setOrders([]);
@@ -39,7 +41,6 @@ export default function Orders() {
       });
   }, []);
 
-    // Add filter handling function
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setDateFilter(prev => ({
@@ -65,6 +66,9 @@ export default function Orders() {
     setFilteredOrders(filtered);
   };
 
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
@@ -116,7 +120,13 @@ function handleSubmit(e) {
       method: "DELETE",
     }).then((res) => {
       if (res.ok) {
-        setOrders(orders.filter((o) => o.id !== orderToDelete.id));
+        const updatedOrders = orders.filter((o) => o.id !== orderToDelete.id);
+        setOrders(updatedOrders);
+        setFilteredOrders(
+          updatedOrders
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+            .slice(0, ORDERS_LIMIT)
+        );
         closeDeleteModal();
       } else {
         alert("Błąd podczas usuwania zamówienia.");
@@ -247,7 +257,9 @@ function handleSubmit(e) {
        {orders.length > 0 && (
         <section className="mt-12 bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">Ostatnie zamówienia</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
+              Ostatnie zamówienia {!dateFilter.startDate && !dateFilter.endDate && `(${ORDERS_LIMIT} najnowszych)`}
+            </h2>
             
             <div className="flex flex-col sm:flex-row gap-4">
               <div>
@@ -319,8 +331,7 @@ function handleSubmit(e) {
         </section>
       )}
 
-      {/* Modal remains the same */}
-      {showModal && orderToDelete && (
+       {showModal && orderToDelete && (
         <OrderDeleteModal
           order={orderToDelete}
           onDelete={handleDelete}
