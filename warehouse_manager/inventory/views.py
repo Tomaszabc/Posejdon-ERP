@@ -155,22 +155,18 @@ class ComponentDetailView(generics.RetrieveUpdateDestroyAPIView):
 def import_components_csv(request):
     """
     Importuje komponenty z pliku CSV przesłanego przez frontend.
-    Obsługuje zarówno ',' jak i ';' jako separator.
     """
     file = request.FILES.get('file')
     if not file:
         return Response({"error": "Nie przesłano pliku."}, status=400)
 
     decoded_file = file.read().decode('utf-8').splitlines()
-    # Wykryj separator na podstawie pierwszej linii
+    # Wykrywanie separatora
     first_line = decoded_file[0]
-    if first_line.count(';') > first_line.count(','):
-        delimiter = ';'
-    else:
-        delimiter = ','
-
+    delimiter = ';' if first_line.count(';') > first_line.count(',') else ','
     reader = csv.DictReader(decoded_file, delimiter=delimiter)
     count = 0
+
     for row in reader:
         def dec(val):
             val = (val or '').replace(',', '.').replace(' ', '')
@@ -178,36 +174,39 @@ def import_components_csv(request):
         def val(val):
             return val.strip() if val else ''
 
-        Component.objects.create(
-            r=val(row.get('R')),
-            full_name=val(row.get('Nazwa cała')),
-            stock=dec(row.get('Stan')),
-            available_quantity=dec(row.get('Ilość dostępna')),
-            unit=val(row.get('j.m.')),
-            purchase_price_net=dec(row.get('Cena zakupu netto')),
-            sale_price_net=dec(row.get('Cena sprzedaży netto')),
-            barcode=val(row.get('Kod kreskowy')),
+        Component.objects.update_or_create(
             catalog_index=val(row.get('Indeks katalogowy')),
-            reserved=dec(row.get('Zarezerwowano')),
-            short_name=val(row.get('Nazwa krótka')),
-            original_name=val(row.get('Nazwa oryg.')),
-            suppliers_will_deliver=dec(row.get('Dostawcy dostarczą')),
-            recipients_will_receive=dec(row.get('Odbiorcy odbiorą')),
-            purchase_price_net_currency=dec(row.get('C. zakupu netto wal.')),
-            vat_sale=dec(row.get('Vat sprz.')),
-            margin_percent=dec(row.get('Marża [%]')),
-            f=val(row.get('F')),
-            producer=val(row.get('Producent')),
-            article_number=val(row.get('Nr artykułu')),
-            s=val(row.get('S')),
-            attachment=val(row.get('Zał.')),
-            marker=val(row.get('Wyróżnik')),
-            a=val(row.get('A')),
-            producer_index=val(row.get('Indeks producenta')),
-            cn_code=val(row.get('Kod CN')),
-            country_of_origin=val(row.get('Kraj pochodzenia')),
-            jpk_classification=val(row.get('JPK Klasyfikacja')),
-            markup_percent=dec(row.get('Narzut [%]')),
+            defaults={
+                'r': val(row.get('R')),
+                'full_name': val(row.get('Nazwa cała')),
+                'stock': dec(row.get('Stan')),
+                'available_quantity': dec(row.get('Ilość dostępna')),
+                'unit': val(row.get('j.m.')),
+                'purchase_price_net': dec(row.get('Cena zakupu netto')),
+                'sale_price_net': dec(row.get('Cena sprzedaży netto')),
+                'barcode': val(row.get('Kod kreskowy')),
+                'reserved': dec(row.get('Zarezerwowano')),
+                'short_name': val(row.get('Nazwa krótka')),
+                'original_name': val(row.get('Nazwa oryg.')),
+                'suppliers_will_deliver': dec(row.get('Dostawcy dostarczą')),
+                'recipients_will_receive': dec(row.get('Odbiorcy odbiorą')),
+                'purchase_price_net_currency': dec(row.get('C. zakupu netto wal.')),
+                'vat_sale': dec(row.get('Vat sprz.')),
+                'margin_percent': dec(row.get('Marża [%]')),
+                'f': val(row.get('F')),
+                'producer': val(row.get('Producent')),
+                'article_number': val(row.get('Nr artykułu')),
+                's': val(row.get('S')),
+                'attachment': val(row.get('Zał.')),
+                'marker': val(row.get('Wyróżnik')),
+                'a': val(row.get('A')),
+                'producer_index': val(row.get('Indeks producenta')),
+                'cn_code': val(row.get('Kod CN')),
+                'country_of_origin': val(row.get('Kraj pochodzenia')),
+                'jpk_classification': val(row.get('JPK Klasyfikacja')),
+                'markup_percent': dec(row.get('Narzut [%]')),
+            }
         )
         count += 1
+
     return Response({"success": True, "imported": count})
