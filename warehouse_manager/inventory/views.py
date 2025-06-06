@@ -137,3 +137,7 @@ def undo_produce_order(request):
 class ComponentListCreateView(generics.ListCreateAPIView):
     queryset = Component.objects.all()
     serializer_class = ComponentSerializer
+
+class ComponentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Component.objects.all()
+    serializer_class = ComponentSerializer

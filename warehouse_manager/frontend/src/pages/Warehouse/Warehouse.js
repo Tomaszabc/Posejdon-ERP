@@ -3,8 +3,46 @@ import React, { useEffect, useState } from "react";
 export default function Warehouse() {
   const [components, setComponents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingComponent, setEditingComponent] = useState(null);
+  const [newComponent, setNewComponent] = useState({
+    r: 'Towar',
+    full_name: '',
+    stock: '0.00',
+    available_quantity: '0.00',
+    unit: 'szt.',
+    purchase_price_net: '0.00',
+    sale_price_net: '0.00',
+    barcode: '',
+    catalog_index: '',
+    reserved: '0.00',
+    short_name: '',
+    original_name: '',
+    suppliers_will_deliver: '0.000',
+    recipients_will_receive: '0.000',
+    purchase_price_net_currency: '0.00',
+    vat_sale: '23.00',
+    margin_percent: '0.00',
+    f: '0',
+    producer: '',
+    article_number: '',
+    s: '0',
+    attachment: '0',
+    marker: '',
+    a: '0',
+    producer_index: '',
+    cn_code: '',
+    country_of_origin: '',
+    jpk_classification: '',
+    markup_percent: '0.00'
+  });
 
   useEffect(() => {
+    fetchComponents();
+  }, []);
+
+  const fetchComponents = () => {
     fetch("http://localhost:8000/api/components/")
       .then(res => res.json())
       .then(data => {
@@ -15,7 +53,106 @@ export default function Warehouse() {
         console.error("Błąd pobierania danych:", err);
         setLoading(false);
       });
-  }, []);
+  };
+
+  const handleAddComponent = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:8000/api/components/", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newComponent)
+      });
+
+      if (response.ok) {
+        setShowAddModal(false);
+        setNewComponent({
+          r: 'Towar',
+          full_name: '',
+          stock: '0.00',
+          available_quantity: '0.00',
+          unit: 'szt.',
+          purchase_price_net: '0.00',
+          sale_price_net: '0.00',
+          barcode: '',
+          catalog_index: '',
+          reserved: '0.00',
+          short_name: '',
+          original_name: '',
+          suppliers_will_deliver: '0.000',
+          recipients_will_receive: '0.000',
+          purchase_price_net_currency: '0.00',
+          vat_sale: '23.00',
+          margin_percent: '0.00',
+          f: '0',
+          producer: '',
+          article_number: '',
+          s: '0',
+          attachment: '0',
+          marker: '',
+          a: '0',
+          producer_index: '',
+          cn_code: '',
+          country_of_origin: '',
+          jpk_classification: '',
+          markup_percent: '0.00'
+        });
+        fetchComponents();
+      } else {
+        alert('Błąd podczas dodawania komponentu');
+      }
+    } catch (error) {
+      console.error('Błąd:', error);
+      alert('Błąd podczas dodawania komponentu');
+    }
+  };
+
+  const handleEditComponent = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`http://localhost:8000/api/components/${editingComponent.id}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editingComponent)
+      });
+
+      if (response.ok) {
+        setShowEditModal(false);
+        setEditingComponent(null);
+        fetchComponents();
+      } else {
+        alert('Błąd podczas aktualizacji komponentu');
+      }
+    } catch (error) {
+      console.error('Błąd:', error);
+      alert('Błąd podczas aktualizacji komponentu');
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewComponent(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditingComponent(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const openEditModal = (component) => {
+    setEditingComponent({ ...component });
+    setShowEditModal(true);
+  };
 
   if (loading) {
     return (
@@ -32,8 +169,22 @@ export default function Warehouse() {
     <div className="max-w-full mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-ocean-900 mb-2">📦 Magazyn – Komponenty</h1>
-        <p className="text-gray-600">Pełny widok wszystkich komponentów magazynowych</p>
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h1 className="text-4xl font-bold text-ocean-900 mb-2">📦 Magazyn – Komponenty</h1>
+            <p className="text-gray-600">Pełny widok wszystkich komponentów magazynowych</p>
+          </div>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="bg-ocean-600 hover:bg-ocean-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Dodaj komponent
+          </button>
+        </div>
+
         {components.length > 0 && (
           <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
@@ -44,12 +195,428 @@ export default function Warehouse() {
         )}
       </div>
 
+      {/* Modal dodawania */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">Dodaj nowy komponent</h2>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <form onSubmit={handleAddComponent} className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Podstawowe informacje */}
+                <div className="col-span-full">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Podstawowe informacje</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Typ</label>
+                  <select
+                    name="r"
+                    value={newComponent.r}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  >
+                    <option value="Towar">Towar</option>
+                    <option value="Usługa">Usługa</option>
+                    <option value="Materiał">Materiał</option>
+                  </select>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nazwa pełna *</label>
+                  <input
+                    type="text"
+                    name="full_name"
+                    value={newComponent.full_name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                    placeholder="Wprowadź pełną nazwę komponentu"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nazwa krótka</label>
+                  <input
+                    type="text"
+                    name="short_name"
+                    value={newComponent.short_name}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Jednostka miary</label>
+                  <input
+                    type="text"
+                    name="unit"
+                    value={newComponent.unit}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Stan magazynowy</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="stock"
+                    value={newComponent.stock}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                {/* Ceny */}
+                <div className="col-span-full mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Ceny i marże</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cena zakupu netto (zł)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="purchase_price_net"
+                    value={newComponent.purchase_price_net}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cena sprzedaży netto (zł)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="sale_price_net"
+                    value={newComponent.sale_price_net}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">VAT sprzedaży (%)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="vat_sale"
+                    value={newComponent.vat_sale}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                {/* Dodatkowe informacje */}
+                <div className="col-span-full mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Dodatkowe informacje</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Kod kreskowy</label>
+                  <input
+                    type="text"
+                    name="barcode"
+                    value={newComponent.barcode}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Indeks katalogowy</label>
+                  <input
+                    type="text"
+                    name="catalog_index"
+                    value={newComponent.catalog_index}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Producent</label>
+                  <input
+                    type="text"
+                    name="producer"
+                    value={newComponent.producer}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Numer artykułu</label>
+                  <input
+                    type="text"
+                    name="article_number"
+                    value={newComponent.article_number}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Kraj pochodzenia</label>
+                  <input
+                    type="text"
+                    name="country_of_origin"
+                    value={newComponent.country_of_origin}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Anuluj
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 transition-colors"
+                >
+                  Dodaj komponent
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal edytowania */}
+      {showEditModal && editingComponent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">Edytuj komponent</h2>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <form onSubmit={handleEditComponent} className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Podstawowe informacje */}
+                <div className="col-span-full">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Podstawowe informacje</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Typ</label>
+                  <select
+                    name="r"
+                    value={editingComponent.r}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  >
+                    <option value="Towar">Towar</option>
+                    <option value="Usługa">Usługa</option>
+                    <option value="Materiał">Materiał</option>
+                  </select>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nazwa pełna *</label>
+                  <input
+                    type="text"
+                    name="full_name"
+                    value={editingComponent.full_name}
+                    onChange={handleEditInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nazwa krótka</label>
+                  <input
+                    type="text"
+                    name="short_name"
+                    value={editingComponent.short_name || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Jednostka miary</label>
+                  <input
+                    type="text"
+                    name="unit"
+                    value={editingComponent.unit}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Stan magazynowy</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="stock"
+                    value={editingComponent.stock}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                {/* Ceny */}
+                <div className="col-span-full mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Ceny i marże</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cena zakupu netto (zł)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="purchase_price_net"
+                    value={editingComponent.purchase_price_net}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cena sprzedaży netto (zł)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="sale_price_net"
+                    value={editingComponent.sale_price_net}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">VAT sprzedaży (%)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="vat_sale"
+                    value={editingComponent.vat_sale}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                {/* Dodatkowe informacje */}
+                <div className="col-span-full mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Dodatkowe informacje</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Kod kreskowy</label>
+                  <input
+                    type="text"
+                    name="barcode"
+                    value={editingComponent.barcode || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Indeks katalogowy</label>
+                  <input
+                    type="text"
+                    name="catalog_index"
+                    value={editingComponent.catalog_index || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Producent</label>
+                  <input
+                    type="text"
+                    name="producer"
+                    value={editingComponent.producer || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Numer artykułu</label>
+                  <input
+                    type="text"
+                    name="article_number"
+                    value={editingComponent.article_number || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Kraj pochodzenia</label>
+                  <input
+                    type="text"
+                    name="country_of_origin"
+                    value={editingComponent.country_of_origin || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Anuluj
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 transition-colors"
+                >
+                  Zapisz zmiany
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Tabela */}
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
               <tr className="bg-gradient-to-r from-ocean-600 to-ocean-700 text-white">
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Akcje</th>
                 <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">R</th>
                 <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider min-w-[200px]">Nazwa cała</th>
                 <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Stan</th>
@@ -84,7 +651,7 @@ export default function Warehouse() {
             <tbody className="divide-y divide-gray-100">
               {components.length === 0 ? (
                 <tr>
-                  <td colSpan={29} className="text-center py-12 text-gray-500">
+                  <td colSpan={30} className="text-center py-12 text-gray-500">
                     <div className="flex flex-col items-center">
                       <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -97,6 +664,17 @@ export default function Warehouse() {
               ) : (
                 components.map((comp, index) => (
                   <tr key={comp.id} className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
+                    <td className="px-3 py-4 text-center">
+                      <button
+                        onClick={() => openEditModal(comp)}
+                        className="bg-blue-100 hover:bg-blue-200 text-blue-700 p-2 rounded-lg transition-colors"
+                        title="Edytuj komponent"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
+                    </td>
                     <td className="px-3 py-4">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         comp.r === 'Towar' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'

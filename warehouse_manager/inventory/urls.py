@@ -4,7 +4,7 @@ from . import views
 from rest_framework import routers
 from .views import OrderViewSet, production_orders, produce_order, undo_produce_order
 from .views import ComponentListCreateView
-
+from .views import ComponentDetailView
 
 router = routers.DefaultRouter()
 router.register(r'orders', OrderViewSet)
@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/production/produce/', produce_order, name='produce_order'),
     path('api/production/undo/', undo_produce_order, name='undo_produce_order'),
     path("api/components/", ComponentListCreateView.as_view(), name="component-list-create"),
+    path("api/components/<int:pk>/", ComponentDetailView.as_view(), name="component-detail"),
     # Dodaj inne widoki jeśli są potrzebne:
     # path('products/', views.products, name='products'),
     # path('categories/', views.categories, name='categories'),
