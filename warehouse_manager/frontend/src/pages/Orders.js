@@ -252,9 +252,34 @@ return (
       {orders.length > 0 && (
         <section className="bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">
-              Lista zamówień {!filters.startDate && !filters.endDate && !filters.diameter && !filters.shape && !filters.size && !filters.color && !filters.quantity && `(${ORDERS_LIMIT} najnowszych)`}
-            </h2>
+
+<h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+  Lista zamówień
+  {!filters.startDate && !filters.endDate && !filters.diameter && !filters.shape && !filters.size && !filters.color && !filters.quantity && (
+    <span className="ml-1 relative group">
+      <span
+        className="inline-block align-middle cursor-pointer group"
+        style={{ borderBottom: "0px dotted #888" }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="inline w-7 h-7 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="white"/>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 16v-4m0-4h.01" />
+        </svg>
+        {/* TOOLTIP */}
+        <span className="absolute left-1/2 -translate-x-1/2 mt-2 px-3 py-1 rounded bg-gray-800 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
+          {ORDERS_LIMIT} najnowszych
+        </span>
+      </span>
+    </span>
+  )}
+</h2>
+
             <button
                   type="button"
                   onClick={() => setShowFilters(!showFilters)}
