@@ -5,6 +5,15 @@ module.exports = {
   ],
   theme: {
     extend: {
+      keyframes: {
+        'fade-in-out': {
+          '0%,100%': { opacity: 0 },
+          '10%,90%': { opacity: 1 },
+        }
+      }, // <-- tutaj musi być przecinek!
+      animation: {
+        'fade-in-out': 'fade-in-out 2s ease-in-out',
+      },
       colors: {
         ocean: {
           50: '#f0f9ff',

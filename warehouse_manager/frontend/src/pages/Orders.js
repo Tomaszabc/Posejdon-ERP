@@ -14,7 +14,7 @@ const initialFilters = {
 };
 
 export default function Orders() {
-  const diameters = ["100", "125", "150"];
+  const diameters = ["100", "125", "160"];
   const shapes = ["Okrągły", "Kwadratowy"];
   const sizes = ["S", "M", "L"];
   const colors = ["B", "W", "G"];
@@ -25,6 +25,8 @@ export default function Orders() {
     color: "",
     quantity_to_assemble: "",
   });
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const [orders, setOrders] = useState([]);
   const [errors, setErrors] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -80,29 +82,31 @@ export default function Orders() {
     }
   }
 
-  function handleConfirmSubmit() {
-    fetch("http://127.0.0.1:8000/api/orders/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        fetch("http://127.0.0.1:8000/api/orders/")
-          .then((res) => res.json())
-          .then((data) => {
-            setOrders(data);
-          });
-        setForm({
-          diameter: "",
-          shape: "",
-          size: "",
-          color: "",
-          quantity_to_assemble: "",
+function handleConfirmSubmit() {
+  fetch("http://127.0.0.1:8000/api/orders/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(form),
+  })
+    .then((res) => res.json())
+    .then(() => {
+      fetch("http://127.0.0.1:8000/api/orders/")
+        .then((res) => res.json())
+        .then((data) => {
+          setOrders(data);
         });
-        setShowConfirmModal(false);
+      setForm({
+        diameter: "",
+        shape: "",
+        size: "",
+        color: "",
+        quantity_to_assemble: "",
       });
-  }
+      setShowConfirmModal(false);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 1000);
+    });
+}
 
   function openDeleteModal(order) {
     setOrderToDelete(order);
@@ -470,6 +474,14 @@ return (
         onCancel={() => setShowConfirmModal(false)}
       />
     )}
+
+{showSuccess && (
+  <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+    <div className="bg-green-500 text-white px-8 py-4 rounded-xl shadow-lg text-lg font-semibold animate-fade-in-out">
+      Dodano zamówienie!
+    </div>
+  </div>
+)}
   </div>
 );
 }
