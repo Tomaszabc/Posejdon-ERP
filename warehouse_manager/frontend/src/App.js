@@ -7,6 +7,8 @@ import Login from "./components/Login";
 import { jwtDecode } from "jwt-decode";
 import UserProfile from "./pages/UserProfile";
 import Home from "./pages/Home";
+import ProtectedRoute from "./ProtectedRoute";
+
 
 
 function App() {
@@ -31,17 +33,39 @@ function App() {
     }
   }, []);
 
-   return (
+  return (
     <Router>
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-blue-50">
         <Navbar user={user} setUser={setUser} />
         <main className="flex-1 max-w-full sm:max-w-7xl mx-auto px-2 sm:px-4 pt-20 sm:pt-24 pb-8">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/orders" element={<Orders />} />
             <Route path="/login" element={<Login setUser={setUser} />} />
-            <Route path="/user" element={<UserProfile user={user} />} />
-            {/* ...inne trasy... */}
+            {/* Chronione trasy */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute user={user}>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute user={user}>
+                  <Orders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/user"
+              element={
+                <ProtectedRoute user={user}>
+                  <UserProfile user={user} />
+                </ProtectedRoute>
+              }
+            />
+            {/* ...inne chronione trasy w ten sam sposób... */}
           </Routes>
         </main>
         <Footer />
