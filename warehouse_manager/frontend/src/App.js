@@ -8,7 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import UserProfile from "./pages/UserProfile";
 import Home from "./pages/Home";
 import ProtectedRoute from "./ProtectedRoute";
-import Production from "./pages/Production";
+import Production from "./pages/Production/Production";
 
 
 function App() {
