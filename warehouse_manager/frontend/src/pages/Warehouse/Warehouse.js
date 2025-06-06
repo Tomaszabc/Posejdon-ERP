@@ -8,6 +8,53 @@ export default function Warehouse() {
   const [editingComponent, setEditingComponent] = useState(null);
   const [selectedComponents, setSelectedComponents] = useState(new Set());
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  // Funkcja do eksportu CSV
+const exportToCSV = () => {
+  // Jeśli są zaznaczone, eksportuj tylko zaznaczone, w przeciwnym razie wszystkie
+  const exportData = selectedComponents.size > 0
+    ? components.filter(comp => selectedComponents.has(comp.id))
+    : components;
+
+  if (exportData.length === 0) {
+    alert("Brak danych do eksportu!");
+    return;
+  }
+
+  // Ustal nagłówki (możesz dodać/zmienić kolejność wg potrzeb)
+  const headers = [
+    "R", "Nazwa cała", "Stan", "Ilość dostępna", "j.m.", "Cena zakupu netto", "Cena sprzedaży netto",
+    "Kod kreskowy", "Indeks katalogowy", "Zarezerwowano", "Nazwa krótka", "Nazwa oryg.",
+    "Dostawcy dostarczą", "Odbiorcy odbiorą", "C. zakupu netto wal.", "Vat sprz.", "Marża [%]", "F",
+    "Producent", "Nr artykułu", "S", "Zał.", "Wyróżnik", "A", "Indeks producenta", "Kod CN",
+    "Kraj pochodzenia", "JPK Klasyfikacja", "Narzut [%]"
+  ];
+
+  // Mapuj dane
+  const rows = exportData.map(comp => [
+    comp.r, comp.full_name, comp.stock, comp.available_quantity, comp.unit, comp.purchase_price_net, comp.sale_price_net,
+    comp.barcode, comp.catalog_index, comp.reserved, comp.short_name, comp.original_name,
+    comp.suppliers_will_deliver, comp.recipients_will_receive, comp.purchase_price_net_currency, comp.vat_sale, comp.margin_percent, comp.f,
+    comp.producer, comp.article_number, comp.s, comp.attachment, comp.marker, comp.a, comp.producer_index, comp.cn_code,
+    comp.country_of_origin, comp.jpk_classification, comp.markup_percent
+  ]);
+
+  // Tworzenie CSV
+  let csvContent = '';
+  csvContent += headers.join(';') + '\n';
+  rows.forEach(row => {
+    csvContent += row.map(val => (val !== null && val !== undefined ? `"${val}"` : "")).join(';') + '\n';
+  });
+
+  // Pobieranie pliku
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", "components_export.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
   const [newComponent, setNewComponent] = useState({
     r: 'Towar',
     full_name: '',
@@ -225,6 +272,17 @@ export default function Warehouse() {
             <p className="text-gray-600">Pełny widok wszystkich komponentów magazynowych</p>
           </div>
           <div className="flex gap-3">
+             {/* Eksport CSV */}
+            <button
+                onClick={exportToCSV}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
+                title="Eksportuj do CSV"
+            >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Eksportuj CSV
+            </button>
             {selectedComponents.size > 0 && (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
