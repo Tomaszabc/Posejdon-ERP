@@ -10,6 +10,9 @@ from .serializers import OrderSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import generics
+from .models import Component
+from .serializers import ComponentSerializer
 
 def index(request):
     return render(request, "inventory/index.html")
@@ -130,3 +133,7 @@ def undo_produce_order(request):
         return Response({"success": True})
     except Order.DoesNotExist:
         return Response({"error": "Nie znaleziono zamówienia"}, status=404)
+
+class ComponentListCreateView(generics.ListCreateAPIView):
+    queryset = Component.objects.all()
+    serializer_class = ComponentSerializer

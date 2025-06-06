@@ -83,3 +83,37 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Zamówienie: {self.diameter}, {self.shape}, {self.size}, {self.color}, ilość: {self.quantity_to_assemble}"
+
+class Component(models.Model):
+    r = models.CharField(max_length=10, blank=True, null=True)  # R
+    full_name = models.CharField(max_length=255)  # Nazwa cała
+    stock = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # Stan
+    available_quantity = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # Ilość dostępna
+    unit = models.CharField(max_length=10)  # j.m.
+    purchase_price_net = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # Cena zakupu netto
+    sale_price_net = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # Cena sprzedaży netto
+    barcode = models.CharField(max_length=64, blank=True, null=True)  # Kod kreskowy
+    catalog_index = models.CharField(max_length=64, blank=True, null=True)  # Indeks katalogowy
+    reserved = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # Zarezerwowano
+    short_name = models.CharField(max_length=128, blank=True, null=True)  # Nazwa krótka
+    original_name = models.CharField(max_length=128, blank=True, null=True)  # Nazwa oryg.
+    suppliers_will_deliver = models.DecimalField(max_digits=12, decimal_places=3, default=0)  # Dostawcy dostarczą
+    recipients_will_receive = models.DecimalField(max_digits=12, decimal_places=3, default=0)  # Odbiorcy odbiorą
+    purchase_price_net_currency = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # C. zakupu netto wal.
+    vat_sale = models.DecimalField(max_digits=5, decimal_places=2, default=0)  # Vat sprz.
+    margin_percent = models.DecimalField(max_digits=6, decimal_places=2, default=0)  # Marża [%]
+    f = models.CharField(max_length=10, blank=True, null=True)  # F
+    producer = models.CharField(max_length=128, blank=True, null=True)  # Producent
+    article_number = models.CharField(max_length=64, blank=True, null=True)  # Nr artykułu
+    s = models.CharField(max_length=10, blank=True, null=True)  # S
+    attachment = models.CharField(max_length=10, blank=True, null=True)  # Zał.
+    marker = models.CharField(max_length=10, blank=True, null=True)  # Wyróżnik
+    a = models.CharField(max_length=10, blank=True, null=True)  # A
+    producer_index = models.CharField(max_length=64, blank=True, null=True)  # Indeks producenta
+    cn_code = models.CharField(max_length=32, blank=True, null=True)  # Kod CN
+    country_of_origin = models.CharField(max_length=64, blank=True, null=True)  # Kraj pochodzenia
+    jpk_classification = models.CharField(max_length=64, blank=True, null=True)  # JPK Klasyfikacja
+    markup_percent = models.DecimalField(max_digits=6, decimal_places=2, default=0)  # Narzut [%]
+
+    def __str__(self):
+        return self.full_name

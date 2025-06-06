@@ -9,7 +9,7 @@ import UserProfile from "./pages/UserProfile";
 import Home from "./pages/Home";
 import ProtectedRoute from "./ProtectedRoute";
 import Production from "./pages/Production/Production";
-
+import Warehouse from "./pages/Warehouse/Warehouse";
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -70,6 +70,14 @@ function App() {
               element={
                 <ProtectedRoute user={user}>
                   <Production />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/warehouse"
+              element={
+                <ProtectedRoute user={user}>
+                  <Warehouse />
                 </ProtectedRoute>
               }
             />
