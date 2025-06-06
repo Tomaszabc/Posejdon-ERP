@@ -272,6 +272,44 @@ const exportToCSV = () => {
             <p className="text-gray-600">Pełny widok wszystkich komponentów magazynowych</p>
           </div>
           <div className="flex gap-3">
+            <input
+            type="file"
+            accept=".csv"
+            id="import-csv"
+            style={{ display: "none" }}
+            onChange={async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const formData = new FormData();
+                formData.append("file", file);
+
+                try {
+                const response = await fetch("http://localhost:8000/api/components/import/", {
+                    method: "POST",
+                    body: formData,
+                });
+                if (response.ok) {
+                    alert("Import zakończony sukcesem!");
+                    fetchComponents();
+                } else {
+                    alert("Błąd importu CSV.");
+                }
+                } catch (err) {
+                alert("Błąd importu CSV.");
+                }
+                e.target.value = ""; // reset inputa
+            }}
+            />
+            <button
+            className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
+            title="Importuj z CSV"
+            onClick={() => document.getElementById("import-csv").click()}
+            >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+            </svg>
+            Importuj CSV
+            </button>
              {/* Eksport CSV */}
             <button
                 onClick={exportToCSV}
