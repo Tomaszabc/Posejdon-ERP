@@ -1,4 +1,6 @@
-Żeby uruchomić projekt trzeba zainstalować wtyczki z requirements:
+Frontend to React. Backend Python.
+
+Żeby uruchomić projekt Backend trzeba zainstalować wtyczki z requirements:
 pip install -r requirements.txt
 
 Oraz wszystko czego brakuje w requirements ale wymaga tego aplikacja.
@@ -15,6 +17,16 @@ Polecenie na tworzenie superusera lokalnie:
 
 python manage.py createsuperuser
 
+Następnie instalacja paczek React:
+npm install lub yarn install
+
+Uruchomienie:
+npm start
+
+http://localhost:3000
+
+
+Backend oraz Frontend musi być uruchomiony w jednym czasie.
 
 # Warehouse Manager
 
