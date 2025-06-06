@@ -15,7 +15,7 @@ export default function ProducedOrdersSection({
   sizes,
   colors
 }) {
-  if (!producedOrders.length) return null;
+ 
 
   return (
     <section className="bg-white shadow-2xl rounded-3xl p-6 border border-gray-100">

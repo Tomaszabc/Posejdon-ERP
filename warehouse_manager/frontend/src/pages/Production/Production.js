@@ -158,7 +158,7 @@ export default function Production() {
           onProduce={handleAskConfirmProduce}
         />
         <ProducedOrdersSection
-          producedOrders={producedOrders}
+          producedOrders={filteredProducedOrders}
           onUndo={handleUndoProduce}
           showFilters={showFilters}
           setShowFilters={setShowFilters}
