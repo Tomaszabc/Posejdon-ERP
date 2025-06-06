@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import OrderDeleteModal from "../components/modals/OrderDeleteModal";
 import OrderConfirmModal from "../components/modals/OrderConfirmModal";
+import { filterOrders } from "../utils/orderFilters";
 
 export default function Orders() {
   const diameters = ["100", "125", "150"];
@@ -38,37 +39,8 @@ export default function Orders() {
       });
   }, []);
 
-  // Filtrowanie zamówień po zmianie daty lub zamówień
   useEffect(() => {
-    const { startDate, endDate } = dateFilter;
-    const filtered = orders.filter(order => {
-      const orderDate = new Date(order.created_at);
-      const start = startDate ? new Date(startDate) : null;
-      const end = endDate
-        ? new Date(new Date(endDate).setHours(23, 59, 59, 999)) // Ustawienie końca dnia
-        : null;
-
-      if (start && end) {
-        return orderDate >= start && orderDate <= end;
-      } else if (start) {
-        return orderDate >= start;
-      } else if (end) {
-        return orderDate <= end;
-      }
-      return true;
-    });
-
-    if (!startDate && !endDate) {
-      setFilteredOrders(
-        filtered
-          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, ORDERS_LIMIT)
-      );
-    } else {
-      setFilteredOrders(
-        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      );
-    }
+    setFilteredOrders(filterOrders(orders, dateFilter, ORDERS_LIMIT));
   }, [dateFilter, orders]);
 
   const handleFilterChange = (e) => {
