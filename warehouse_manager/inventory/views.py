@@ -155,13 +155,21 @@ class ComponentDetailView(generics.RetrieveUpdateDestroyAPIView):
 def import_components_csv(request):
     """
     Importuje komponenty z pliku CSV przesłanego przez frontend.
+    Obsługuje zarówno ',' jak i ';' jako separator.
     """
     file = request.FILES.get('file')
     if not file:
         return Response({"error": "Nie przesłano pliku."}, status=400)
 
     decoded_file = file.read().decode('utf-8').splitlines()
-    reader = csv.DictReader(decoded_file, delimiter=';')
+    # Wykryj separator na podstawie pierwszej linii
+    first_line = decoded_file[0]
+    if first_line.count(';') > first_line.count(','):
+        delimiter = ';'
+    else:
+        delimiter = ','
+
+    reader = csv.DictReader(decoded_file, delimiter=delimiter)
     count = 0
     for row in reader:
         def dec(val):
