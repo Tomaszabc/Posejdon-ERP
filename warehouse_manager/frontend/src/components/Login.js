@@ -33,7 +33,7 @@ export default function Login({ setUser }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-24 bg-white p-8 rounded-xl shadow-lg">
+    <form autoComplete="on" onSubmit={handleSubmit} className="max-w-md mx-auto mt-24 bg-white p-8 rounded-xl shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Logowanie</h2>
       {error && <div className="mb-4 p-4 bg-red-100 border border-red-300 text-red-700 rounded-xl">{error}</div>}
       <div className="mb-4">
