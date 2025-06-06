@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 import Login from "./components/Login";
 import { jwtDecode } from "jwt-decode";
 import UserProfile from "./pages/UserProfile";
+import Home from "./pages/Home";
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
         <Navbar user={user} setUser={setUser} />
         <main className="flex-1 max-w-full sm:max-w-7xl mx-auto px-2 sm:px-4 pt-20 sm:pt-24 pb-8">
           <Routes>
+            <Route path="/" element={<Home />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/login" element={<Login setUser={setUser} />} />
             <Route path="/user" element={<UserProfile user={user} />} />
