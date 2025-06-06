@@ -115,3 +115,18 @@ def produce_order(request):
         return Response({"success": True})
     except Order.DoesNotExist:
         return Response({"error": "Nie znaleziono zamówienia"}, status=404)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def undo_produce_order(request):
+    order_id = request.data.get("order_id")
+    if not order_id:
+        return Response({"error": "Brak order_id"}, status=400)
+    try:
+        order = Order.objects.get(id=order_id)
+        order.is_produced = False
+        order.produced_at = None
+        order.save()
+        return Response({"success": True})
+    except Order.DoesNotExist:
+        return Response({"error": "Nie znaleziono zamówienia"}, status=404)

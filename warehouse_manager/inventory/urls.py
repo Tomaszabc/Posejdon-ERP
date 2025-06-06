@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from . import views
 from rest_framework import routers
-from .views import OrderViewSet, production_orders, produce_order
+from .views import OrderViewSet, production_orders, produce_order, undo_produce_order
+
 
 router = routers.DefaultRouter()
 router.register(r'orders', OrderViewSet)
@@ -18,6 +19,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/production/orders/', production_orders),
     path('api/production/produce/', produce_order, name='produce_order'),
+    path('api/production/undo/', undo_produce_order, name='undo_produce_order'),
     # Dodaj inne widoki jeśli są potrzebne:
     # path('products/', views.products, name='products'),
     # path('categories/', views.categories, name='categories'),
