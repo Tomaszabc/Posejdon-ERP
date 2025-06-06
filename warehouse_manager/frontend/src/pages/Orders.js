@@ -3,6 +3,16 @@ import OrderDeleteModal from "../components/modals/OrderDeleteModal";
 import OrderConfirmModal from "../components/modals/OrderConfirmModal";
 import { filterOrders } from "../utils/orderFilters";
 
+const initialFilters = {
+  startDate: "",
+  endDate: "",
+  diameter: "",
+  shape: "",
+  size: "",
+  color: "",
+  quantity: ""
+};
+
 export default function Orders() {
   const diameters = ["100", "125", "150"];
   const shapes = ["Okrągły", "Kwadratowy"];
@@ -19,17 +29,10 @@ export default function Orders() {
   const [errors, setErrors] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState(null);
-  const [filters, setFilters] = useState({
-  startDate: "",
-  endDate: "",
-  diameter: "",
-  shape: "",
-  size: "",
-  color: "",
-  quantity: ""
-});
+  const [filters, setFilters] = useState(initialFilters);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const handleClearFilters = () => setFilters(initialFilters);
   const ORDERS_LIMIT = 100;
 
   // Pobieranie zamówień tylko raz na start
@@ -244,90 +247,103 @@ export default function Orders() {
         </form>
       </section>
 
-      {orders.length > 0 && (
-        <section className="mt-12 bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
-          <div className="flex flex-col sm:flex-row flex-wrap gap-4">
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">Od daty</label>
-    <input
-      type="date"
-      name="startDate"
-      value={filters.startDate}
-      onChange={handleFilterChange}
-      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-    />
-  </div>
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">Do daty</label>
-    <input
-      type="date"
-      name="endDate"
-      value={filters.endDate}
-      onChange={handleFilterChange}
-      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-    />
-  </div>
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">Średnica</label>
-    <select
-      name="diameter"
-      value={filters.diameter}
-      onChange={handleFilterChange}
-      className="px-3 py-2 border border-gray-300 rounded-lg"
-    >
-      <option value="">Wszystkie</option>
-      {diameters.map(d => <option key={d} value={d}>{d}</option>)}
-    </select>
-  </div>
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">Kształt</label>
-    <select
-      name="shape"
-      value={filters.shape}
-      onChange={handleFilterChange}
-      className="px-3 py-2 border border-gray-300 rounded-lg"
-    >
-      <option value="">Wszystkie</option>
-      {shapes.map(s => <option key={s} value={s}>{s}</option>)}
-    </select>
-  </div>
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">Rozmiar</label>
-    <select
-      name="size"
-      value={filters.size}
-      onChange={handleFilterChange}
-      className="px-3 py-2 border border-gray-300 rounded-lg"
-    >
-      <option value="">Wszystkie</option>
-      {sizes.map(s => <option key={s} value={s}>{s}</option>)}
-    </select>
-  </div>
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">Kolor</label>
-    <select
-      name="color"
-      value={filters.color}
-      onChange={handleFilterChange}
-      className="px-3 py-2 border border-gray-300 rounded-lg"
-    >
-      <option value="">Wszystkie</option>
-      {colors.map(c => <option key={c} value={c}>{c}</option>)}
-    </select>
-  </div>
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">Ilość</label>
-    <input
-      type="number"
-      name="quantity"
-      value={filters.quantity}
-      onChange={handleFilterChange}
-      className="px-3 py-2 border border-gray-300 rounded-lg"
-      placeholder="Dowolna"
-      min="0"
-    />
-  </div>
-</div>
+{orders.length > 0 && (
+  <section className="mt-12 bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
+    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4 lg:mb-0">
+        Zamówienia {!filters.startDate && !filters.endDate && !filters.diameter && !filters.shape && !filters.size && !filters.color && !filters.quantity && `(${ORDERS_LIMIT} najnowszych)`}
+      </h2>
+      <button
+        type="button"
+        onClick={handleClearFilters}
+        className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors shadow-sm"
+      >
+        🗑️ Wyczyść filtry
+      </button>
+    </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-8">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Od daty</label>
+        <input
+          type="date"
+          name="startDate"
+          value={filters.startDate}
+          onChange={handleFilterChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Do daty</label>
+        <input
+          type="date"
+          name="endDate"
+          value={filters.endDate}
+          onChange={handleFilterChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Średnica</label>
+        <select
+          name="diameter"
+          value={filters.diameter}
+          onChange={handleFilterChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+        >
+          <option value="">Wszystkie</option>
+          {diameters.map(d => <option key={d} value={d}>{d}</option>)}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Kształt</label>
+        <select
+          name="shape"
+          value={filters.shape}
+          onChange={handleFilterChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+        >
+          <option value="">Wszystkie</option>
+          {shapes.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Rozmiar</label>
+        <select
+          name="size"
+          value={filters.size}
+          onChange={handleFilterChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+        >
+          <option value="">Wszystkie</option>
+          {sizes.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Kolor</label>
+        <select
+          name="color"
+          value={filters.color}
+          onChange={handleFilterChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+        >
+          <option value="">Wszystkie</option>
+          {colors.map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Ilość</label>
+        <input
+          type="number"
+          name="quantity"
+          value={filters.quantity}
+          onChange={handleFilterChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+          placeholder="Dowolna"
+          min="0"
+        />
+      </div>
+    </div>
           
           
 
