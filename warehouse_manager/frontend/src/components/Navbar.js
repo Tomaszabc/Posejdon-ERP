@@ -18,7 +18,7 @@ export default function Navbar({ user, setUser }) {
       <nav className="bg-gradient-to-r from-ocean-800 to-ocean-900 shadow-xl fixed w-full z-20 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="text-white font-bold text-xl tracking-wide">E-Posejdon ERP</Link>
+            <Link to="/" className="text-white font-bold text-xl tracking-wide">E-Posejdon Produkcja</Link>
             {/* Desktop menu */}
             <div className="hidden md:flex items-center space-x-4">
               <Link to="/" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Strona główna</Link>
@@ -27,7 +27,7 @@ export default function Navbar({ user, setUser }) {
                   <a href="/user" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
                     Moje konto: {user?.username || user?.user_id}
                   </a>
-                  <Link to="/orders" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Zamówienia</Link>
+                  <Link to="/orders" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Zamówienie produkcyjne</Link>
                   <Link to="/production" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Produkcja</Link>
                   <button
                     onClick={handleLogout}

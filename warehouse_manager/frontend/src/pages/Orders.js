@@ -296,94 +296,106 @@ return (
                 </button>
           </div>
 
-          {/* FILTRY - POKAZYWANE/UKRYWANE */}
-            {showFilters && (
-              <div className="bg-gray-50 rounded-xl p-4 mb-6 transition-all duration-300">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">Filtry</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Od daty</label>
-                    <input
-                      type="date"
-                      name="startDate"
-                      value={filters.startDate}
-                      onChange={handleFilterChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Do daty</label>
-                    <input
-                      type="date"
-                      name="endDate"
-                      value={filters.endDate}
-                      onChange={handleFilterChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Średnica</label>
-                    <select
-                      name="diameter"
-                      value={filters.diameter}
-                      onChange={handleFilterChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-                    >
-                      <option value="">Wszystkie</option>
-                      {diameters.map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Kształt</label>
-                    <select
-                      name="shape"
-                      value={filters.shape}
-                      onChange={handleFilterChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-                    >
-                      <option value="">Wszystkie</option>
-                      {shapes.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Rozmiar</label>
-                    <select
-                      name="size"
-                      value={filters.size}
-                      onChange={handleFilterChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-                    >
-                      <option value="">Wszystkie</option>
-                      {sizes.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Kolor</label>
-                    <select
-                      name="color"
-                      value={filters.color}
-                      onChange={handleFilterChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-                    >
-                      <option value="">Wszystkie</option>
-                      {colors.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Ilość</label>
-                    <input
-                      type="number"
-                      name="quantity"
-                      value={filters.quantity}
-                      onChange={handleFilterChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-                      placeholder="Dowolna"
-                      min="0"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
+   
+
+{showFilters && (
+  <div
+  className={`bg-gray-50 rounded-xl mb-6 overflow-hidden transition-all duration-500`}
+  style={{
+    maxHeight: showFilters ? 1000 : 0,
+    opacity: showFilters ? 1 : 0,
+    pointerEvents: showFilters ? 'auto' : 'none',
+    transition: "max-height 0.6s cubic-bezier(0.4,0,0.2,1), opacity 0.4s"
+  }}
+>
+    <div className="p-4">
+      <h3 className="text-lg font-semibold text-gray-700 mb-4">Filtry</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Od daty</label>
+          <input
+            type="date"
+            name="startDate"
+            value={filters.startDate}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Do daty</label>
+          <input
+            type="date"
+            name="endDate"
+            value={filters.endDate}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Średnica</label>
+          <select
+            name="diameter"
+            value={filters.diameter}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+          >
+            <option value="">Wszystkie</option>
+            {diameters.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Kształt</label>
+          <select
+            name="shape"
+            value={filters.shape}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+          >
+            <option value="">Wszystkie</option>
+            {shapes.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Rozmiar</label>
+          <select
+            name="size"
+            value={filters.size}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+          >
+            <option value="">Wszystkie</option>
+            {sizes.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Kolor</label>
+          <select
+            name="color"
+            value={filters.color}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+          >
+            <option value="">Wszystkie</option>
+            {colors.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Ilość</label>
+          <input
+            type="number"
+            name="quantity"
+            value={filters.quantity}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+            placeholder="Dowolna"
+            min="0"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
 
           {/* TABELA ZAMÓWIEŃ */}
 <div className="overflow-x-auto">

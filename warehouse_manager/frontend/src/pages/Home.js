@@ -91,7 +91,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-10">
-      <h1 className="text-3xl font-bold mb-6">Witamy w E-Posejdon ERP!</h1>
+      <h1 className="text-3xl font-bold mb-6">Witamy w E-Posejdon. Moduł produkcji</h1>
       <div className="flex flex-col md:flex-row gap-10">
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Wykres kołowy</h2>
