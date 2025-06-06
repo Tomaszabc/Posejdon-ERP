@@ -4,6 +4,7 @@ import ProducedOrdersSection from "./ProducedOrdersSection";
 import UndoModal from "./UndoModal";
 import SuccessModal from "./SuccessModal";
 import ConfirmProductionModal from "./ConfirmProductionModal";
+import { filterOrders } from "./utils/orderFilters";
 
 export default function Production() {
   // States
@@ -17,6 +18,51 @@ export default function Production() {
   const [orderToConfirm, setOrderToConfirm] = useState(null);
   const [showUndoModal, setShowUndoModal] = useState(false);
   const [orderToUndo, setOrderToUndo] = useState(null);
+
+  const ORDERS_LIMIT = 100;
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    startDate: "",
+    endDate: "",
+    diameter: "",
+    shape: "",
+    size: "",
+    color: "",
+    quantity: ""
+  });
+  const [filteredProducedOrders, setFilteredProducedOrders] = useState([]);
+
+    // Stałe dla filtrów
+  const diameters = ["100", "125", "160"];
+  const shapes = ["Okrągły", "Kwadratowy"];
+  const sizes = ["S", "M", "L"];
+  const colors = ["B", "W", "G"];
+
+    // Effect do filtrowania
+  useEffect(() => {
+    setFilteredProducedOrders(filterOrders(producedOrders, filters, ORDERS_LIMIT));
+  }, [filters, producedOrders]);
+
+    // Handlery dla filtrów
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
+  const handleClearFilters = () => {
+    setFilters({
+      startDate: "",
+      endDate: "",
+      diameter: "",
+      shape: "",
+      size: "",
+      color: "",
+      quantity: ""
+    });
+  };
 
   // Effects
   useEffect(() => {
@@ -114,6 +160,16 @@ export default function Production() {
         <ProducedOrdersSection
           producedOrders={producedOrders}
           onUndo={handleUndoProduce}
+          showFilters={showFilters}
+          setShowFilters={setShowFilters}
+          filters={filters}
+          handleFilterChange={handleFilterChange}
+          handleClearFilters={handleClearFilters}
+          ORDERS_LIMIT={ORDERS_LIMIT}
+          diameters={diameters}
+          shapes={shapes}
+          sizes={sizes}
+          colors={colors}
         />
       </div>
 
