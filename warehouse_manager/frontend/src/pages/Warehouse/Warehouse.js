@@ -6,6 +6,8 @@ export default function Warehouse() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingComponent, setEditingComponent] = useState(null);
+  const [selectedComponents, setSelectedComponents] = useState(new Set());
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [newComponent, setNewComponent] = useState({
     r: 'Towar',
     full_name: '',
@@ -133,6 +135,36 @@ export default function Warehouse() {
     }
   };
 
+  const handleBatchDelete = async () => {
+    if (selectedComponents.size === 0) {
+      alert('Nie zaznaczono żadnych komponentów do usunięcia');
+      return;
+    }
+
+    try {
+      const deletePromises = Array.from(selectedComponents).map(id =>
+        fetch(`http://localhost:8000/api/components/${id}/`, {
+          method: 'DELETE'
+        })
+      );
+
+      const results = await Promise.all(deletePromises);
+      const failedDeletes = results.filter(response => !response.ok);
+
+      if (failedDeletes.length === 0) {
+        setSelectedComponents(new Set());
+        setShowDeleteConfirm(false);
+        fetchComponents();
+        alert(`Pomyślnie usunięto ${selectedComponents.size} komponentów`);
+      } else {
+        alert(`Błąd podczas usuwania ${failedDeletes.length} komponentów`);
+      }
+    } catch (error) {
+      console.error('Błąd podczas usuwania:', error);
+      alert('Błąd podczas usuwania komponentów');
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewComponent(prev => ({
@@ -152,6 +184,24 @@ export default function Warehouse() {
   const openEditModal = (component) => {
     setEditingComponent({ ...component });
     setShowEditModal(true);
+  };
+
+  const toggleComponentSelection = (componentId) => {
+    const newSelected = new Set(selectedComponents);
+    if (newSelected.has(componentId)) {
+      newSelected.delete(componentId);
+    } else {
+      newSelected.add(componentId);
+    }
+    setSelectedComponents(newSelected);
+  };
+
+  const selectAllComponents = () => {
+    if (selectedComponents.size === components.length) {
+      setSelectedComponents(new Set());
+    } else {
+      setSelectedComponents(new Set(components.map(comp => comp.id)));
+    }
   };
 
   if (loading) {
@@ -174,15 +224,28 @@ export default function Warehouse() {
             <h1 className="text-4xl font-bold text-ocean-900 mb-2">📦 Magazyn – Komponenty</h1>
             <p className="text-gray-600">Pełny widok wszystkich komponentów magazynowych</p>
           </div>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="bg-ocean-600 hover:bg-ocean-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Dodaj komponent
-          </button>
+          <div className="flex gap-3">
+            {selectedComponents.size > 0 && (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Usuń zaznaczone ({selectedComponents.size})
+              </button>
+            )}
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="bg-ocean-600 hover:bg-ocean-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Dodaj komponent
+            </button>
+          </div>
         </div>
 
         {components.length > 0 && (
@@ -190,10 +253,57 @@ export default function Warehouse() {
             <p className="text-sm text-blue-800">
               💡 <strong>Liczba pozycji:</strong> {components.length} | 
               <strong> Stan wartości:</strong> {components.reduce((sum, comp) => sum + parseFloat(comp.purchase_price_net || 0) * parseFloat(comp.stock || 0), 0).toFixed(2)} zł
+              {selectedComponents.size > 0 && (
+                <span className="ml-4">
+                  <strong>Zaznaczone:</strong> {selectedComponents.size} pozycji
+                </span>
+              )}
             </p>
           </div>
         )}
       </div>
+
+      {/* Modal potwierdzenia usunięcia */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <div className="flex items-center mb-4">
+                <div className="flex-shrink-0">
+                  <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.083 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <div className="ml-4">
+                  <h3 className="text-lg font-medium text-gray-900">Potwierdzenie usunięcia</h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Czy na pewno chcesz usunąć {selectedComponents.size} zaznaczonych komponentów?
+                  </p>
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                <p className="text-xs text-gray-600">
+                  Ta operacja jest nieodwracalna. Wszystkie dane o zaznaczonych komponentach zostaną trwale usunięte.
+                </p>
+              </div>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Anuluj
+                </button>
+                <button
+                  onClick={handleBatchDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Usuń komponenty
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal dodawania */}
       {showAddModal && (
@@ -616,6 +726,14 @@ export default function Warehouse() {
           <table className="min-w-full">
             <thead>
               <tr className="bg-gradient-to-r from-ocean-600 to-ocean-700 text-white">
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  <input
+                    type="checkbox"
+                    checked={components.length > 0 && selectedComponents.size === components.length}
+                    onChange={selectAllComponents}
+                    className="rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
+                  />
+                </th>
                 <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Akcje</th>
                 <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">R</th>
                 <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider min-w-[200px]">Nazwa cała</th>
@@ -651,7 +769,7 @@ export default function Warehouse() {
             <tbody className="divide-y divide-gray-100">
               {components.length === 0 ? (
                 <tr>
-                  <td colSpan={30} className="text-center py-12 text-gray-500">
+                  <td colSpan={31} className="text-center py-12 text-gray-500">
                     <div className="flex flex-col items-center">
                       <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -663,7 +781,20 @@ export default function Warehouse() {
                 </tr>
               ) : (
                 components.map((comp, index) => (
-                  <tr key={comp.id} className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
+                  <tr 
+                    key={comp.id} 
+                    className={`hover:bg-gray-50 transition-colors ${
+                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
+                    } ${selectedComponents.has(comp.id) ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`}
+                  >
+                    <td className="px-3 py-4 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedComponents.has(comp.id)}
+                        onChange={() => toggleComponentSelection(comp.id)}
+                        className="rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
+                      />
+                    </td>
                     <td className="px-3 py-4 text-center">
                       <button
                         onClick={() => openEditModal(comp)}
