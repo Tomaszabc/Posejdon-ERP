@@ -1,5 +1,8 @@
-export function filterOrders(orders, dateFilter, ORDERS_LIMIT) {
-  const { startDate, endDate } = dateFilter;
+export function filterOrders(orders, filters, ORDERS_LIMIT) {
+  const {
+    startDate, endDate, diameter, shape, size, color, quantity
+  } = filters;
+
   const filtered = orders.filter(order => {
     const orderDate = new Date(order.created_at);
     const start = startDate ? new Date(startDate) : null;
@@ -7,17 +10,17 @@ export function filterOrders(orders, dateFilter, ORDERS_LIMIT) {
       ? new Date(new Date(endDate).setHours(23, 59, 59, 999))
       : null;
 
-    if (start && end) {
-      return orderDate >= start && orderDate <= end;
-    } else if (start) {
-      return orderDate >= start;
-    } else if (end) {
-      return orderDate <= end;
-    }
+    if (start && orderDate < start) return false;
+    if (end && orderDate > end) return false;
+    if (diameter && order.diameter !== diameter) return false;
+    if (shape && order.shape !== shape) return false;
+    if (size && order.size !== size) return false;
+    if (color && order.color !== color) return false;
+    if (quantity && String(order.quantity_to_assemble) !== String(quantity)) return false;
     return true;
   });
 
-  if (!startDate && !endDate) {
+  if (!startDate && !endDate && !diameter && !shape && !size && !color && !quantity) {
     return filtered
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
       .slice(0, ORDERS_LIMIT);
