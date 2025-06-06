@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import OrderDeleteModal from "../components/modals/OrderDeleteModal";
 import OrderConfirmModal from "../components/modals/OrderConfirmModal";
 
-
 export default function Orders() {
   const diameters = ["100", "125", "150"];
   const shapes = ["Okrągły", "Kwadratowy"];
@@ -24,36 +23,30 @@ export default function Orders() {
     endDate: ""
   });
   const [filteredOrders, setFilteredOrders] = useState([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const ORDERS_LIMIT = 100;
 
+  // Pobieranie zamówień tylko raz na start
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/orders/")
       .then((res) => res.json())
       .then((data) => {
-        const sortedOrders = data.sort((a, b) => 
-          new Date(b.created_at) - new Date(a.created_at)
-        ).slice(0, ORDERS_LIMIT);
-        
         setOrders(data);
-        setFilteredOrders(sortedOrders);
       })
       .catch(() => {
         setOrders([]);
-        setFilteredOrders([]);
       });
   }, []);
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setDateFilter(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
+  // Filtrowanie zamówień po zmianie daty lub zamówień
+  useEffect(() => {
+    const { startDate, endDate } = dateFilter;
     const filtered = orders.filter(order => {
       const orderDate = new Date(order.created_at);
-      const start = dateFilter.startDate ? new Date(dateFilter.startDate) : null;
-      const end = dateFilter.endDate ? new Date(dateFilter.endDate) : null;
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate
+        ? new Date(new Date(endDate).setHours(23, 59, 59, 999)) // Ustawienie końca dnia
+        : null;
 
       if (start && end) {
         return orderDate >= start && orderDate <= end;
@@ -65,63 +58,69 @@ export default function Orders() {
       return true;
     });
 
-    setFilteredOrders(filtered);
+    if (!startDate && !endDate) {
+      setFilteredOrders(
+        filtered
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, ORDERS_LIMIT)
+      );
+    } else {
+      setFilteredOrders(
+        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      );
+    }
+  }, [dateFilter, orders]);
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setDateFilter(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    let newErrors = [];
+    if (!form.diameter) newErrors.push('Pole "Średnica" jest wymagane.');
+    if (!form.shape) newErrors.push('Pole "Kształt" jest wymagane.');
+    if (!form.size) newErrors.push('Pole "Rozmiar" jest wymagane.');
+    if (!form.color) newErrors.push('Pole "Kolor" jest wymagane.');
+    if (!form.quantity_to_assemble) newErrors.push('Pole "Ilość do złożenia" jest wymagane.');
+    setErrors(newErrors);
+
+    if (newErrors.length === 0) {
+      setShowConfirmModal(true);
+    }
   }
 
-
-  // Add new state for confirm modal
-const [showConfirmModal, setShowConfirmModal] = useState(false);
-
-function handleSubmit(e) {
-  e.preventDefault();
-  let newErrors = [];
-  if (!form.diameter) newErrors.push('Pole "Średnica" jest wymagane.');
-  if (!form.shape) newErrors.push('Pole "Kształt" jest wymagane.');
-  if (!form.size) newErrors.push('Pole "Rozmiar" jest wymagane.');
-  if (!form.color) newErrors.push('Pole "Kolor" jest wymagane.');
-  if (!form.quantity_to_assemble) newErrors.push('Pole "Ilość do złożenia" jest wymagane.');
-  setErrors(newErrors);
-  
-  if (newErrors.length === 0) {
-    setShowConfirmModal(true);
-  }
-}
-
-// Add new function to handle confirmation
-function handleConfirmSubmit() {
-  fetch("http://127.0.0.1:8000/api/orders/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(form),
-  })
-    .then((res) => res.json())
-    .then(() => {
-      fetch("http://127.0.0.1:8000/api/orders/")
-        .then((res) => res.json())
-        .then((data) => {
-          const sortedOrders = data
-            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-            .slice(0, ORDERS_LIMIT);
-          setOrders(data);
-          setFilteredOrders(sortedOrders);
+  function handleConfirmSubmit() {
+    fetch("http://127.0.0.1:8000/api/orders/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        fetch("http://127.0.0.1:8000/api/orders/")
+          .then((res) => res.json())
+          .then((data) => {
+            setOrders(data);
+          });
+        setForm({
+          diameter: "",
+          shape: "",
+          size: "",
+          color: "",
+          quantity_to_assemble: "",
         });
-      setForm({
-        diameter: "",
-        shape: "",
-        size: "",
-        color: "",
-        quantity_to_assemble: "",
+        setShowConfirmModal(false);
       });
-      setShowConfirmModal(false);
-    });
-}
+  }
 
   function openDeleteModal(order) {
     setOrderToDelete(order);
@@ -141,11 +140,6 @@ function handleConfirmSubmit() {
       if (res.ok) {
         const updatedOrders = orders.filter((o) => o.id !== orderToDelete.id);
         setOrders(updatedOrders);
-        setFilteredOrders(
-          updatedOrders
-            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-            .slice(0, ORDERS_LIMIT)
-        );
         closeDeleteModal();
       } else {
         alert("Błąd podczas usuwania zamówienia.");
@@ -273,13 +267,12 @@ function handleConfirmSubmit() {
         </form>
       </section>
 
-       {orders.length > 0 && (
+      {orders.length > 0 && (
         <section className="mt-12 bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
               Ostatnie zamówienia {!dateFilter.startDate && !dateFilter.endDate && `(${ORDERS_LIMIT} najnowszych)`}
             </h2>
-            
             <div className="flex flex-col sm:flex-row gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Od daty</label>
@@ -350,7 +343,7 @@ function handleConfirmSubmit() {
         </section>
       )}
 
-       {showModal && orderToDelete && (
+      {showModal && orderToDelete && (
         <OrderDeleteModal
           order={orderToDelete}
           onDelete={handleDelete}
@@ -359,12 +352,12 @@ function handleConfirmSubmit() {
       )}
 
       {showConfirmModal && (
-  <OrderConfirmModal
-    order={form}
-    onConfirm={handleConfirmSubmit}
-    onCancel={() => setShowConfirmModal(false)}
-  />
-)}
+        <OrderConfirmModal
+          order={form}
+          onConfirm={handleConfirmSubmit}
+          onCancel={() => setShowConfirmModal(false)}
+        />
+      )}
     </div>
   );
 }
