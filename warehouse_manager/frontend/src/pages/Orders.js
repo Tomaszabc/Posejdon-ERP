@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import OrderDeleteModal from "../components/modals/OrderDeleteModal";
+import OrderConfirmModal from "../components/modals/OrderConfirmModal";
+
 
 export default function Orders() {
   const diameters = ["100", "125", "150"];
@@ -73,6 +75,10 @@ export default function Orders() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
+
+  // Add new state for confirm modal
+const [showConfirmModal, setShowConfirmModal] = useState(false);
+
 function handleSubmit(e) {
   e.preventDefault();
   let newErrors = [];
@@ -82,26 +88,39 @@ function handleSubmit(e) {
   if (!form.color) newErrors.push('Pole "Kolor" jest wymagane.');
   if (!form.quantity_to_assemble) newErrors.push('Pole "Ilość do złożenia" jest wymagane.');
   setErrors(newErrors);
+  
   if (newErrors.length === 0) {
-    fetch("http://127.0.0.1:8000/api/orders/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        fetch("http://127.0.0.1:8000/api/orders/")
-          .then((res) => res.json())
-          .then((data) => setOrders(data));
-        setForm({
-          diameter: "",
-          shape: "",
-          size: "",
-          color: "",
-          quantity_to_assemble: "",
-        });
-      });
+    setShowConfirmModal(true);
   }
+}
+
+// Add new function to handle confirmation
+function handleConfirmSubmit() {
+  fetch("http://127.0.0.1:8000/api/orders/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(form),
+  })
+    .then((res) => res.json())
+    .then(() => {
+      fetch("http://127.0.0.1:8000/api/orders/")
+        .then((res) => res.json())
+        .then((data) => {
+          const sortedOrders = data
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+            .slice(0, ORDERS_LIMIT);
+          setOrders(data);
+          setFilteredOrders(sortedOrders);
+        });
+      setForm({
+        diameter: "",
+        shape: "",
+        size: "",
+        color: "",
+        quantity_to_assemble: "",
+      });
+      setShowConfirmModal(false);
+    });
 }
 
   function openDeleteModal(order) {
@@ -289,7 +308,7 @@ function handleSubmit(e) {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nr. zamówienia</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data utworzenia</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Średnica</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kształt</th>
@@ -338,6 +357,14 @@ function handleSubmit(e) {
           onCancel={closeDeleteModal}
         />
       )}
+
+      {showConfirmModal && (
+  <OrderConfirmModal
+    order={form}
+    onConfirm={handleConfirmSubmit}
+    onCancel={() => setShowConfirmModal(false)}
+  />
+)}
     </div>
   );
 }
