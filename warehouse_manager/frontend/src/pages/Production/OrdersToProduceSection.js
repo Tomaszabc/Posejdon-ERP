@@ -19,7 +19,7 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
                 <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Kolor</th>
                 <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ilość</th>
                 <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Data zam.</th>
-                <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Akcje</th>
+                <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Zatwierdź</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -36,11 +36,24 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
                   </td>
                   <td className="px-2 py-2 whitespace-nowrap text-right text-xs font-medium">
                     <button
-                      type="button"
-                      onClick={() => onProduce(order.id)}
-                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-xs font-bold"
-                    >
-                      Zatwierdź
+                        type="button"
+                        onClick={() => onProduce(order)}
+                        className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg text-xs transition-colors"
+                        title="Zatwierdź produkcję"
+                        >
+                        <svg 
+                            className="w-4 h-4" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth="2" 
+                            d="M5 13l4 4L19 7"
+                            />
+                        </svg>
                     </button>
                   </td>
                 </tr>
