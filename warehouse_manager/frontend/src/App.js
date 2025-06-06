@@ -9,30 +9,26 @@ import UserProfile from "./pages/UserProfile";
 
 
 function App() {
-  // Przykładowy user, w przyszłości pobierzesz z API lub contextu
   const [user, setUser] = useState(null);
 
-    // Sprawdź token po załadowaniu aplikacji
   useEffect(() => {
-  const token = localStorage.getItem("access");
-  if (token) {
-    try {
-      const decoded = jwtDecode(token);
-      // Pobierz dane użytkownika z API
+    // Użyj tego samego tokena co w logowaniu
+    const token = localStorage.getItem("access");
+    if (token) {
       fetch("http://localhost:8000/api/auth/user/", {
-  headers: {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json"
-  }
-})
-        .then(res => res.json())
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error();
+          return res.json();
+        })
         .then(data => setUser({ username: data.username, email: data.email }))
-        .catch(() => setUser({ user_id: decoded.user_id }));
-    } catch {
-      setUser(null);
+        .catch(() => setUser(null));
     }
-  }
-}, []);
+  }, []);
 
    return (
     <Router>
