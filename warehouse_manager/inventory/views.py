@@ -7,6 +7,9 @@ from django.contrib import messages
 from rest_framework import viewsets
 from .models import Order
 from .serializers import OrderSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 def index(request):
     return render(request, "inventory/index.html")
@@ -87,3 +90,28 @@ def product_production(request):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all().order_by('-created_at')
     serializer_class = OrderSerializer
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def production_orders(request):
+    orders = Order.objects.filter(is_produced=False).order_by("created_at")
+    produced_orders = Order.objects.filter(is_produced=True).order_by("-produced_at")[:10]
+    return Response({
+        "orders": OrderSerializer(orders, many=True).data,
+        "produced_orders": OrderSerializer(produced_orders, many=True).data,
+    })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def produce_order(request):
+    order_id = request.data.get("order_id")
+    if not order_id:
+        return Response({"error": "Brak order_id"}, status=400)
+    try:
+        order = Order.objects.get(id=order_id)
+        order.is_produced = True
+        order.produced_at = timezone.now()
+        order.save()
+        return Response({"success": True})
+    except Order.DoesNotExist:
+        return Response({"error": "Nie znaleziono zamówienia"}, status=404)

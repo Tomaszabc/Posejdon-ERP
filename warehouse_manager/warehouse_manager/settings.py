@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
+
 
 load_dotenv()
 
@@ -148,4 +150,6 @@ REST_USE_JWT = True
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=10),  # np. 2 godziny
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=20),  # np. 7 dni
 }

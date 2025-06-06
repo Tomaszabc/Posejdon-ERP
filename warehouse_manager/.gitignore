@@ -1,1 +1,19 @@
 .env
+# Python
+__pycache__/
+*.pyc
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# Arduino IDE
+*.json
+*.yaml
+
+# Systemowe
+.DS_Store
+Thumbs.db
+
+# Inne katalogi cache
+.cache/
