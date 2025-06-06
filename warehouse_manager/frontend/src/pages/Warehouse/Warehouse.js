@@ -283,9 +283,13 @@ const exportToCSV = () => {
                 const formData = new FormData();
                 formData.append("file", file);
 
+                const token = localStorage.getItem("access"); // lub "access_token" jeśli tak się nazywa
                 try {
                 const response = await fetch("http://localhost:8000/api/components/import/", {
                     method: "POST",
+                    headers: {
+                    Authorization: `Bearer ${token}`,
+                    },
                     body: formData,
                 });
                 if (response.ok) {
