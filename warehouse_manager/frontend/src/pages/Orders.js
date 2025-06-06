@@ -37,7 +37,7 @@ export default function Orders() {
   const handleClearFilters = () => setFilters(initialFilters);
   const ORDERS_LIMIT = 100;
   const [showFilters, setShowFilters] = useState(false);
-
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
 
   // Pobieranie zamówień tylko raz na start
   useEffect(() => {
@@ -118,20 +118,22 @@ function handleConfirmSubmit() {
     setOrderToDelete(null);
   }
 
-  function handleDelete() {
-    if (!orderToDelete) return;
-    fetch(`http://127.0.0.1:8000/api/orders/${orderToDelete.id}/`, {
-      method: "DELETE",
-    }).then((res) => {
-      if (res.ok) {
-        const updatedOrders = orders.filter((o) => o.id !== orderToDelete.id);
-        setOrders(updatedOrders);
-        closeDeleteModal();
-      } else {
-        alert("Błąd podczas usuwania zamówienia.");
-      }
-    });
-  }
+function handleDelete() {
+  if (!orderToDelete) return;
+  fetch(`http://127.0.0.1:8000/api/orders/${orderToDelete.id}/`, {
+    method: "DELETE",
+  }).then((res) => {
+    if (res.ok) {
+      const updatedOrders = orders.filter((o) => o.id !== orderToDelete.id);
+      setOrders(updatedOrders);
+      closeDeleteModal();
+      setShowDeleteSuccess(true); // Pokaż potwierdzenie
+      setTimeout(() => setShowDeleteSuccess(false), 1000); // Ukryj po 1s
+    } else {
+      alert("Błąd podczas usuwania zamówienia.");
+    }
+  });
+}
 
 return (
   <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8  pb-8">
@@ -479,6 +481,14 @@ return (
   <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
     <div className="bg-green-500 text-white px-8 py-4 rounded-xl shadow-lg text-lg font-semibold animate-fade-in-out">
       Dodano zamówienie!
+    </div>
+  </div>
+)}
+
+{showDeleteSuccess && (
+  <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+    <div className="bg-green-500 text-white px-8 py-4 rounded-xl shadow-lg text-lg font-semibold animate-fade-in-out">
+      Zamówienie usunięte!
     </div>
   </div>
 )}
