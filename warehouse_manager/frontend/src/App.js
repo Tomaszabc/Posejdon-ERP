@@ -8,11 +8,11 @@ import { jwtDecode } from "jwt-decode";
 import UserProfile from "./pages/UserProfile";
 import Home from "./pages/Home";
 import ProtectedRoute from "./ProtectedRoute";
-
+import Production from "./pages/Production";
 
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(undefined);
 
   useEffect(() => {
     // Użyj tego samego tokena co w logowaniu
@@ -62,6 +62,14 @@ function App() {
               element={
                 <ProtectedRoute user={user}>
                   <UserProfile user={user} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/production"
+              element={
+                <ProtectedRoute user={user}>
+                  <Production />
                 </ProtectedRoute>
               }
             />

@@ -21,3 +21,23 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+# Python
+__pycache__/
+*.pyc
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# Arduino IDE
+*.json
+*.yaml
+
+# Systemowe
+.DS_Store
+Thumbs.db
+
+# Inne katalogi cache
+.cache/
