@@ -362,6 +362,7 @@ export default function Orders() {
       {showConfirmModal && (
         <OrderConfirmModal
           order={form}
+          components={components}
           onConfirm={handleConfirmSubmit}
           onCancel={() => setShowConfirmModal(false)}
         />

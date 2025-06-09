@@ -7,8 +7,11 @@ export default function OrderDeleteModal({ order, onDelete, onCancel }) {
       <div className="bg-white rounded-xl shadow-xl p-6 max-w-xs w-full text-center">
         <h2 className="text-lg font-bold mb-4 text-gray-800">Potwierdź usunięcie</h2>
         <p className="mb-4 text-gray-600">Czy na pewno chcesz usunąć to zamówienie?</p>
-        <div className="mb-4 text-gray-700 font-semibold">
-          ID: {order.id}, Średnica: {order.diameter}, Kształt: {order.shape}
+        <div className="mb-4 text-gray-700 font-semibold space-y-2">
+          <p>ID: {order.id}</p>
+          <p>SKU: {order.component_catalog_index}</p>
+          <p>Nazwa: {order.component_full_name}</p>
+          <p>Ilość: {order.quantity}</p>
         </div>
         <div className="flex justify-center gap-4">
           <button
