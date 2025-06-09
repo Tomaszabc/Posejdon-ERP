@@ -6,6 +6,10 @@ from .views import OrderViewSet, production_orders, produce_order, undo_produce_
 from .views import ComponentListCreateView
 from .views import ComponentDetailView
 from .views import import_components_csv
+from .views import diffusor_types_list
+from .views import components_for_order
+
+
 
 
 router = routers.DefaultRouter()
@@ -26,6 +30,11 @@ urlpatterns = [
     path("api/components/", ComponentListCreateView.as_view(), name="component-list-create"),
     path("api/components/<int:pk>/", ComponentDetailView.as_view(), name="component-detail"),
     path("api/components/import/", import_components_csv, name="component-import"),
+    path('diffusor-types/', diffusor_types_list),
+    path('api/components-for-order/', components_for_order),
+
+
+    
     # Dodaj inne widoki jeśli są potrzebne:
     # path('products/', views.products, name='products'),
     # path('categories/', views.categories, name='categories'),

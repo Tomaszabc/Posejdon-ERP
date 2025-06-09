@@ -20,6 +20,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from .models import Component
+from .models import DiffusorType
+from .serializers import DiffusorTypeSerializer
 
 def index(request):
     return render(request, "inventory/index.html")
@@ -210,3 +212,19 @@ def import_components_csv(request):
         count += 1
 
     return Response({"success": True, "imported": count})
+
+
+@api_view(['GET'])
+def diffusor_types_list(request):
+    types = DiffusorType.objects.all()
+    serializer = DiffusorTypeSerializer(types, many=True)
+    return Response(serializer.data)
+
+
+
+@api_view(['GET'])
+def components_for_order(request):
+    # Przykład: tylko te z '-20-' w indeksie katalogowym
+    queryset = Component.objects.filter(catalog_index__regex=r'^.*-20-.*$')
+    serializer = ComponentSerializer(queryset, many=True)
+    return Response(serializer.data)

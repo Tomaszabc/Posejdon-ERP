@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from .models import Order
-from .models import Component
+from .models import Order, Component, DiffusorType
+
+
+
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,4 +12,9 @@ class OrderSerializer(serializers.ModelSerializer):
 class ComponentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Component
+        fields = '__all__'
+
+class DiffusorTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DiffusorType
         fields = '__all__'
