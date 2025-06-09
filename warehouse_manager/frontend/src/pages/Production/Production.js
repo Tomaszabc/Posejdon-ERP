@@ -84,30 +84,30 @@ export default function Production() {
     setShowConfirmModal(true);
   };
 
-  const confirmProduce = () => {
-    if (!orderToConfirm) return;
-    
-    fetch(`http://127.0.0.1:8000/api/production/produce/${orderToConfirm.id}/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      }
+const confirmProduce = () => {
+  if (!orderToConfirm) return;
+
+  fetch(`http://127.0.0.1:8000/api/production/produce/${orderToConfirm.id}/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Błąd podczas oznaczania jako wyprodukowane");
+      return res.json();
     })
-      .then(res => {
-        if (!res.ok) throw new Error("Błąd podczas oznaczania jako wyprodukowane");
-        return res.json();
-      })
-      .then(() => {
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 1000);
-        setShowConfirmModal(false);
-        setOrderToConfirm(null);
-        fetchOrders();
-      })
-      .catch(error => {
-        alert(error.message);
-      });
-  };
+    .then(() => {
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 1000);
+      setShowConfirmModal(false);
+      setOrderToConfirm(null);
+      fetchOrders();
+    })
+    .catch(error => {
+      alert(error.message);
+    });
+};
 
   const cancelConfirmProduce = () => {
     setShowConfirmModal(false);

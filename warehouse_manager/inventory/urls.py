@@ -37,7 +37,7 @@ urlpatterns = [
     path('api/components-for-order/', components_for_order),
     path('api/product-to-production/', ProductToProductionListCreateView.as_view(), name='product-to-production-list-create'),
     path('api/product-to-production/<int:pk>/', delete_product_to_production, name='delete-product-to-production'),
-
+    path('api/production/produce/<int:order_id>/', views.produce_product_to_production, name='produce_product_to_production'),
 
     
     # Dodaj inne widoki jeśli są potrzebne:

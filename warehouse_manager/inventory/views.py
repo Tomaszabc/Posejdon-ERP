@@ -244,3 +244,16 @@ def delete_product_to_production(request, pk):
         return Response(status=204)
     except ProductToProduction.DoesNotExist:
         return Response(status=404)
+
+
+@api_view(['POST'])
+def produce_product_to_production(request, order_id):
+    try:
+        order = ProductToProduction.objects.get(id=order_id)
+        if not order.is_produced:
+            order.is_produced = True
+            order.produced_at = timezone.now()
+            order.save()
+        return Response({"success": True})
+    except ProductToProduction.DoesNotExist:
+        return Response({"error": "Order not found"}, status=404)
