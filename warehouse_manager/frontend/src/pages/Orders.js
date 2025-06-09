@@ -17,7 +17,8 @@ export default function Orders() {
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
-    quantity: ""
+    quantity: "",
+    sku: ""
   });
 
   // Pobierz komponenty do zamówienia
@@ -49,6 +50,7 @@ export default function Orders() {
       if (filters.startDate && new Date(order.created_at) < new Date(filters.startDate)) return false;
       if (filters.endDate && new Date(order.created_at) > new Date(filters.endDate)) return false;
       if (filters.quantity && String(order.quantity) !== String(filters.quantity)) return false;
+      if (filters.sku && !order.component_catalog_index?.toLowerCase().includes(filters.sku.toLowerCase())) return false;
       return true;
     })
     .slice(0, ORDERS_LIMIT);
@@ -64,7 +66,8 @@ export default function Orders() {
   const handleClearFilters = () => setFilters({
     startDate: "",
     endDate: "",
-    quantity: ""
+    quantity: "",
+    sku: ""
   });
 
   function handleChange(e) {
@@ -278,59 +281,72 @@ export default function Orders() {
                       min="0"
                     />
                   </div>
+                   <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">SKU</label>
+                    <input
+                      type="text"
+                      name="sku"
+                      value={filters.sku}
+                      onChange={handleFilterChange}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+                      placeholder="Wpisz SKU"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           )}
-          {/* TABELA ZAMÓWIEŃ */}
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Nr</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Data zamów.</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">SKU</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nazwa produktu</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ilość</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Status</th>
-                <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Usuń</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">{order.id}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-                    {new Date(order.created_at).toLocaleDateString('pl-PL', { 
-                      day: '2-digit', 
-                      month: '2-digit',
-                      year: 'numeric'
-                    })} {new Date(order.created_at).toLocaleTimeString('pl-PL', { 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
-                    })}
-                  </td>
-                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_catalog_index}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_full_name}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.quantity}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
-                    {order.is_produced ? "Wyprodukowano" : "Do produkcji"}
-                  </td>
-                  <td className="px-2 py-2 whitespace-nowrap text-right text-xs font-medium">
-                    <button
-                      type="button"
-                      onClick={() => openDeleteModal(order)}
-                      className="text-red-600 hover:text-red-900 transition-colors p-1 rounded"
-                      title="Usuń zamówienie"
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+{/* TABELA ZAMÓWIEŃ */}
+<div className="w-full overflow-x-auto">
+  <table className="min-w-full divide-y divide-gray-200">
+    <thead className="bg-gray-50">
+      <tr>
+        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Nr</th>
+        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Data zamów.</th>
+        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">SKU</th>
+        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nazwa produktu</th>
+        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ilość</th>
+        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Status</th>
+        <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Usuń</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white divide-y divide-gray-200">
+      {filteredOrders.map((order) => (
+        <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+          <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">{order.id}</td>
+          <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
+            {new Date(order.created_at).toLocaleDateString('pl-PL', { 
+              day: '2-digit', 
+              month: '2-digit',
+              year: 'numeric'
+            })} {new Date(order.created_at).toLocaleTimeString('pl-PL', { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            })}
+          </td>
+          <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_catalog_index}</td>
+          <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_full_name}</td>
+          <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.quantity}</td>
+          <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+            {order.is_produced ? "Wyprodukowano" : "Do produkcji"}
+          </td>
+          <td className="px-2 py-2 whitespace-nowrap text-right text-xs font-medium">
+            <button
+              type="button"
+              onClick={() => openDeleteModal(order)}
+              className="text-red-600 hover:text-red-900 transition-colors p-1 rounded"
+              title="Usuń zamówienie"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
         </section>
       </div>
 
