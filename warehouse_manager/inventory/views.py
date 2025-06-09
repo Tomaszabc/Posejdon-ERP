@@ -257,3 +257,15 @@ def produce_product_to_production(request, order_id):
         return Response({"success": True})
     except ProductToProduction.DoesNotExist:
         return Response({"error": "Order not found"}, status=404)
+
+@api_view(['POST'])
+def undo_product_to_production(request, order_id):
+    try:
+        order = ProductToProduction.objects.get(id=order_id)
+        if order.is_produced:
+            order.is_produced = False
+            order.produced_at = None
+            order.save()
+        return Response({"success": True})
+    except ProductToProduction.DoesNotExist:
+        return Response({"error": "Order not found"}, status=404)

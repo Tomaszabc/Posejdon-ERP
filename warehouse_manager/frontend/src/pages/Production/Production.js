@@ -121,27 +121,27 @@ const confirmProduce = () => {
   };
 
   const confirmUndoProduce = () => {
-    if (!orderToUndo) return;
-    
-    fetch(`http://127.0.0.1:8000/api/production/undo/${orderToUndo.id}/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      }
+  if (!orderToUndo) return;
+
+  fetch(`http://127.0.0.1:8000/api/production/undo/${orderToUndo.id}/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Błąd podczas cofania produkcji");
+      return res.json();
     })
-      .then(res => {
-        if (!res.ok) throw new Error("Błąd podczas cofania produkcji");
-        return res.json();
-      })
-      .then(() => {
-        setShowUndoModal(false);
-        setOrderToUndo(null);
-        fetchOrders();
-      })
-      .catch(error => {
-        alert(error.message);
-      });
-  };
+    .then(() => {
+      setShowUndoModal(false);
+      setOrderToUndo(null);
+      fetchOrders();
+    })
+    .catch(error => {
+      alert(error.message);
+    });
+};
 
   const cancelUndoProduce = () => {
     setShowUndoModal(false);
