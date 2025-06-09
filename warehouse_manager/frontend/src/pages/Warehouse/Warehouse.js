@@ -352,7 +352,7 @@ const exportToCSV = () => {
           <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
               💡 <strong>Liczba pozycji:</strong> {components.length} | 
-              <strong> Stan wartości:</strong> {components.reduce((sum, comp) => sum + parseFloat(comp.purchase_price_net || 0) * parseFloat(comp.stock || 0), 0).toFixed(2)} zł
+             
               {selectedComponents.size > 0 && (
                 <span className="ml-4">
                   <strong>Zaznaczone:</strong> {selectedComponents.size} pozycji
