@@ -124,3 +124,13 @@ class DiffusorType(models.Model):
 
     def __str__(self):
         return f"{self.sku} – {self.name}"
+
+class ProductToProduction(models.Model):
+    component = models.ForeignKey(Component, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_produced = models.BooleanField(default=False)
+    produced_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.component.full_name} ({self.component.catalog_index}) x {self.quantity}"

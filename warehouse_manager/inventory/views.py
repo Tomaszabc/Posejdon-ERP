@@ -22,6 +22,9 @@ from rest_framework.response import Response
 from .models import Component
 from .models import DiffusorType
 from .serializers import DiffusorTypeSerializer
+from .models import ProductToProduction
+from .serializers import ProductToProductionSerializer
+
 
 def index(request):
     return render(request, "inventory/index.html")
@@ -224,7 +227,11 @@ def diffusor_types_list(request):
 
 @api_view(['GET'])
 def components_for_order(request):
-    # Przykład: tylko te z '-20-' w indeksie katalogowym
-    queryset = Component.objects.filter(catalog_index__regex=r'^.*-20-.*$')
+    # Tylko te z r="Produkt"
+    queryset = Component.objects.filter(r="Produkt")
     serializer = ComponentSerializer(queryset, many=True)
     return Response(serializer.data)
+
+class ProductToProductionListCreateView(generics.ListCreateAPIView):
+    queryset = ProductToProduction.objects.all().order_by('-created_at')
+    serializer_class = ProductToProductionSerializer

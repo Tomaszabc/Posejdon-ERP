@@ -8,6 +8,8 @@ from .views import ComponentDetailView
 from .views import import_components_csv
 from .views import diffusor_types_list
 from .views import components_for_order
+from .views import ProductToProductionListCreateView
+
 
 
 
@@ -32,6 +34,7 @@ urlpatterns = [
     path("api/components/import/", import_components_csv, name="component-import"),
     path('diffusor-types/', diffusor_types_list),
     path('api/components-for-order/', components_for_order),
+    path('api/product-to-production/', ProductToProductionListCreateView.as_view(), name='product-to-production-list-create'),
 
 
     

@@ -1,51 +1,39 @@
 import React, { useState, useEffect } from "react";
 import OrderDeleteModal from "../components/modals/OrderDeleteModal";
 import OrderConfirmModal from "../components/modals/OrderConfirmModal";
-import { filterOrders } from "../utils/orderFilters";
 
 export default function Orders() {
-  const [diffusorTypes, setDiffusorTypes] = useState([]);
   const [form, setForm] = useState({ component: "", quantity: "" });
   const [orders, setOrders] = useState([]);
   const [errors, setErrors] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState(null);
-  const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
-    diameter: "",
-    shape: "",
-    size: "",
-    color: "",
-    quantity: ""
-  });
-  const [filteredOrders, setFilteredOrders] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [components, setComponents] = useState([]);
-  const handleClearFilters = () => setFilters({
-    startDate: "",
-    endDate: "",
-    diameter: "",
-    shape: "",
-    size: "",
-    color: "",
-    quantity: ""
-  });
   const ORDERS_LIMIT = 100;
   const [showFilters, setShowFilters] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
+  const [filters, setFilters] = useState({
+    startDate: "",
+    endDate: "",
+    quantity: ""
+  });
 
-  // Pobierz typy dyfuzorów
+  // Pobierz komponenty do zamówienia
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/diffusor-types/")
+    fetch("http://127.0.0.1:8000/api/components-for-order/")
       .then(res => res.json())
-      .then(setDiffusorTypes);
+      .then(setComponents);
   }, []);
 
-  // Pobieranie zamówień tylko raz na start
+  // Pobierz zamówienia z ProductToProduction
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/orders/")
+    fetchOrders();
+  }, []);
+
+  function fetchOrders() {
+    fetch("http://127.0.0.1:8000/api/product-to-production/")
       .then((res) => res.json())
       .then((data) => {
         setOrders(data);
@@ -53,11 +41,17 @@ export default function Orders() {
       .catch(() => {
         setOrders([]);
       });
-  }, []);
+  }
 
-  useEffect(() => {
-    setFilteredOrders(filterOrders(orders, filters, ORDERS_LIMIT));
-  }, [filters, orders]);
+  // Filtrowanie zamówień (proste, tylko po dacie i ilości)
+  const filteredOrders = orders
+    .filter(order => {
+      if (filters.startDate && new Date(order.created_at) < new Date(filters.startDate)) return false;
+      if (filters.endDate && new Date(order.created_at) > new Date(filters.endDate)) return false;
+      if (filters.quantity && String(order.quantity) !== String(filters.quantity)) return false;
+      return true;
+    })
+    .slice(0, ORDERS_LIMIT);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -66,6 +60,12 @@ export default function Orders() {
       [name]: value
     }));
   };
+
+  const handleClearFilters = () => setFilters({
+    startDate: "",
+    endDate: "",
+    quantity: ""
+  });
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -81,18 +81,22 @@ export default function Orders() {
   }
 
   function handleConfirmSubmit() {
-    fetch("http://127.0.0.1:8000/api/orders/", {
+    fetch("http://127.0.0.1:8000/api/product-to-production/", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        component: form.component,
+        quantity: form.quantity,
+      }),
     })
-      .then((res) => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Błąd zapisu zamówienia");
+        return res.json();
+      })
       .then(() => {
-        fetch("http://127.0.0.1:8000/api/orders/")
-          .then((res) => res.json())
-          .then((data) => {
-            setOrders(data);
-          });
+        fetchOrders();
         setForm({
           component: "",
           quantity: "",
@@ -100,7 +104,8 @@ export default function Orders() {
         setShowConfirmModal(false);
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 1000);
-      });
+      })
+      .catch(err => setErrors([err.message]));
   }
 
   function openDeleteModal(order) {
@@ -115,27 +120,19 @@ export default function Orders() {
 
   function handleDelete() {
     if (!orderToDelete) return;
-    fetch(`http://127.0.0.1:8000/api/orders/${orderToDelete.id}/`, {
+    fetch(`http://127.0.0.1:8000/api/product-to-production/${orderToDelete.id}/`, {
       method: "DELETE",
     }).then((res) => {
       if (res.ok) {
-        const updatedOrders = orders.filter((o) => o.id !== orderToDelete.id);
-        setOrders(updatedOrders);
+        setOrders(orders.filter((o) => o.id !== orderToDelete.id));
         closeDeleteModal();
-        setShowDeleteSuccess(true); // Pokaż potwierdzenie
-        setTimeout(() => setShowDeleteSuccess(false), 1000); // Ukryj po 1s
+        setShowDeleteSuccess(true);
+        setTimeout(() => setShowDeleteSuccess(false), 1000);
       } else {
         alert("Błąd podczas usuwania zamówienia.");
       }
     });
   }
-
-  // Fetch components for order
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/components-for-order/")
-      .then(res => res.json())
-      .then(setComponents);
-  }, []);
 
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
@@ -194,196 +191,181 @@ export default function Orders() {
           </form>
         </section>
         {/* PRAWA STRONA - LISTA ZAMÓWIEŃ I FILTRY */}
-        {orders.length > 0 && (
-          <section className="bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
-            <div className="flex justify-between items-center mb-6">
-
-<h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-  Lista zamówień
-  {!filters.startDate && !filters.endDate && !filters.diameter && !filters.shape && !filters.size && !filters.color && !filters.quantity && (
-    <span className="ml-1 relative group">
-      <span
-        className="inline-block align-middle cursor-pointer group"
-        style={{ borderBottom: "0px dotted #888" }}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="inline w-7 h-7 text-gray-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="white"/>
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 16v-4m0-4h.01" />
-        </svg>
-        {/* TOOLTIP */}
-        <span className="absolute left-1/2 -translate-x-1/2 mt-2 px-3 py-1 rounded bg-gray-800 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
-          {ORDERS_LIMIT} najnowszych
-        </span>
-      </span>
-    </span>
-  )}
-</h2>
-
-            <button
-                  type="button"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-sm text-sm"
-                >
-                  🔍 {showFilters ? 'Ukryj filtry' : 'Pokaż filtry'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleClearFilters}
-                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors shadow-sm text-sm"
-                >
-                  🗑️ Wyczyść filtry
-                </button>
-          </div>
-
-   
-
-{showFilters && (
-  <div
-  className={`bg-gray-50 rounded-xl mb-6 overflow-hidden transition-all duration-500`}
-  style={{
-    maxHeight: showFilters ? 1000 : 0,
-    opacity: showFilters ? 1 : 0,
-    pointerEvents: showFilters ? 'auto' : 'none',
-    transition: "max-height 0.6s cubic-bezier(0.4,0,0.2,1), opacity 0.4s"
-  }}
->
-    <div className="p-4">
-      <h3 className="text-lg font-semibold text-gray-700 mb-4">Filtry</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Od daty</label>
-          <input
-            type="date"
-            name="startDate"
-            value={filters.startDate}
-            onChange={handleFilterChange}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Do daty</label>
-          <input
-            type="date"
-            name="endDate"
-            value={filters.endDate}
-            onChange={handleFilterChange}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-          />
-        </div>
-       
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Ilość</label>
-          <input
-            type="number"
-            name="quantity"
-            value={filters.quantity}
-            onChange={handleFilterChange}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-            placeholder="Dowolna"
-            min="0"
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
-          {/* TABELA ZAMÓWIEŃ */}
-<div className="overflow-x-auto">
-  <table className="min-w-full divide-y divide-gray-200">
-    <thead className="bg-gray-50">
-      <tr>
-        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Nr</th>
-        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Data zamów.</th>
-        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Śred.</th>
-        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Kszt.</th>
-        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Rozm.</th>
-        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Kolor</th>
-        <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ilość</th>
-        <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Usuń</th>
-      </tr>
-    </thead>
-    <tbody className="bg-white divide-y divide-gray-200">
-      {filteredOrders.map((order) => (
-        <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-          <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">{order.id}</td>
-          <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-             {new Date(order.created_at).toLocaleDateString('pl-PL', { 
-          day: '2-digit', 
-          month: '2-digit',
-          year: 'numeric'
-        })} {new Date(order.created_at).toLocaleTimeString('pl-PL', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        })}
-          </td>
-          <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.diameter}</td>
-          <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-            {order.shape === 'Okrągły' ? 'Okr.' : 'Kw.'}
-          </td>
-          <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.size}</td>
-          <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.color}</td>
-          <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.quantity_to_assemble}</td>
-          <td className="px-2 py-2 whitespace-nowrap text-right text-xs font-medium">
+        <section className="bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+              Lista zamówień
+              {!filters.startDate && !filters.endDate && !filters.quantity && (
+                <span className="ml-1 relative group">
+                  <span
+                    className="inline-block align-middle cursor-pointer group"
+                    style={{ borderBottom: "0px dotted #888" }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="inline w-7 h-7 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="white"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 16v-4m0-4h.01" />
+                    </svg>
+                    <span className="absolute left-1/2 -translate-x-1/2 mt-2 px-3 py-1 rounded bg-gray-800 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
+                      {ORDERS_LIMIT} najnowszych
+                    </span>
+                  </span>
+                </span>
+              )}
+            </h2>
             <button
               type="button"
-              onClick={() => openDeleteModal(order)}
-              className="text-red-600 hover:text-red-900 transition-colors p-1 rounded"
-              title="Usuń zamówienie"
+              onClick={() => setShowFilters(!showFilters)}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-sm text-sm"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              🔍 {showFilters ? 'Ukryj filtry' : 'Pokaż filtry'}
             </button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors shadow-sm text-sm"
+            >
+              🗑️ Wyczyść filtry
+            </button>
+          </div>
+          {showFilters && (
+            <div
+              className={`bg-gray-50 rounded-xl mb-6 overflow-hidden transition-all duration-500`}
+              style={{
+                maxHeight: showFilters ? 1000 : 0,
+                opacity: showFilters ? 1 : 0,
+                pointerEvents: showFilters ? 'auto' : 'none',
+                transition: "max-height 0.6s cubic-bezier(0.4,0,0.2,1), opacity 0.4s"
+              }}
+            >
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-700 mb-4">Filtry</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Od daty</label>
+                    <input
+                      type="date"
+                      name="startDate"
+                      value={filters.startDate}
+                      onChange={handleFilterChange}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Do daty</label>
+                    <input
+                      type="date"
+                      name="endDate"
+                      value={filters.endDate}
+                      onChange={handleFilterChange}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Ilość</label>
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={filters.quantity}
+                      onChange={handleFilterChange}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
+                      placeholder="Dowolna"
+                      min="0"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {/* TABELA ZAMÓWIEŃ */}
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Nr</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Data zamów.</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">SKU</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nazwa produktu</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ilość</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Status</th>
+                <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Usuń</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredOrders.map((order) => (
+                <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">{order.id}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
+                    {new Date(order.created_at).toLocaleDateString('pl-PL', { 
+                      day: '2-digit', 
+                      month: '2-digit',
+                      year: 'numeric'
+                    })} {new Date(order.created_at).toLocaleTimeString('pl-PL', { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </td>
+                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_catalog_index}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_full_name}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.quantity}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                    {order.is_produced ? "Wyprodukowano" : "Do produkcji"}
+                  </td>
+                  <td className="px-2 py-2 whitespace-nowrap text-right text-xs font-medium">
+                    <button
+                      type="button"
+                      onClick={() => openDeleteModal(order)}
+                      className="text-red-600 hover:text-red-900 transition-colors p-1 rounded"
+                      title="Usuń zamówienie"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </section>
+      </div>
+
+      {/* MODALNE */}
+      {showModal && orderToDelete && (
+        <OrderDeleteModal
+          order={orderToDelete}
+          onDelete={handleDelete}
+          onCancel={closeDeleteModal}
+        />
+      )}
+
+      {showConfirmModal && (
+        <OrderConfirmModal
+          order={form}
+          onConfirm={handleConfirmSubmit}
+          onCancel={() => setShowConfirmModal(false)}
+        />
+      )}
+
+      {showSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="bg-green-500 text-white px-8 py-4 rounded-xl shadow-lg text-lg font-semibold animate-fade-in-out">
+            Dodano zamówienie!
+          </div>
+        </div>
+      )}
+
+      {showDeleteSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="bg-green-500 text-white px-8 py-4 rounded-xl shadow-lg text-lg font-semibold animate-fade-in-out">
+            Zamówienie usunięte!
+          </div>
+        </div>
       )}
     </div>
-
-    {/* MODALNE */}
-    {showModal && orderToDelete && (
-      <OrderDeleteModal
-        order={orderToDelete}
-        onDelete={handleDelete}
-        onCancel={closeDeleteModal}
-      />
-    )}
-
-    {showConfirmModal && (
-      <OrderConfirmModal
-        order={form}
-        onConfirm={handleConfirmSubmit}
-        onCancel={() => setShowConfirmModal(false)}
-      />
-    )}
-
-{showSuccess && (
-  <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-    <div className="bg-green-500 text-white px-8 py-4 rounded-xl shadow-lg text-lg font-semibold animate-fade-in-out">
-      Dodano zamówienie!
-    </div>
-  </div>
-)}
-
-{showDeleteSuccess && (
-  <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-    <div className="bg-green-500 text-white px-8 py-4 rounded-xl shadow-lg text-lg font-semibold animate-fade-in-out">
-      Zamówienie usunięte!
-    </div>
-  </div>
-)}
-  </div>
-);
+  );
 }
