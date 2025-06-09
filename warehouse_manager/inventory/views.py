@@ -235,3 +235,12 @@ def components_for_order(request):
 class ProductToProductionListCreateView(generics.ListCreateAPIView):
     queryset = ProductToProduction.objects.all().order_by('-created_at')
     serializer_class = ProductToProductionSerializer
+
+@api_view(['DELETE'])
+def delete_product_to_production(request, pk):
+    try:
+        product = ProductToProduction.objects.get(pk=pk)
+        product.delete()
+        return Response(status=204)
+    except ProductToProduction.DoesNotExist:
+        return Response(status=404)

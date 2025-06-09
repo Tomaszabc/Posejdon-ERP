@@ -9,6 +9,7 @@ from .views import import_components_csv
 from .views import diffusor_types_list
 from .views import components_for_order
 from .views import ProductToProductionListCreateView
+from .views import delete_product_to_production
 
 
 
@@ -35,6 +36,7 @@ urlpatterns = [
     path('diffusor-types/', diffusor_types_list),
     path('api/components-for-order/', components_for_order),
     path('api/product-to-production/', ProductToProductionListCreateView.as_view(), name='product-to-production-list-create'),
+    path('api/product-to-production/<int:pk>/', delete_product_to_production, name='delete-product-to-production'),
 
 
     

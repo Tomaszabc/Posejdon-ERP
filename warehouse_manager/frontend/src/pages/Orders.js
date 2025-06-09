@@ -198,7 +198,7 @@ export default function Orders() {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
               Lista zamówień
-              {!filters.startDate && !filters.endDate && !filters.quantity && (
+              {!filters.startDate && !filters.endDate && !filters.quantity && !filters.sku && (
                 <span className="ml-1 relative group">
                   <span
                     className="inline-block align-middle cursor-pointer group"
@@ -374,6 +374,8 @@ export default function Orders() {
           </div>
         </div>
       )}
+
+
 
       {showDeleteSuccess && (
         <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
