@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import OrderDeleteModal from "../components/modals/OrderDeleteModal";
-import OrderConfirmModal from "../components/modals/OrderConfirmModal";
-import OrderList from "./Pages/Order/OrderList";
+import OrderDeleteModal from "../../components/modals/OrderDeleteModal";
+import OrderConfirmModal from "../../components/modals/OrderConfirmModal";
+import OrderList from "./OrderList";
 
 export default function Orders() {
   const [form, setForm] = useState({ component: "", quantity: "" });
