@@ -4,15 +4,12 @@ import ProducedOrdersSection from "./ProducedOrdersSection";
 import UndoModal from "./UndoModal";
 import SuccessModal from "./SuccessModal";
 import ConfirmProductionModal from "./ConfirmProductionModal";
-import { filterOrders } from "./utils/orderFilters";
 
 export default function Production() {
   // States
   const [orders, setOrders] = useState([]);
-  const [producedOrders, setProducedOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
-  
   
   // Modal states
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -25,26 +22,25 @@ export default function Production() {
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
-    diameter: "",
-    shape: "",
-    size: "",
-    color: "",
+    sku: "",
     quantity: ""
   });
-  const [filteredProducedOrders, setFilteredProducedOrders] = useState([]);
 
-    // Stałe dla filtrów
-  const diameters = ["100", "125", "160"];
-  const shapes = ["Okrągły", "Kwadratowy"];
-  const sizes = ["S", "M", "L"];
-  const colors = ["B", "W", "G"];
+  // Effect do filtrowania
+  const filteredOrders = orders
+    .filter(order => {
+      if (filters.startDate && new Date(order.created_at) < new Date(filters.startDate)) return false;
+      if (filters.endDate && new Date(order.created_at) > new Date(filters.endDate)) return false;
+      if (filters.quantity && String(order.quantity) !== String(filters.quantity)) return false;
+      if (filters.sku && !order.component_catalog_index?.toLowerCase().includes(filters.sku.toLowerCase())) return false;
+      return true;
+    })
+    .slice(0, ORDERS_LIMIT);
 
-    // Effect do filtrowania
-  useEffect(() => {
-    setFilteredProducedOrders(filterOrders(producedOrders, filters, ORDERS_LIMIT));
-  }, [filters, producedOrders]);
+  const producedOrders = filteredOrders.filter(order => order.is_produced);
+  const ordersToProduce = filteredOrders.filter(order => !order.is_produced);
 
-    // Handlery dla filtrów
+  // Handlery dla filtrów
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({
@@ -57,10 +53,7 @@ export default function Production() {
     setFilters({
       startDate: "",
       endDate: "",
-      diameter: "",
-      shape: "",
-      size: "",
-      color: "",
+      sku: "",
       quantity: ""
     });
   };
@@ -73,16 +66,14 @@ export default function Production() {
   // API calls
   const fetchOrders = () => {
     setLoading(true);
-    fetch("http://localhost:8000/api/production/orders/", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access")}`,
-        "Content-Type": "application/json"
-      }
-    })
+    fetch("http://127.0.0.1:8000/api/product-to-production/")
       .then(res => res.json())
       .then(data => {
-        setOrders(data.orders || []);
-        setProducedOrders(data.produced_orders || []);
+        setOrders(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setOrders([]);
         setLoading(false);
       });
   };
@@ -96,21 +87,25 @@ export default function Production() {
   const confirmProduce = () => {
     if (!orderToConfirm) return;
     
-    fetch("http://localhost:8000/api/production/produce/", {
+    fetch(`http://127.0.0.1:8000/api/production/produce/${orderToConfirm.id}/`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("access")}`,
         "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ order_id: orderToConfirm.id })
+      }
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Błąd podczas oznaczania jako wyprodukowane");
+        return res.json();
+      })
       .then(() => {
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 1000);
         setShowConfirmModal(false);
         setOrderToConfirm(null);
         fetchOrders();
+      })
+      .catch(error => {
+        alert(error.message);
       });
   };
 
@@ -128,19 +123,23 @@ export default function Production() {
   const confirmUndoProduce = () => {
     if (!orderToUndo) return;
     
-    fetch("http://localhost:8000/api/production/undo/", {
+    fetch(`http://127.0.0.1:8000/api/production/undo/${orderToUndo.id}/`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("access")}`,
         "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ order_id: orderToUndo.id })
+      }
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Błąd podczas cofania produkcji");
+        return res.json();
+      })
       .then(() => {
         setShowUndoModal(false);
         setOrderToUndo(null);
         fetchOrders();
+      })
+      .catch(error => {
+        alert(error.message);
       });
   };
 
@@ -152,14 +151,13 @@ export default function Production() {
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        {/* Main sections */}
         <OrdersToProduceSection
-          orders={orders}
+          orders={ordersToProduce}
           loading={loading}
           onProduce={handleAskConfirmProduce}
         />
         <ProducedOrdersSection
-          producedOrders={filteredProducedOrders}
+          producedOrders={producedOrders}
           onUndo={handleUndoProduce}
           showFilters={showFilters}
           setShowFilters={setShowFilters}
@@ -167,14 +165,9 @@ export default function Production() {
           handleFilterChange={handleFilterChange}
           handleClearFilters={handleClearFilters}
           ORDERS_LIMIT={ORDERS_LIMIT}
-          diameters={diameters}
-          shapes={shapes}
-          sizes={sizes}
-          colors={colors}
         />
       </div>
 
-      {/* Modals */}
       <ConfirmProductionModal
         order={orderToConfirm}
         show={showConfirmModal}

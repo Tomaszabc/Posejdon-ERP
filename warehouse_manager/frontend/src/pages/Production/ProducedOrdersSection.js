@@ -1,3 +1,4 @@
+// filepath: c:\Users\Posejdon\Desktop\Cyfryzacja\Warehouse_manager\Warehouse_Management\warehouse_manager\frontend\src\pages\Production\ProducedOrdersSection.js
 import React from "react";
 import { formatDateTime } from "./utils";
 
@@ -9,22 +10,15 @@ export default function ProducedOrdersSection({
   filters,
   handleFilterChange,
   handleClearFilters,
-  ORDERS_LIMIT,
-  diameters,
-  shapes,
-  sizes,
-  colors
+  ORDERS_LIMIT
 }) {
- 
-
   return (
     <section className="bg-white shadow-2xl rounded-3xl p-6 border border-gray-100">
       {/* Header z tytułem i przyciskami filtrów */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
           Wyprodukowane produkty
-          {!filters.startDate && !filters.endDate && !filters.diameter && !filters.shape && 
-           !filters.size && !filters.color && !filters.quantity && (
+          {!filters.startDate && !filters.endDate && !filters.sku && !filters.quantity && (
             <span className="ml-1 relative group">
               <span className="inline-block align-middle cursor-pointer group">
                 <svg xmlns="http://www.w3.org/2000/svg" 
@@ -86,52 +80,15 @@ export default function ProducedOrdersSection({
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Średnica</label>
-                <select
-                  name="diameter"
-                  value={filters.diameter}
+                <label className="block text-xs font-medium text-gray-600 mb-1">SKU</label>
+                <input
+                  type="text"
+                  name="sku"
+                  value={filters.sku}
                   onChange={handleFilterChange}
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-                >
-                  <option value="">Wszystkie</option>
-                  {diameters.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Kształt</label>
-                <select
-                  name="shape"
-                  value={filters.shape}
-                  onChange={handleFilterChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-                >
-                  <option value="">Wszystkie</option>
-                  {shapes.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Rozmiar</label>
-                <select
-                  name="size"
-                  value={filters.size}
-                  onChange={handleFilterChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-                >
-                  <option value="">Wszystkie</option>
-                  {sizes.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Kolor</label>
-                <select
-                  name="color"
-                  value={filters.color}
-                  onChange={handleFilterChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ocean-500 focus:border-ocean-500"
-                >
-                  <option value="">Wszystkie</option>
-                  {colors.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                  placeholder="Wpisz SKU"
+                />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Ilość</label>
@@ -156,10 +113,8 @@ export default function ProducedOrdersSection({
           <thead className="bg-gray-50">
             <tr>
               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Nr</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Śr.</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Kształt</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">Rozm.</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">Kolor</th>
+              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">SKU</th>
+              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produkt</th>
               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Ilość</th>
               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Data prod.</th>
               <th className="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Cofnij</th>
@@ -169,13 +124,9 @@ export default function ProducedOrdersSection({
             {producedOrders.map(order => (
               <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">{order.id}</td>
-                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.diameter}</td>
-                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-                  {order.shape === 'Okrągły' ? 'Okr.' : 'Kw.'}
-                </td>
-                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.size}</td>
-                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.color}</td>
-                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.quantity_to_assemble}</td>
+                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_catalog_index}</td>
+                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_full_name}</td>
+                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.quantity}</td>
                 <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
                   {formatDateTime(order.produced_at)}
                 </td>

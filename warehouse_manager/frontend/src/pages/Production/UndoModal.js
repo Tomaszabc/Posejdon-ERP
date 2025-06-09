@@ -14,11 +14,9 @@ export default function UndoModal({ order, onCancel, onConfirm, show }) {
         <div className="bg-gray-50 rounded-lg p-4 mb-6">
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div><span className="font-medium">Nr:</span> {order.id}</div>
-            <div><span className="font-medium">Średnica:</span> {order.diameter}</div>
-            <div><span className="font-medium">Kształt:</span> {order.shape}</div>
-            <div><span className="font-medium">Rozmiar:</span> {order.size}</div>
-            <div><span className="font-medium">Kolor:</span> {order.color}</div>
-            <div><span className="font-medium">Ilość:</span> {order.quantity_to_assemble}</div>
+            <div><span className="font-medium">SKU:</span> {order.component_catalog_index}</div>
+            <div><span className="font-medium">Produkt:</span> {order.component_full_name}</div>
+            <div><span className="font-medium">Ilość:</span> {order.quantity}</div>
           </div>
         </div>
         <div className="flex gap-3 justify-end">
