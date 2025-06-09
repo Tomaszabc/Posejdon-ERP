@@ -34,7 +34,7 @@ export default function Production() {
     .filter(order => {
       if (filters.startDate && new Date(order.created_at) < new Date(filters.startDate)) return false;
       if (filters.endDate && new Date(order.created_at) > new Date(filters.endDate)) return false;
-      if (filters.quantity && String(order.quantity) !== String(filters.quantity)) return false;
+      if (filters.quantity && !String(order.quantity).startsWith(String(filters.quantity))) return false;
       if (filters.sku && !order.component_catalog_index?.toLowerCase().includes(filters.sku.toLowerCase())) return false;
       return true;
     })
