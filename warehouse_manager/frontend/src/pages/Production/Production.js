@@ -4,6 +4,8 @@ import ProducedOrdersSection from "./ProducedOrdersSection";
 import UndoModal from "./UndoModal";
 import SuccessModal from "./SuccessModal";
 import ConfirmProductionModal from "./ConfirmProductionModal";
+import UndoSuccessModal from "./UndoSuccessModal";
+
 
 export default function Production() {
   // States
@@ -16,7 +18,7 @@ export default function Production() {
   const [orderToConfirm, setOrderToConfirm] = useState(null);
   const [showUndoModal, setShowUndoModal] = useState(false);
   const [orderToUndo, setOrderToUndo] = useState(null);
-
+  const [showUndoSuccess, setShowUndoSuccess] = useState(false);
   const ORDERS_LIMIT = 100;
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -26,6 +28,7 @@ export default function Production() {
     quantity: ""
   });
 
+  
   // Effect do filtrowania
   const filteredOrders = orders
     .filter(order => {
@@ -120,34 +123,38 @@ const confirmProduce = () => {
     setShowUndoModal(true);
   };
 
-  const confirmUndoProduce = () => {
-  if (!orderToUndo) return;
+ const confirmUndoProduce = () => {
+    if (!orderToUndo) return;
 
-  fetch(`http://127.0.0.1:8000/api/production/undo/${orderToUndo.id}/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    }
-  })
-    .then(res => {
-      if (!res.ok) throw new Error("Błąd podczas cofania produkcji");
-      return res.json();
+    fetch(`http://127.0.0.1:8000/api/production/undo/${orderToUndo.id}/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      }
     })
-    .then(() => {
-      setShowUndoModal(false);
-      setOrderToUndo(null);
-      fetchOrders();
-    })
-    .catch(error => {
-      alert(error.message);
-    });
-};
+      .then(res => {
+        if (!res.ok) throw new Error("Błąd podczas cofania produkcji");
+        return res.json();
+      })
+      .then(() => {
+        setShowUndoModal(false);
+        setOrderToUndo(null);
+        setShowUndoSuccess(true);
+        setTimeout(() => setShowUndoSuccess(false), 1000);
+        fetchOrders();
+      })
+      .catch(error => {
+        alert(error.message);
+      });
+  };
 
   const cancelUndoProduce = () => {
     setShowUndoModal(false);
     setOrderToUndo(null);
   };
 
+
+  
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -181,6 +188,7 @@ const confirmProduce = () => {
         onConfirm={confirmUndoProduce}
       />
       <SuccessModal show={showSuccess} />
+      <UndoSuccessModal show={showUndoSuccess} />
     </div>
   );
 }
