@@ -11,7 +11,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import Production from "./pages/Production/Production";
 import Warehouse from "./pages/Warehouse/Warehouse";
 import PartsBuilder from "./pages/Warehouse/PartsBuilder";
-
+import ProductsAndGoods from "./pages/Warehouse/ProductsAndGoods";
+import WarehouseIndex from "./pages/Warehouse/WarehouseIndex";
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -79,11 +80,20 @@ function App() {
               path="/warehouse"
               element={
                 <ProtectedRoute user={user}>
+                  <WarehouseIndex />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="/warehouse/components"
+              element={
+                <ProtectedRoute user={user}>
                   <Warehouse />
                 </ProtectedRoute>
               }
             />
             <Route path="/warehouse/parts-builder" element={<PartsBuilder />} />
+            <Route path="/warehouse/products" element={<ProductsAndGoods />} />
             {/* ...inne chronione trasy w ten sam sposób... */}
           </Routes>
         </main>
