@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function Navbar({ user, setUser }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [salesDropdownOpen, setSalesDropdownOpen] = useState(false);
+  const [mobileSalesDropdownOpen, setMobileSalesDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   function handleLogout(e) {
@@ -27,6 +29,28 @@ export default function Navbar({ user, setUser }) {
                   <a href="/user" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
                     Moje konto: {user?.username || user?.user_id}
                   </a>
+                  {/* Dropdown desktop */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setSalesDropdownOpen((v) => !v)}
+                      className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg flex items-center focus:outline-none"
+                    >
+                      Zarządzanie Sprzedażą
+                      <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {salesDropdownOpen && (
+                      <div
+                        className="absolute left-0 mt-2 w-56 bg-white text-gray-800 rounded-lg shadow-lg z-40"
+                        onMouseLeave={() => setSalesDropdownOpen(false)}
+                      >
+                        <a href="#" className="block px-4 py-2 hover:bg-ocean-100">Uruchom dodatek PrintNode</a>
+                        <a href="#" className="block px-4 py-2 hover:bg-ocean-100">Uruchom dodatek WfSync</a>
+                        <a href="https://panel.baselinker.com/login.php" target="_blank" rel="noopener" className="block px-4 py-2 hover:bg-ocean-100">Przeglądaj Sprzedaż</a>
+                      </div>
+                    )}
+                  </div>
                   <Link to="/warehouse" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Magazyn</Link>
                   <Link to="/orders" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Zamówienie produkcyjne</Link>
                   <Link to="/production" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Produkcja</Link>
@@ -64,8 +88,27 @@ export default function Navbar({ user, setUser }) {
           {user ? (
             <>
               <a href="/user" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
-  Moje konto: {user?.username || user?.user_id}
-</a>
+                Moje konto: {user?.username || user?.user_id}
+              </a>
+              {/* Dropdown mobile */}
+              <div>
+                <button
+                  onClick={() => setMobileSalesDropdownOpen((v) => !v)}
+                  className="w-full text-left block px-4 py-2 rounded-lg hover:bg-ocean-800 flex items-center focus:outline-none"
+                >
+                  Zarządzanie Sprzedażą
+                  <svg className="ml-2 w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {mobileSalesDropdownOpen && (
+                  <div className="pl-4 mt-2 space-y-1">
+                    <a href="#" className="block px-4 py-2 rounded-lg hover:bg-ocean-700">Uruchom dodatek PrintNode</a>
+                    <a href="#" className="block px-4 py-2 rounded-lg hover:bg-ocean-700">Uruchom dodatek WfSync</a>
+                    <a href="https://panel.baselinker.com/login.php" target="_blank" rel="noopener" className="block px-4 py-2 rounded-lg hover:bg-ocean-700">Przeglądaj Sprzedaż</a>
+                  </div>
+                )}
+              </div>
               <a href="/orders" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Zamówienia</a>
               <a href="/production" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Produkcja</a>
               <button
