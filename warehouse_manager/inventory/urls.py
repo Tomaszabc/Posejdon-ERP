@@ -12,7 +12,7 @@ from .views import (
 router = routers.DefaultRouter()
 router.register(r'orders', OrderViewSet)
 router.register(r'merchandise', MerchandiseViewSet, basename='merchandise')
-
+router.register(r'parts-builder', views.PartsBuilderViewSet)
 
 app_name = "inventory"
 
@@ -23,7 +23,7 @@ urlpatterns = [
     path("order/delete/<int:order_id>/", views.delete_order, name="delete_order"),
     path("product-production/", views.product_production, name="product_production"),
     
-    # Najpierw specyficzne ścieżki PRZED include(router.urls)
+    # API endpoints
     path('api/production/orders/', production_orders),
     path('api/production/produce/', produce_order, name='produce_order'),
     path('api/production/undo/', undo_produce_order, name='undo_produce_order'),
@@ -31,6 +31,9 @@ urlpatterns = [
     path("api/components/<int:pk>/", ComponentDetailView.as_view(), name="component-detail"),
     path("api/components/import/", import_components_csv, name="component-import"),
     path('api/components-for-order/', components_for_order),
+    path('api/materials-for-parts/', views.materials_for_parts, name='materials_for_parts'),
+    path('api/product-recipe/<int:product_id>/', views.product_recipe, name='product_recipe'),
+    path('api/calculate-production-needs/', views.calculate_production_needs, name='calculate_production_needs'),
     path('api/product-to-production/', ProductToProductionListCreateView.as_view(), name='product-to-production-list-create'),
     path('api/product-to-production/<int:pk>/', delete_product_to_production, name='delete-product-to-production'),
     path('api/production/produce/<int:order_id>/', views.produce_product_to_production, name='produce_product_to_production'),
@@ -38,6 +41,6 @@ urlpatterns = [
     path("api/merchandise/import/", import_merchandise_csv, name="merchandise-import"),
     path('diffusor-types/', diffusor_types_list),
     
-    # Router na końcu (będzie obsługiwał pozostałe ścieżki)
+    # Router na końcu (obsługuje pozostałe ścieżki w tym parts-builder/)
     path('api/', include(router.urls)),
 ]

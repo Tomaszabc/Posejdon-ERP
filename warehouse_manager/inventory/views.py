@@ -27,6 +27,8 @@ from .serializers import ProductToProductionSerializer
 from django.http import JsonResponse
 from .models import Merchandise
 from .serializers import MerchandiseSerializer
+from .models import PartsBuilder
+from .serializers import PartsBuilderSerializer
 
 
 def index(request):
@@ -342,3 +344,65 @@ def import_merchandise_csv(request):
 
     return Response({"success": True, "imported": count})
 
+@api_view(['GET'])
+def materials_for_parts(request):
+    # Tylko materiały dla Parts Builder
+    queryset = Component.objects.filter(r__in=["Materiał", "Towar"])
+    serializer = ComponentSerializer(queryset, many=True)
+    return Response(serializer.data)
+
+class PartsBuilderViewSet(viewsets.ModelViewSet):
+    queryset = PartsBuilder.objects.all().select_related('product', 'material').order_by('-created_at')
+    serializer_class = PartsBuilderSerializer
+
+@api_view(['GET'])
+def product_recipe(request, product_id):
+    """Pobiera przepis (listę materiałów) dla konkretnego produktu"""
+    try:
+        parts = PartsBuilder.objects.filter(product_id=product_id).select_related('material')
+        serializer = PartsBuilderSerializer(parts, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
+
+@api_view(['POST'])
+def calculate_production_needs(request):
+    """
+    Oblicza potrzeby materiałowe dla danej ilości produktu
+    Oczekuje: {"product_id": 1, "quantity": 10}
+    """
+    product_id = request.data.get('product_id')
+    quantity = request.data.get('quantity', 1)
+    
+    if not product_id:
+        return Response({"error": "Brak product_id"}, status=400)
+    
+    try:
+        parts = PartsBuilder.objects.filter(product_id=product_id).select_related('material')
+        needs = []
+        
+        for part in parts:
+            needed_quantity = part.quantity_needed * Decimal(str(quantity))
+            available = part.material.stock
+            shortage = max(0, needed_quantity - available)
+            
+            needs.append({
+                'material_id': part.material.id,
+                'material_name': part.material.full_name,
+                'material_unit': part.material.unit,
+                'quantity_per_product': part.quantity_needed,
+                'total_needed': needed_quantity,
+                'available_stock': available,
+                'shortage': shortage,
+                'cost_per_unit': part.material.purchase_price_net,
+                'total_cost': part.material.purchase_price_net * needed_quantity
+            })
+            
+        return Response({
+            'product_quantity': quantity,
+            'materials_needed': needs,
+            'total_cost': sum(item['total_cost'] for item in needs)
+        })
+        
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Order, Component, DiffusorType, ProductToProduction, Merchandise
+from .models import Order, Component, DiffusorType, ProductToProduction, Merchandise,  PartsBuilder
 
 
 
@@ -31,3 +31,23 @@ class MerchandiseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Merchandise
         fields = '__all__'
+
+class PartsBuilderSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='product.full_name', read_only=True)
+    product_sku = serializers.CharField(source='product.catalog_index', read_only=True)
+    material_name = serializers.CharField(source='material.full_name', read_only=True)
+    material_unit = serializers.CharField(source='material.unit', read_only=True)
+    material_price = serializers.DecimalField(source='material.purchase_price_net', max_digits=10, decimal_places=2, read_only=True)
+    material_stock = serializers.DecimalField(source='material.stock', max_digits=10, decimal_places=3, read_only=True)
+    total_cost = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = PartsBuilder
+        fields = [
+            'id', 'product', 'product_name', 'product_sku',
+            'material', 'material_name', 'material_unit', 'material_price', 'material_stock',
+            'quantity_needed', 'total_cost', 'notes', 'created_at', 'updated_at'
+        ]
+        
+    def get_total_cost(self, obj):
+        return obj.total_cost()

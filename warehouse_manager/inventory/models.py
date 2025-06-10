@@ -178,3 +178,47 @@ class Merchandise(models.Model):
 
     def __str__(self):
         return self.full_name
+
+class PartsBuilder(models.Model):
+    # Produkt główny (SKU) - r="Produkt"
+    product = models.ForeignKey(
+        Component, 
+        on_delete=models.CASCADE, 
+        related_name='parts_recipes',
+        limit_choices_to={'r': 'Produkt'},
+        help_text="Produkt główny (SKU)"   
+ )
+    # Materiał składowy - r="Materiał" 
+    material = models.ForeignKey(
+        Component,
+        on_delete=models.CASCADE,
+        related_name='used_in_products',
+        limit_choices_to={'r': 'Materiał'},
+        help_text="Materiał użyty w produkcie"
+    )
+
+    # Ilość materiału potrzebna na 1 sztukę produktu
+    quantity_needed = models.DecimalField(
+        max_digits=10,
+        decimal_places=3,
+        default=1,
+        help_text="Ilość materiału na 1 szt. produktu"
+    )
+    
+    # Dodatkowe informacje
+    notes = models.TextField(blank=True, help_text="Dodatkowe uwagi")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'parts_builder'
+        verbose_name = "Przepis produktu"
+        verbose_name_plural = "Przepisy produktów"
+        unique_together = ['product', 'material']  # Jeden materiał na produkt tylko raz
+        
+    def __str__(self):
+        return f"{self.product.full_name} → {self.material.full_name} ({self.quantity_needed})"
+        
+    def total_cost(self):
+        """Koszt materiału na 1 szt. produktu"""
+        return self.material.purchase_price_net * self.quantity_needed
