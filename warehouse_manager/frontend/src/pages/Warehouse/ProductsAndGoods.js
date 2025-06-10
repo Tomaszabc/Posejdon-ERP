@@ -53,7 +53,7 @@ export default function ProductsAndGoods() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "produkty_i_towary_export.csv");
+    link.setAttribute("download", "materialy_produkcyjne.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -263,7 +263,7 @@ export default function ProductsAndGoods() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ocean-600"></div>
-          <span className="ml-3 text-gray-600">Ładowanie produktów i towarów...</span>
+          <span className="ml-3 text-gray-600">Ładowanie materiałów produkcyjnych...</span>
         </div>
       </div>
     );
@@ -275,7 +275,7 @@ export default function ProductsAndGoods() {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-ocean-900 mb-2">🧱 Produkty i towary</h1>
+            <h1 className="text-4xl font-bold text-ocean-900 mb-2">🧱 Materiały produkcyjne</h1>
             <p className="text-gray-600">Materiały magazynowe (typ R = "Materiał")</p>
           </div>
           <div className="flex gap-3">
