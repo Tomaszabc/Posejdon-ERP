@@ -1,4 +1,12 @@
 import React, { useEffect, useState } from "react";
+import {
+  fetchProducts,
+  fetchMaterials,
+  fetchRecipe,
+  deleteRecipeItem,
+  patchRecipeItem,
+  postRecipeItem,
+} from "./api";
 
 export default function PartsBuilder() {
   const [products, setProducts] = useState([]);
@@ -9,22 +17,14 @@ export default function PartsBuilder() {
   const [recipe, setRecipe] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Pobierz produkty i materiały
-  useEffect(() => {
-    fetch("/api/components-for-order/")
-      .then(res => res.json())
-      .then(setProducts);
-    fetch("/api/materials-for-parts/")
-      .then(res => res.json())
-      .then(setMaterials);
-  }, []);
+useEffect(() => {
+  fetchProducts().then(setProducts);
+  fetchMaterials().then(setMaterials);
+}, []);
 
-  // Dodaj funkcję do usuwania materiału z przepisu
 const handleDelete = async (id) => {
   if (!window.confirm("Czy na pewno chcesz usunąć ten materiał z przepisu?")) return;
-  const res = await fetch(`/api/parts-builder/${id}/`, {
-    method: "DELETE",
-  });
+  const res = await deleteRecipeItem(id);
   if (res.ok) {
     setRecipe(recipe.filter(r => r.id !== id));
   } else {
@@ -32,75 +32,41 @@ const handleDelete = async (id) => {
   }
 };
 
-  // Pobierz przepis dla wybranego produktu
-  useEffect(() => {
-    if (selectedProduct) {
-      setLoading(true);
-      fetch(`/api/product-recipe/${selectedProduct}/`)
-        .then(res => res.json())
-        .then(data => {
-          setRecipe(data);
-          setLoading(false);
-        });
-    } else {
-      setRecipe([]);
-    }
-  }, [selectedProduct]);
-
-  // Ustaw ilość jeśli materiał już istnieje w przepisie
-  useEffect(() => {
-    if (selectedMaterial && recipe.length > 0) {
-      const found = recipe.find(r => String(r.material) === String(selectedMaterial));
-      if (found) {
-        setQuantity(found.quantity_needed);
-      } else {
-        setQuantity(1);
-      }
-    }
-  }, [selectedMaterial, recipe]);
-
-  // Dodaj lub edytuj materiał w produkcie
-  const handleAdd = async (e) => {
-    e.preventDefault();
-    if (!selectedProduct || !selectedMaterial || quantity <= 0) return;
-    const found = recipe.find(r => String(r.material) === String(selectedMaterial));
-    if (found) {
-      // Edycja: PATCH
-      const res = await fetch(`/api/parts-builder/${found.id}/`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          quantity_needed: quantity,
-        }),
+useEffect(() => {
+  if (selectedProduct) {
+    setLoading(true);
+    fetchRecipe(selectedProduct)
+      .then(data => {
+        setRecipe(data);
+        setLoading(false);
       });
-      if (!res.ok) {
-        alert("Błąd edycji ilości materiału.");
-        return;
-      }
-    } else {
-      // Dodanie: POST
-      const res = await fetch("/api/parts-builder/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product: selectedProduct,
-          material: selectedMaterial,
-          quantity_needed: quantity,
-        }),
-      });
-      if (!res.ok) {
-        alert("Błąd dodawania materiału do produktu.");
-        return;
-      }
-    }
-    // Odśwież przepis
-    fetch(`/api/product-recipe/${selectedProduct}/`)
-      .then(res => res.json())
-      .then(setRecipe);
-    setSelectedMaterial("");
-    setQuantity(1);
-  };
+  } else {
+    setRecipe([]);
+  }
+}, [selectedProduct]);
 
+const handleAdd = async (e) => {
+  e.preventDefault();
+  if (!selectedProduct || !selectedMaterial || quantity <= 0) return;
+  const found = recipe.find(r => String(r.material) === String(selectedMaterial));
+  let res;
+  if (found) {
+    res = await patchRecipeItem(found.id, quantity);
+    if (!res.ok) {
+      alert("Błąd edycji ilości materiału.");
+      return;
+    }
+  } else {
+    res = await postRecipeItem(selectedProduct, selectedMaterial, quantity);
+    if (!res.ok) {
+      alert("Błąd dodawania materiału do produktu.");
+      return;
+    }
+  }
+  fetchRecipe(selectedProduct).then(setRecipe);
+  setSelectedMaterial("");
+  setQuantity(1);
+};
   // Sprawdź czy wybrany materiał już jest w przepisie
   const isEdit = !!recipe.find(r => String(r.material) === String(selectedMaterial));
 

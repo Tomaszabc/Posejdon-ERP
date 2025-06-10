@@ -10,8 +10,9 @@ import Home from "./pages/Home";
 import ProtectedRoute from "./ProtectedRoute";
 import Production from "./pages/Production/Production";
 import Warehouse from "./pages/Warehouse/Warehouse";
-import PartsBuilder from "./pages/Warehouse/PartsBuilder";
-import ProductsAndGoods from "./pages/Warehouse/ProductsAndGoods";
+
+import PartsBuilder from "./pages/Warehouse/PartsBuilder/PartsBuilder.js";
+import ProductsAndGoods from "./pages/Warehouse/ProductsAndGoods/ProductsAndGoods.js";
 import WarehouseIndex from "./pages/Warehouse/WarehouseIndex";
 
 function App() {
