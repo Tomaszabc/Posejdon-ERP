@@ -19,6 +19,19 @@ export default function PartsBuilder() {
       .then(setMaterials);
   }, []);
 
+  // Dodaj funkcję do usuwania materiału z przepisu
+const handleDelete = async (id) => {
+  if (!window.confirm("Czy na pewno chcesz usunąć ten materiał z przepisu?")) return;
+  const res = await fetch(`/api/parts-builder/${id}/`, {
+    method: "DELETE",
+  });
+  if (res.ok) {
+    setRecipe(recipe.filter(r => r.id !== id));
+  } else {
+    alert("Błąd usuwania materiału.");
+  }
+};
+
   // Pobierz przepis dla wybranego produktu
   useEffect(() => {
     if (selectedProduct) {
@@ -34,30 +47,62 @@ export default function PartsBuilder() {
     }
   }, [selectedProduct]);
 
-  // Dodaj materiał do produktu
+  // Ustaw ilość jeśli materiał już istnieje w przepisie
+  useEffect(() => {
+    if (selectedMaterial && recipe.length > 0) {
+      const found = recipe.find(r => String(r.material) === String(selectedMaterial));
+      if (found) {
+        setQuantity(found.quantity_needed);
+      } else {
+        setQuantity(1);
+      }
+    }
+  }, [selectedMaterial, recipe]);
+
+  // Dodaj lub edytuj materiał w produkcie
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!selectedProduct || !selectedMaterial || quantity <= 0) return;
-    const res = await fetch("/api/parts-builder/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        product: selectedProduct,
-        material: selectedMaterial,
-        quantity_needed: quantity,
-      }),
-    });
-    if (res.ok) {
-      // Odśwież przepis
-      fetch(`/api/product-recipe/${selectedProduct}/`)
-        .then(res => res.json())
-        .then(setRecipe);
-      setSelectedMaterial("");
-      setQuantity(1);
+    const found = recipe.find(r => String(r.material) === String(selectedMaterial));
+    if (found) {
+      // Edycja: PATCH
+      const res = await fetch(`/api/parts-builder/${found.id}/`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quantity_needed: quantity,
+        }),
+      });
+      if (!res.ok) {
+        alert("Błąd edycji ilości materiału.");
+        return;
+      }
     } else {
-      alert("Błąd dodawania materiału do produktu.");
+      // Dodanie: POST
+      const res = await fetch("/api/parts-builder/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product: selectedProduct,
+          material: selectedMaterial,
+          quantity_needed: quantity,
+        }),
+      });
+      if (!res.ok) {
+        alert("Błąd dodawania materiału do produktu.");
+        return;
+      }
     }
+    // Odśwież przepis
+    fetch(`/api/product-recipe/${selectedProduct}/`)
+      .then(res => res.json())
+      .then(setRecipe);
+    setSelectedMaterial("");
+    setQuantity(1);
   };
+
+  // Sprawdź czy wybrany materiał już jest w przepisie
+  const isEdit = !!recipe.find(r => String(r.material) === String(selectedMaterial));
 
   return (
     <div className="max-w-3xl mx-auto py-10">
@@ -83,21 +128,27 @@ export default function PartsBuilder() {
         </select>
       </div>
 
-      {/* Formularz dodawania materiału */}
+      {/* Formularz dodawania/edycji materiału */}
       {selectedProduct && (
         <form onSubmit={handleAdd} className="mb-8 flex gap-4 items-end">
           <div className="flex-1">
-            <label className="block mb-1 font-medium">Materiał:</label>
+            <label className="block mb-1 font-medium flex items-center gap-4">
+              Materiał:
+              <span className="text-sm font-normal flex items-center gap-2">
+                <span title="Materiał" className="flex items-center"><span role="img" aria-label="materiał">🧱</span> Materiał</span>
+                <span title="Towar" className="flex items-center"><span role="img" aria-label="towar">📦</span> Towar</span>
+              </span>
+            </label>
             <select
               className="w-full border px-3 py-2 rounded"
               value={selectedMaterial}
               onChange={e => setSelectedMaterial(e.target.value)}
               required
             >
-              <option value="">-- wybierz materiał --</option>
+              <option value="">-- wybierz materiał lub towar --</option>
               {materials.map(mat => (
                 <option key={mat.id} value={mat.id}>
-                  {mat.full_name}
+                  {mat.r === "Materiał" ? "🧱" : mat.r === "Towar" ? "📦" : "🔧"} {mat.full_name}
                 </option>
               ))}
             </select>
@@ -116,9 +167,9 @@ export default function PartsBuilder() {
           </div>
           <button
             type="submit"
-            className="bg-ocean-600 text-white px-6 py-2 rounded hover:bg-ocean-700"
+            className={`px-6 py-2 rounded text-white ${isEdit ? "bg-yellow-600 hover:bg-yellow-700" : "bg-ocean-600 hover:bg-ocean-700"}`}
           >
-            Dodaj materiał
+            {isEdit ? "Edytuj ilość" : "Dodaj materiał"}
           </button>
         </form>
       )}
@@ -143,14 +194,31 @@ export default function PartsBuilder() {
               </thead>
               <tbody>
                 {recipe.map(row => (
-                  <tr key={row.id}>
-                    <td className="px-3 py-2">{row.material_name}</td>
+                    <tr key={row.id}>
+                    <td className="px-3 py-2 flex items-center gap-2">
+                        {row.material_r === "Materiał" ? (
+                        <span role="img" aria-label="materiał" title="Materiał">🧱</span>
+                        ) : row.material_r === "Towar" ? (
+                        <span role="img" aria-label="towar" title="Towar">📦</span>
+                        ) : (
+                        <span role="img" aria-label="element" title="Inny">🔧</span>
+                        )}
+                        {row.material_name}
+                        <button
+                        type="button"
+                        onClick={() => handleDelete(row.id)}
+                        className="ml-2 text-red-600 hover:text-red-800 font-bold"
+                        title="Usuń materiał"
+                        >
+                        ×
+                        </button>
+                    </td>
                     <td className="px-3 py-2 text-right">{row.quantity_needed}</td>
                     <td className="px-3 py-2 text-right">{row.material_unit}</td>
                     <td className="px-3 py-2 text-right">{row.material_price} zł</td>
-                  </tr>
+                    </tr>
                 ))}
-              </tbody>
+                </tbody>
             </table>
           )}
         </div>

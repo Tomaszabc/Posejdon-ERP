@@ -34,6 +34,7 @@ class MerchandiseSerializer(serializers.ModelSerializer):
 
 class PartsBuilderSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.full_name', read_only=True)
+    material_r = serializers.CharField(source='material.r', read_only=True)
     product_sku = serializers.CharField(source='product.catalog_index', read_only=True)
     material_name = serializers.CharField(source='material.full_name', read_only=True)
     material_unit = serializers.CharField(source='material.unit', read_only=True)
@@ -45,7 +46,7 @@ class PartsBuilderSerializer(serializers.ModelSerializer):
         model = PartsBuilder
         fields = [
             'id', 'product', 'product_name', 'product_sku',
-            'material', 'material_name', 'material_unit', 'material_price', 'material_stock',
+            'material', 'material_name', 'material_unit', 'material_price', 'material_stock', 'material_r',
             'quantity_needed', 'total_cost', 'notes', 'created_at', 'updated_at'
         ]
         
