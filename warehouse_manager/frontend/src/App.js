@@ -10,6 +10,8 @@ import Home from "./pages/Home";
 import ProtectedRoute from "./ProtectedRoute";
 import Production from "./pages/Production/Production";
 import Warehouse from "./pages/Warehouse/Warehouse";
+import PartsBuilder from "./pages/Warehouse/PartsBuilder";
+
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -81,6 +83,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/warehouse/parts-builder" element={<PartsBuilder />} />
             {/* ...inne chronione trasy w ten sam sposób... */}
           </Routes>
         </main>

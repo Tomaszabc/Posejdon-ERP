@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Warehouse() {
   const [components, setComponents] = useState([]);
@@ -263,7 +264,15 @@ const exportToCSV = () => {
   }
 
   return (
+    
     <div className="max-w-full mx-auto px-4 py-8">
+         {/* Link do Parts Buildera */}
+      <Link
+        to="/warehouse/parts-builder"
+        className="inline-block mt-4 px-4 py-2 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 transition"
+      >
+        Przypisz części do produktu (Parts Builder)
+      </Link>
       {/* Header */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
@@ -999,6 +1008,8 @@ const exportToCSV = () => {
           Wyświetlono {components.length} pozycji magazynowych • Przewiń w prawo, aby zobaczyć wszystkie kolumny
         </div>
       )}
+
+     
     </div>
   );
 }

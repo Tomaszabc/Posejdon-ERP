@@ -134,3 +134,13 @@ class ProductToProduction(models.Model):
 
     def __str__(self):
         return f"{self.component.full_name} ({self.component.catalog_index}) x {self.quantity}"
+
+class ProductToProductionComponent(models.Model):
+    product_to_production = models.ForeignKey(
+        ProductToProduction, on_delete=models.CASCADE, related_name="components"
+    )
+    component = models.ForeignKey(Component, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.product_to_production} - {self.component} x {self.quantity}"
