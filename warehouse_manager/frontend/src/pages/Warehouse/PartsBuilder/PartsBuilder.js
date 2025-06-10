@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ConfirmModal from "./ConfirmModal";
+import ConfirmAddModal from "./ConfirmAddModal";
+import ConfirmEditModal from "./ConfirmEditModal";
 
 import {
   fetchProducts,
@@ -19,6 +21,7 @@ export default function PartsBuilder() {
   const [recipe, setRecipe] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({ open: false, action: null, payload: null });
+
 
 useEffect(() => {
   fetchProducts().then(setProducts);
@@ -57,27 +60,15 @@ useEffect(() => {
   }
 }, [selectedProduct]);
 
-const handleAdd = async (e) => {
+const handleAdd = (e) => {
   e.preventDefault();
   if (!selectedProduct || !selectedMaterial || quantity <= 0) return;
   const found = recipe.find(r => String(r.material) === String(selectedMaterial));
-  let res;
-  if (found) {
-    res = await patchRecipeItem(found.id, quantity);
-    if (!res.ok) {
-      alert("Błąd edycji ilości materiału.");
-      return;
-    }
-  } else {
-    res = await postRecipeItem(selectedProduct, selectedMaterial, quantity);
-    if (!res.ok) {
-      alert("Błąd dodawania materiału do produktu.");
-      return;
-    }
-  }
-  fetchRecipe(selectedProduct).then(setRecipe);
-  setSelectedMaterial("");
-  setQuantity(1);
+  setModal({
+    open: true,
+    action: found ? "edit" : "add",
+    payload: { materialId: selectedMaterial, quantity }
+  });
 };
   // Sprawdź czy wybrany materiał już jest w przepisie
   const isEdit = !!recipe.find(r => String(r.material) === String(selectedMaterial));
@@ -87,8 +78,53 @@ const getMaterialNameById = (id) => {
   return row ? row.material_name : "";
 };
 
+const confirmAdd = async () => {
+  const { materialId, quantity } = modal.payload;
+  const res = await postRecipeItem(selectedProduct, materialId, quantity);
+  if (!res.ok) {
+    alert("Błąd dodawania materiału do produktu.");
+    setModal({ open: false, action: null, payload: null });
+    return;
+  }
+  fetchRecipe(selectedProduct).then(setRecipe);
+  setSelectedMaterial("");
+  setQuantity(1);
+  setModal({ open: false, action: null, payload: null });
+};
+
+const confirmEdit = async () => {
+  const { materialId, quantity } = modal.payload;
+  const found = recipe.find(r => String(r.material) === String(materialId));
+  if (!found) return;
+  const res = await patchRecipeItem(found.id, quantity);
+  if (!res.ok) {
+    alert("Błąd edycji ilości materiału.");
+    setModal({ open: false, action: null, payload: null });
+    return;
+  }
+  fetchRecipe(selectedProduct).then(setRecipe);
+  setSelectedMaterial("");
+  setQuantity(1);
+  setModal({ open: false, action: null, payload: null });
+};
+
   return (
     <>
+      <ConfirmAddModal
+  open={modal.open && modal.action === "add"}
+  materialName={materials.find(m => String(m.id) === String(modal.payload?.materialId))?.full_name || ""}
+  quantity={modal.payload?.quantity}
+  onConfirm={confirmAdd}
+  onCancel={() => setModal({ open: false, action: null, payload: null })}
+/>
+<ConfirmEditModal
+  open={modal.open && modal.action === "edit"}
+  materialName={materials.find(m => String(m.id) === String(modal.payload?.materialId))?.full_name || ""}
+  quantity={modal.payload?.quantity}
+  onConfirm={confirmEdit}
+  onCancel={() => setModal({ open: false, action: null, payload: null })}
+/>
+
       <ConfirmModal
         open={modal.open && modal.action === "delete"}
         title="Potwierdź usunięcie"
