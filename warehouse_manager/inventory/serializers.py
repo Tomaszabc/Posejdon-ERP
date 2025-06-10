@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Order, Component, DiffusorType, ProductToProduction
+from .models import Order, Component, DiffusorType, ProductToProduction, Merchandise
 
 
 
@@ -26,3 +26,8 @@ class ProductToProductionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductToProduction
         fields = ['id', 'component', 'component_full_name', 'component_catalog_index', 'quantity', 'created_at', 'is_produced', 'produced_at']
+
+class MerchandiseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Merchandise
+        fields = '__all__'
