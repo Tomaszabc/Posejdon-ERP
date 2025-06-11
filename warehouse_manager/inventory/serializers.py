@@ -1,9 +1,6 @@
 from rest_framework import serializers
 from .models import Order, Component, DiffusorType, ProductToProduction, Merchandise,  PartsBuilder
 
-
-
-
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order

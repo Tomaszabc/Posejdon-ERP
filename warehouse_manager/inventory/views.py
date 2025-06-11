@@ -1,39 +1,34 @@
+import csv
+from decimal import Decimal
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from .models import Product, Order
 from django.utils import timezone
 from django.contrib import messages
-from rest_framework import viewsets
-from .models import Order
-from .serializers import OrderSerializer
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import generics
-from .models import Component
-from .serializers import ComponentSerializer
-import csv
-from decimal import Decimal
-from rest_framework.decorators import api_view, permission_classes, parser_classes
+from django.http import JsonResponse
+
+from rest_framework import viewsets, generics
+from rest_framework.decorators import (
+    api_view, permission_classes, parser_classes
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
-from .models import Component
-from .models import DiffusorType
-from .serializers import DiffusorTypeSerializer
-from .models import ProductToProduction
-from .serializers import ProductToProductionSerializer
-from django.http import JsonResponse
-from .models import Merchandise
-from .serializers import MerchandiseSerializer
-from .models import PartsBuilder
-from .serializers import PartsBuilderSerializer
 
+from .models import (
+    Product, Order, Component, DiffusorType, ProductToProduction,
+    Merchandise, PartsBuilder
+)
+from .serializers import (
+    OrderSerializer, ComponentSerializer, DiffusorTypeSerializer,
+    ProductToProductionSerializer, MerchandiseSerializer, PartsBuilderSerializer
+)
+
+# --- Django views ---
 
 def index(request):
     return render(request, "inventory/index.html")
-
 
 def product_order(request):
     diameters = [d[0] for d in Product.DIAMETER_CHOICES]
@@ -56,7 +51,7 @@ def product_order(request):
             messages.success(request, "Zamówienie zostało dodane!")
             return redirect("inventory:product_order")
         except ValidationError as e:
-            errors = e.message_dict  # <-- przekazujesz błędy
+            errors = e.message_dict
 
     orders = Order.objects.order_by("-created_at")[:10]
     return render(
@@ -68,29 +63,24 @@ def product_order(request):
             "sizes": sizes,
             "colors": colors,
             "orders": orders,
-            "errors": errors,  # <-- zawsze przekazujesz errors
+            "errors": errors,
         },
     )
-
 
 @login_required
 def user_profile(request):
     return render(request, "account/user_profile.html")
-
 
 def delete_order(request, order_id):
     if request.method == "POST":
         order = get_object_or_404(Order, id=order_id)
         order.delete()
         messages.success(request, "Zamówienie zostało usunięte!")
-    return redirect("inventory:product_order")  
-
+    return redirect("inventory:product_order")
 
 def product_production(request):
     orders = Order.objects.filter(is_produced=False).order_by("created_at")
-    produced_orders = Order.objects.filter(is_produced=True).order_by("-produced_at")[
-        :10
-    ]
+    produced_orders = Order.objects.filter(is_produced=True).order_by("-produced_at")[:10]
     if request.method == "POST":
         order_id = request.POST.get("order_id")
         order = get_object_or_404(Order, id=order_id)
@@ -107,6 +97,9 @@ def product_production(request):
         },
     )
 
+# --- DRF ViewSets & API views ---
+
+# Orders
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all().order_by('-created_at')
     serializer_class = OrderSerializer
@@ -151,6 +144,7 @@ def undo_produce_order(request):
     except Order.DoesNotExist:
         return Response({"error": "Nie znaleziono zamówienia"}, status=404)
 
+# Components
 class ComponentListCreateView(generics.ListCreateAPIView):
     queryset = Component.objects.all()
     serializer_class = ComponentSerializer
@@ -171,7 +165,6 @@ def import_components_csv(request):
         return Response({"error": "Nie przesłano pliku."}, status=400)
 
     decoded_file = file.read().decode('utf-8').splitlines()
-    # Wykrywanie separatora
     first_line = decoded_file[0]
     delimiter = ';' if first_line.count(';') > first_line.count(',') else ','
     reader = csv.DictReader(decoded_file, delimiter=delimiter)
@@ -221,22 +214,19 @@ def import_components_csv(request):
 
     return Response({"success": True, "imported": count})
 
-
 @api_view(['GET'])
 def diffusor_types_list(request):
     types = DiffusorType.objects.all()
     serializer = DiffusorTypeSerializer(types, many=True)
     return Response(serializer.data)
 
-
-
 @api_view(['GET'])
 def components_for_order(request):
-    # Tylko te z r="Produkt"
     queryset = Component.objects.filter(r="Produkt")
     serializer = ComponentSerializer(queryset, many=True)
     return Response(serializer.data)
 
+# ProductToProduction
 class ProductToProductionListCreateView(generics.ListCreateAPIView):
     queryset = ProductToProduction.objects.all().order_by('-created_at')
     serializer_class = ProductToProductionSerializer
@@ -250,7 +240,6 @@ def delete_product_to_production(request, pk):
     except ProductToProduction.DoesNotExist:
         return Response(status=404)
 
-
 @api_view(['POST'])
 def produce_product_to_production(request, order_id):
     try:
@@ -259,6 +248,9 @@ def produce_product_to_production(request, order_id):
             order.is_produced = True
             order.produced_at = timezone.now()
             order.save()
+            component = order.component
+            component.stock += order.quantity
+            component.save()
         return Response({"success": True})
     except ProductToProduction.DoesNotExist:
         return Response({"error": "Order not found"}, status=404)
@@ -271,10 +263,16 @@ def undo_product_to_production(request, order_id):
             order.is_produced = False
             order.produced_at = None
             order.save()
+            component = order.component
+            component.stock -= order.quantity
+            if component.stock < 0:
+                component.stock = 0
+            component.save()
         return Response({"success": True})
     except ProductToProduction.DoesNotExist:
         return Response({"error": "Order not found"}, status=404)
 
+# Merchandise
 class MerchandiseViewSet(viewsets.ModelViewSet):
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
@@ -303,7 +301,6 @@ def import_merchandise_csv(request):
         def val(val):
             return val.strip() if val else ''
 
-        # Importuj tylko jeśli R == "Materiał"
         if val(row.get('R')) != 'Materiał':
             continue
 
@@ -346,11 +343,11 @@ def import_merchandise_csv(request):
 
 @api_view(['GET'])
 def materials_for_parts(request):
-    # Tylko materiały dla Parts Builder
     queryset = Component.objects.filter(r__in=["Materiał", "Towar"])
     serializer = ComponentSerializer(queryset, many=True)
     return Response(serializer.data)
 
+# PartsBuilder
 class PartsBuilderViewSet(viewsets.ModelViewSet):
     queryset = PartsBuilder.objects.all().select_related('product', 'material').order_by('-created_at')
     serializer_class = PartsBuilderSerializer
@@ -373,19 +370,19 @@ def calculate_production_needs(request):
     """
     product_id = request.data.get('product_id')
     quantity = request.data.get('quantity', 1)
-    
+
     if not product_id:
         return Response({"error": "Brak product_id"}, status=400)
-    
+
     try:
         parts = PartsBuilder.objects.filter(product_id=product_id).select_related('material')
         needs = []
-        
+
         for part in parts:
             needed_quantity = part.quantity_needed * Decimal(str(quantity))
             available = part.material.stock
             shortage = max(0, needed_quantity - available)
-            
+
             needs.append({
                 'material_id': part.material.id,
                 'material_name': part.material.full_name,
@@ -397,12 +394,12 @@ def calculate_production_needs(request):
                 'cost_per_unit': part.material.purchase_price_net,
                 'total_cost': part.material.purchase_price_net * needed_quantity
             })
-            
+
         return Response({
             'product_quantity': quantity,
             'materials_needed': needs,
             'total_cost': sum(item['total_cost'] for item in needs)
         })
-        
+
     except Exception as e:
         return Response({"error": str(e)}, status=400)
