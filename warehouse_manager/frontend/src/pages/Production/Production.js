@@ -5,6 +5,7 @@ import UndoModal from "./UndoModal";
 import SuccessModal from "./SuccessModal";
 import ConfirmProductionModal from "./ConfirmProductionModal";
 import UndoSuccessModal from "./UndoSuccessModal";
+import ErrorModal from "../../components/MissingErrorModal"; // dostosuj ścieżkę
 
 
 export default function Production() {
@@ -27,6 +28,7 @@ export default function Production() {
     sku: "",
     quantity: ""
   });
+  const [errorModal, setErrorModal] = useState({ show: false, message: "" });
 
   
   // Effect do filtrowania
@@ -94,7 +96,7 @@ const confirmProduce = () => {
     .then(res => res.json().then(data => ({ ok: res.ok, data })))
     .then(({ ok, data }) => {
       if (!ok) {
-        alert(data.error || "Błąd produkcji");
+        setErrorModal({ show: true, message: data.error || "Błąd produkcji"});
         return;
       }
       setShowSuccess(true);
@@ -104,7 +106,7 @@ const confirmProduce = () => {
       fetchOrders();
     })
     .catch(error => {
-      alert(error.message);
+      setErrorModal({ show: true, message: error.message });
     });
 };
 
@@ -185,6 +187,11 @@ const confirmProduce = () => {
       />
       <SuccessModal show={showSuccess} />
       <UndoSuccessModal show={showUndoSuccess} />
+      <ErrorModal
+        show={errorModal.show}
+        message={errorModal.message}
+        onClose={() => setErrorModal({ show: false, message: "" })}
+      />  
     </div>
   );
 }
