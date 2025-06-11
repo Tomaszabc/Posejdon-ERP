@@ -95,10 +95,14 @@ const confirmProduce = () => {
   fetch(`/api/production/produce/${orderToConfirm.id}/`, { method: "POST" })
     .then(res => res.json().then(data => ({ ok: res.ok, data })))
     .then(({ ok, data }) => {
-      if (!ok) {
-        setErrorModal({ show: true, message: data.error || "Błąd produkcji"});
-        return;
-      }
+  if (!ok) {
+    setErrorModal({
+      show: true,
+      message: data.error || "Błąd produkcji",
+      missing: data.missing || []
+    });
+    return;
+  }
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1000);
       setShowConfirmModal(false);
@@ -190,8 +194,9 @@ const confirmProduce = () => {
       <ErrorModal
         show={errorModal.show}
         message={errorModal.message}
-        onClose={() => setErrorModal({ show: false, message: "" })}
-      />  
+        missing={errorModal.missing}
+        onClose={() => setErrorModal({ show: false, message: "", missing: [] })}
+      />
     </div>
   );
 }

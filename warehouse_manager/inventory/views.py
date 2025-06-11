@@ -253,12 +253,18 @@ def produce_product_to_production(request, order_id):
                 material = part.material
                 qty_to_substract = part.quantity_needed * order.quantity
                 if material.stock - qty_to_substract < 0:
-                    missing.append(
-                        f"{material.full_name} (SKU: {material.catalog_index})"
-                    )
+                    missing.append({
+                        "name": material.full_name,
+                        "sku": material.catalog_index,
+                        "needed": float(qty_to_substract),
+                        "available": float(material.stock),
+                        "missing_qty": float(qty_to_substract - material.stock),
+                        "unit": material.unit,
+                })
             if missing:
                 return Response({
-                    "error": "Brak wystarczającej ilości materiałów:\n" + "\n".join(missing)
+                    "missing": missing,
+                    "error": "Brak wystarczającej ilości materiałów."
                 }, status=400)
             # 2. Jeśli wszystko OK, dopiero wtedy wykonaj produkcję
             order.is_produced = True
