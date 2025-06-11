@@ -90,17 +90,13 @@ export default function Production() {
 const confirmProduce = () => {
   if (!orderToConfirm) return;
 
-  fetch(`http://127.0.0.1:8000/api/production/produce/${orderToConfirm.id}/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    }
-  })
-    .then(res => {
-      if (!res.ok) throw new Error("Błąd podczas oznaczania jako wyprodukowane");
-      return res.json();
-    })
-    .then(() => {
+  fetch(`/api/production/produce/${orderToConfirm.id}/`, { method: "POST" })
+    .then(res => res.json().then(data => ({ ok: res.ok, data })))
+    .then(({ ok, data }) => {
+      if (!ok) {
+        alert(data.error || "Błąd produkcji");
+        return;
+      }
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1000);
       setShowConfirmModal(false);

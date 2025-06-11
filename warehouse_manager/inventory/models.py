@@ -88,6 +88,10 @@ class Component(models.Model):
     r = models.CharField(max_length=10, blank=True, null=True)  # R
     full_name = models.CharField(max_length=255)  # Nazwa cała
     stock = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # Stan
+    def save(self, *args, **kwargs):
+        if self.stock < 0:
+            self.stock = 0
+        super().save(*args, **kwargs)
     available_quantity = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # Ilość dostępna
     unit = models.CharField(max_length=10)  # j.m.
     purchase_price_net = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # Cena zakupu netto
