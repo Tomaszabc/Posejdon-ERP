@@ -251,6 +251,12 @@ def produce_product_to_production(request, order_id):
             component = order.component
             component.stock += order.quantity
             component.save()
+            parts = PartsBuilder.objects.filter(product=component)
+            for part in parts:
+                material = part.material
+                qty_to_substract = part.quantity_needed * order.quantity
+                material.stock -= qty_to_substract
+                material.save()
         return Response({"success": True})
     except ProductToProduction.DoesNotExist:
         return Response({"error": "Order not found"}, status=404)
@@ -265,9 +271,14 @@ def undo_product_to_production(request, order_id):
             order.save()
             component = order.component
             component.stock -= order.quantity
-            if component.stock < 0:
-                component.stock = 0
             component.save()
+
+            parts = PartsBuilder.objects.filter(product=component)
+            for part in parts:
+                material = part.material
+                qty_to_restore = part.quantity_needed * order.quantity
+                material.stock += qty_to_restore
+                material.save()
         return Response({"success": True})
     except ProductToProduction.DoesNotExist:
         return Response({"error": "Order not found"}, status=404)
