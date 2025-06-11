@@ -14,6 +14,7 @@ import Warehouse from "./pages/Warehouse/Warehouse";
 import PartsBuilder from "./pages/Warehouse/PartsBuilder/PartsBuilder.js";
 import ProductsAndGoods from "./pages/Warehouse/ProductsAndGoods/ProductsAndGoods.js";
 import WarehouseIndex from "./pages/Warehouse/WarehouseIndex";
+import OrderDetail from "./pages/OrderDetails/OrderDetail";
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -95,6 +96,7 @@ function App() {
             />
             <Route path="/warehouse/parts-builder" element={<PartsBuilder />} />
             <Route path="/warehouse/products" element={<ProductsAndGoods />} />
+            <Route path="/order/:orderId" element={<OrderDetail />} />
             {/* ...inne chronione trasy w ten sam sposób... */}
           </Routes>
         </main>

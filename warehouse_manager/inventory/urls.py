@@ -6,7 +6,7 @@ from .views import (
     OrderViewSet, production_orders, produce_order, undo_produce_order,
     ComponentListCreateView, ComponentDetailView, import_components_csv,
     diffusor_types_list, components_for_order, ProductToProductionListCreateView,
-    delete_product_to_production, import_merchandise_csv, MerchandiseViewSet
+    import_merchandise_csv, MerchandiseViewSet
 )
 
 router = routers.DefaultRouter()
@@ -35,9 +35,10 @@ urlpatterns = [
     path('api/product-recipe/<int:product_id>/', views.product_recipe, name='product_recipe'),
     path('api/calculate-production-needs/', views.calculate_production_needs, name='calculate_production_needs'),
     path('api/product-to-production/', ProductToProductionListCreateView.as_view(), name='product-to-production-list-create'),
-    path('api/product-to-production/<int:pk>/', delete_product_to_production, name='delete-product-to-production'),
+    path('api/product-to-production/<int:order_id>/', views.product_to_production_detail),  # GET i DELETE w jednym
     path('api/production/produce/<int:order_id>/', views.produce_product_to_production, name='produce_product_to_production'),
     path('api/production/undo/<int:order_id>/', views.undo_product_to_production, name='undo_product_to_production'),
+    path('api/product-parts/<int:component_id>/', views.product_parts),
     path("api/merchandise/import/", import_merchandise_csv, name="merchandise-import"),
     path('diffusor-types/', diffusor_types_list),
     

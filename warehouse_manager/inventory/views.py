@@ -231,14 +231,7 @@ class ProductToProductionListCreateView(generics.ListCreateAPIView):
     queryset = ProductToProduction.objects.all().order_by('-created_at')
     serializer_class = ProductToProductionSerializer
 
-@api_view(['DELETE'])
-def delete_product_to_production(request, pk):
-    try:
-        product = ProductToProduction.objects.get(pk=pk)
-        product.delete()
-        return Response(status=204)
-    except ProductToProduction.DoesNotExist:
-        return Response(status=404)
+
 
 @api_view(['POST'])
 def produce_product_to_production(request, order_id):
@@ -434,3 +427,33 @@ def calculate_production_needs(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=400)
+
+
+@api_view(['GET'])
+def product_parts(request, component_id):
+    parts = PartsBuilder.objects.filter(product_id=component_id)
+    data = [
+        {
+            "id": part.id,
+            "material_full_name": part.material.full_name,
+            "material_catalog_index": part.material.catalog_index,
+            "quantity_needed": float(part.quantity_needed),
+            "material_unit": part.material.unit,
+        }
+        for part in parts
+    ]
+    return Response(data)
+
+
+@api_view(['GET', 'DELETE'])
+def product_to_production_detail(request, order_id):
+    try:
+        order = ProductToProduction.objects.get(id=order_id)
+        if request.method == 'GET':
+            serializer = ProductToProductionSerializer(order)
+            return Response(serializer.data)
+        elif request.method == 'DELETE':
+            order.delete()
+            return Response({"message": "Order deleted successfully"}, status=204)
+    except ProductToProduction.DoesNotExist:
+        return Response({"error": "Order not found"}, status=404)
