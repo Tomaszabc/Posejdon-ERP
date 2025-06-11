@@ -247,14 +247,19 @@ def produce_product_to_production(request, order_id):
         if not order.is_produced:
             component = order.component
             parts = PartsBuilder.objects.filter(product=component)
+            missing = []
             # 1. Najpierw sprawdź wszystkie stany magazynowe
             for part in parts:
                 material = part.material
                 qty_to_substract = part.quantity_needed * order.quantity
                 if material.stock - qty_to_substract < 0:
-                    return Response({
-                        "error": f"Brak wystarczającej ilości materiału: {material.full_name} (SKU: {material.catalog_index})"
-                    }, status=400)
+                    missing.append(
+                        f"{material.full_name} (SKU: {material.catalog_index})"
+                    )
+            if missing:
+                return Response({
+                    "error": "Brak wystarczającej ilości materiałów:\n" + "\n".join(missing)
+                }, status=400)
             # 2. Jeśli wszystko OK, dopiero wtedy wykonaj produkcję
             order.is_produced = True
             order.produced_at = timezone.now()
