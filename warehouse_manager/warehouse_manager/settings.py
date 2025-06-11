@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'rest_framework',
     "dj_rest_auth",
     'rest_framework.authtoken',
+    'channels',
 ]
 # --------------------------------------
 
@@ -97,6 +98,7 @@ TEMPLATES = [
 # --------------------------------------
 
 WSGI_APPLICATION = "warehouse_manager.wsgi.application"
+ASGI_APPLICATION = "warehouse_manager.asgi.application"
 
 DATABASES = {
     "default": {
@@ -152,4 +154,10 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=10),  # np. 2 godziny
     "REFRESH_TOKEN_LIFETIME": timedelta(days=20),  # np. 7 dni
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # do testów, do produkcji użyj Redis
+    },
 }
