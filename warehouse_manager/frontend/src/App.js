@@ -15,6 +15,8 @@ import PartsBuilder from './pages/Warehouse/PartsBuilder/PartsBuilder.js';
 import ProductsAndGoods from './pages/Warehouse/ProductsAndGoods/ProductsAndGoods.js';
 import WarehouseIndex from './pages/Warehouse/WarehouseIndex';
 import OrderDetail from './pages/OrderDetails/OrderDetail';
+import PartsBuilderIndex from './pages/Warehouse/PartsBuilder/PartsBuilderIndex';
+import ComponentsBuilder from './pages/Warehouse/PartsBuilder/ComponentsBuilder';
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -94,9 +96,12 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/warehouse/parts-builder" element={<PartsBuilder />} />
+            <Route path="/warehouse/parts-builder" element={<PartsBuilderIndex />} />
             <Route path="/warehouse/products" element={<ProductsAndGoods />} />
             <Route path="/order/:orderId" element={<OrderDetail />} />
+            
+            <Route path="/warehouse/parts-builder/parts" element={<PartsBuilder />} />
+            <Route path="/warehouse/parts-builder/components" element={<ComponentsBuilder />} />
             {/* ...inne chronione trasy w ten sam sposób... */}
           </Routes>
         </main>
