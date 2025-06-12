@@ -6,12 +6,12 @@ from .views import (
     OrderViewSet, production_orders, produce_order, undo_produce_order,
     ComponentListCreateView, ComponentDetailView, import_components_csv,
     diffusor_types_list, components_for_order, ProductToProductionListCreateView,
-    import_merchandise_csv, MerchandiseViewSet, components_towar, check_materials_availability,
+     components_towar, check_materials_availability,
 )
 
 router = routers.DefaultRouter()
 router.register(r'orders', OrderViewSet)
-router.register(r'merchandise', MerchandiseViewSet, basename='merchandise')
+
 router.register(r'parts-builder', views.PartsBuilderViewSet)
 
 app_name = "inventory"
@@ -39,7 +39,7 @@ urlpatterns = [
     path('api/production/produce/<int:order_id>/', views.produce_product_to_production, name='produce_product_to_production'),
     path('api/production/undo/<int:order_id>/', views.undo_product_to_production, name='undo_product_to_production'),
     path('api/product-parts/<int:component_id>/', views.product_parts),
-    path("api/merchandise/import/", import_merchandise_csv, name="merchandise-import"),
+   
     path('diffusor-types/', diffusor_types_list),
     path('api/components-towar/', components_towar, name='components-towar'),
     path('api/check-materials-availability/', check_materials_availability),
