@@ -21,7 +21,7 @@ export default function Navbar({ user, setUser }) {
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="text-white font-bold text-xl tracking-wide">
-              E-Posejdon Produkcja
+              E-Posejdon
             </Link>
             {/* Desktop menu */}
             <div className="hidden lg:flex items-center space-x-4">
@@ -36,7 +36,7 @@ export default function Navbar({ user, setUser }) {
                       onClick={() => setSalesDropdownOpen((v) => !v)}
                       className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg flex items-center focus:outline-none"
                     >
-                      Zarządzanie Sprzedażą
+                      Sprzedaż
                       <svg
                         className="ml-2 w-4 h-4"
                         fill="none"
@@ -83,7 +83,7 @@ export default function Navbar({ user, setUser }) {
                     to="/orders"
                     className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg"
                   >
-                    Zamówienie produkcyjne
+                    Zamówienie
                   </Link>
                   <Link
                     to="/production"
@@ -91,8 +91,21 @@ export default function Navbar({ user, setUser }) {
                   >
                     Produkcja
                   </Link>
-                  <a href="/user" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
-                    Moje konto: {user?.username || user?.user_id}
+                  <a href="/user" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg flex items-center">
+                    <svg 
+                      className="w-5 h-5 mr-2" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth="2" 
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
+                      />
+                    </svg>
+                    {user?.username || user?.user_id}
                   </a>
                   <button
                     onClick={handleLogout}
@@ -172,7 +185,7 @@ export default function Navbar({ user, setUser }) {
                       rel="noopener"
                       className="block px-4 py-2 rounded-lg hover:bg-ocean-700"
                     >
-                      Przeglądaj Sprzedaż
+                      Sprzedaż
                     </a>
                   </div>
                 )}
@@ -187,7 +200,20 @@ export default function Navbar({ user, setUser }) {
               <a href="/production" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
                 Produkcja
               </a>
-              <a href="/user" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+              <a href="/user" className="block px-4 py-2 rounded-lg hover:bg-ocean-800 flex items-center">
+                <svg 
+                  className="w-5 h-5 mr-2" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth="2" 
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
+                  />
+                </svg>
                 Moje konto: {user?.username || user?.user_id}
               </a>
               <button
