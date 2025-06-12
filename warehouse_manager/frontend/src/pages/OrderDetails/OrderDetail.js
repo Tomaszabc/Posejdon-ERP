@@ -164,7 +164,7 @@ export default function OrderDetail() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <span className="text-lg font-semibold text-gray-800">
-                          {part.quantity_needed}
+                          {part.quantity_needed * order.quantity}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
