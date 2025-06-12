@@ -1,6 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function OrderList({ orders, openDeleteModal }) {
+  const navigate = useNavigate();
+
   return (
     <div className="w-full overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -31,7 +34,15 @@ export default function OrderList({ orders, openDeleteModal }) {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {orders.map((order) => (
-            <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+            <tr
+              key={order.id}
+              className="hover:bg-gray-50 transition-colors cursor-pointer"
+              onClick={(e) => {
+                if (e.target.closest('button')) return;
+                navigate(`/order/${order.id}`);
+              }}
+              title="Kliknij, aby zobaczyć szczegóły zamówienia"
+            >
               <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
                 {order.id}
               </td>
