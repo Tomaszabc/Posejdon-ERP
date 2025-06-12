@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import OrderDeleteModal from '../../components/modals/OrderDeleteModal';
 
 export default function ComponentProduction() {
   const [form, setForm] = useState({ component: '', quantity: '' });
@@ -8,6 +9,7 @@ export default function ComponentProduction() {
   const [components, setComponents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState(null);
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
 
   useEffect(() => {
     // Pobierz tylko komponenty (r === 'Towar')
@@ -19,7 +21,6 @@ export default function ComponentProduction() {
   useEffect(() => {
     fetchOrders();
   }, []);
-
 
   function fetchOrders() {
     fetch('http://127.0.0.1:8000/api/product-to-production/')
@@ -91,6 +92,8 @@ export default function ComponentProduction() {
       if (res.ok) {
         setOrders(orders.filter((o) => o.id !== orderToDelete.id));
         closeDeleteModal();
+        setShowDeleteSuccess(true);
+        setTimeout(() => setShowDeleteSuccess(false), 1000);
       } else {
         alert('Błąd podczas usuwania zlecenia.');
       }
@@ -244,12 +247,28 @@ export default function ComponentProduction() {
           </div>
         </section>
       </div>
+
       {/* MODALNE */}
-      {/* Możesz dodać modale do potwierdzenia/usuwania jeśli chcesz */}
+      {showModal && orderToDelete && (
+        <OrderDeleteModal
+          order={orderToDelete}
+          onDelete={handleDelete}
+          onCancel={closeDeleteModal}
+        />
+      )}
+
       {showSuccess && (
         <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
           <div className="bg-green-500 text-white px-8 py-4 rounded-xl shadow-lg text-lg font-semibold animate-fade-in-out">
             Dodano zlecenie!
+          </div>
+        </div>
+      )}
+
+      {showDeleteSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="bg-green-500 text-white px-8 py-4 rounded-xl shadow-lg text-lg font-semibold animate-fade-in-out">
+            Zlecenie usunięte!
           </div>
         </div>
       )}
