@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef  } from "react";
 import { Link } from "react-router-dom";
 
 export default function ProductsAndGoods() {
@@ -10,6 +10,19 @@ export default function ProductsAndGoods() {
   const [editingComponent, setEditingComponent] = useState(null);
   const [selectedComponents, setSelectedComponents] = useState(new Set());
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const ws = useRef(null);
+
+  useEffect(() => {
+    ws.current = new window.WebSocket("ws://localhost:8000/ws/warehouse/");
+    ws.current.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.action === "refresh") {
+        fetchComponents(); // <-- odśwież dane magazynowe
+      }
+    };
+    return () => ws.current && ws.current.close();
+  }, []);
 
   // Funkcja do eksportu CSV
   const exportToCSV = () => {

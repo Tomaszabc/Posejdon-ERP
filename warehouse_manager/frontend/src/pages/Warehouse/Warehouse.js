@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef  } from "react";
 import { Link } from "react-router-dom";
+
 
 export default function Warehouse() {
   const [components, setComponents] = useState([]);
@@ -10,6 +11,7 @@ export default function Warehouse() {
   const [editingComponent, setEditingComponent] = useState(null);
   const [selectedComponents, setSelectedComponents] = useState(new Set());
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const ws = useRef(null);
 
   // Funkcja do eksportu CSV
   const exportToCSV = () => {
@@ -110,6 +112,18 @@ export default function Warehouse() {
         setLoading(false);
       });
   };
+
+    useEffect(() => {
+    ws.current = new window.WebSocket("ws://localhost:8000/ws/warehouse/");
+    ws.current.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.action === "refresh") {
+        fetchComponents(); // <-- Twoja funkcja pobierająca stan magazynowy
+      }
+    };
+    return () => ws.current && ws.current.close();
+  }, []);
+
 
   const handleAddComponent = async (e) => {
     e.preventDefault();

@@ -1,8 +1,10 @@
-Django>=3.2,<4.0
-djangorestframework>=3.12,<4.0
+Django>=5.0,<6.0
+djangorestframework>=3.14,<4.0
 psycopg2-binary>=2.9,<3.0
-django-cors-headers>=3.10,<4.0
+django-cors-headers>=4.0,<5.0
 gunicorn
-django-allauth>=0.41,<0.60
+django-allauth>=0.54,<0.60
 django-crispy-forms>=2.0,<3.0
 crispy-bootstrap5>=0.7,<1.0
+dj-rest-auth
+channels

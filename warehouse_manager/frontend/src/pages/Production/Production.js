@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef  } from "react";
 import OrdersToProduceSection from "./OrdersToProduceSection";
 import ProducedOrdersSection from "./ProducedOrdersSection";
 import UndoModal from "./UndoModal";
@@ -29,7 +29,18 @@ export default function Production() {
     quantity: ""
   });
   const [errorModal, setErrorModal] = useState({ show: false, message: "" });
+  const ws = useRef(null);
 
+  useEffect(() => {
+    ws.current = new window.WebSocket("ws://localhost:8000/ws/warehouse/");
+    ws.current.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.action === "refresh") {
+        fetchOrders();
+      }
+    };
+    return () => ws.current && ws.current.close();
+  }, []);
   
   // Effect do filtrowania
   const filteredOrders = orders

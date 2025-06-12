@@ -24,6 +24,8 @@ from .serializers import (
     OrderSerializer, ComponentSerializer, DiffusorTypeSerializer,
     ProductToProductionSerializer, MerchandiseSerializer, PartsBuilderSerializer
 )
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 # --- Django views ---
 
@@ -270,6 +272,15 @@ def produce_product_to_production(request, order_id):
                 qty_to_substract = part.quantity_needed * order.quantity
                 material.stock -= qty_to_substract
                 material.save()
+                 # --- DODAJ TO PO ZMIANIE STANU ---
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "warehouse",
+                {
+                    "type": "warehouse_update",
+                    "data": {"action": "refresh"}
+                }
+            ) 
         return Response({"success": True})
     except ProductToProduction.DoesNotExist:
         return Response({"error": "Order not found"}, status=404)
