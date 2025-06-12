@@ -18,6 +18,9 @@ import OrderDetail from './pages/OrderDetails/OrderDetail';
 import PartsBuilderIndex from './pages/Warehouse/PartsBuilder/PartsBuilderIndex';
 import ComponentsBuilder from './pages/Warehouse/PartsBuilder/ComponentsBuilder';
 
+import ProductionIndex from './pages/Production/ProductionIndex';
+import ComponentProduction from './pages/Production/ComponentProduction';
+
 function App() {
   const [user, setUser] = useState(undefined);
 
@@ -76,7 +79,23 @@ function App() {
               path="/production"
               element={
                 <ProtectedRoute user={user}>
+                  <ProductionIndex />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/production/production"
+              element={
+                <ProtectedRoute user={user}>
                   <Production />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/production/component-production"
+              element={
+                <ProtectedRoute user={user}>
+                  <ComponentProduction />
                 </ProtectedRoute>
               }
             />

@@ -1,0 +1,258 @@
+import React, { useState, useEffect } from 'react';
+
+export default function ComponentProduction() {
+  const [form, setForm] = useState({ component: '', quantity: '' });
+  const [orders, setOrders] = useState([]);
+  const [errors, setErrors] = useState([]);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [components, setComponents] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState(null);
+
+  useEffect(() => {
+    // Pobierz tylko komponenty (r === 'Towar')
+    fetch('http://127.0.0.1:8000/api/components-for-order/')
+      .then((res) => res.json())
+      .then((data) => setComponents(data.filter(c => c.r === 'Towar')));
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+
+  function fetchOrders() {
+    fetch('http://127.0.0.1:8000/api/product-to-production/')
+      .then((res) => res.json())
+      .then((data) => {
+        // Pokaż tylko zamówienia na komponenty typu 'Towar'
+        setOrders(data.filter(o => o.component_r === 'Towar'));
+      })
+      .catch(() => {
+        setOrders([]);
+      });
+  }
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    let newErrors = [];
+    if (!form.component) newErrors.push('Wybierz komponent.');
+    if (!form.quantity) newErrors.push('Podaj ilość.');
+    setErrors(newErrors);
+    if (newErrors.length === 0) handleConfirmSubmit();
+  }
+
+  function handleConfirmSubmit() {
+    fetch('http://127.0.0.1:8000/api/product-to-production/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        component: form.component,
+        quantity: form.quantity,
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Błąd zapisu zlecenia produkcji komponentu');
+        return res.json();
+      })
+      .then(() => {
+        fetchOrders();
+        setForm({
+          component: '',
+          quantity: '',
+        });
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 1000);
+      })
+      .catch((err) => setErrors([err.message]));
+  }
+
+  function openDeleteModal(order) {
+    setOrderToDelete(order);
+    setShowModal(true);
+  }
+
+  function closeDeleteModal() {
+    setShowModal(false);
+    setOrderToDelete(null);
+  }
+
+  function handleDelete() {
+    if (!orderToDelete) return;
+    fetch(`http://127.0.0.1:8000/api/product-to-production/${orderToDelete.id}/`, {
+      method: 'DELETE',
+    }).then((res) => {
+      if (res.ok) {
+        setOrders(orders.filter((o) => o.id !== orderToDelete.id));
+        closeDeleteModal();
+      } else {
+        alert('Błąd podczas usuwania zlecenia.');
+      }
+    });
+  }
+
+  return (
+    <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        {/* LEWA STRONA - NOWY FORMULARZ */}
+        <section className="bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Zleć produkcję komponentu</h1>
+          {errors.length > 0 && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              <ul className="list-disc pl-5">
+                {errors.map((err, i) => (
+                  <li key={i}>{err}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Wybierz komponent
+              </label>
+              <select
+                name="component"
+                value={form.component}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"
+              >
+                <option value="">- Wybierz komponent -</option>
+                {components.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.catalog_index} – {c.full_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Ilość</label>
+              <input
+                type="number"
+                name="quantity"
+                min="1"
+                value={form.quantity}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"
+                placeholder="0"
+              />
+            </div>
+            <div className="pt-4">
+              <button
+                type="submit"
+                className="w-full bg-ocean-600 hover:bg-ocean-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                Zatwierdź zlecenie
+              </button>
+            </div>
+          </form>
+        </section>
+        {/* PRAWA STRONA - LISTA ZLECEŃ */}
+        <section className="bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Lista zleceń produkcji komponentów</h2>
+          <div className="w-full overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                    Nr
+                  </th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Data zlecenia
+                  </th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    SKU
+                  </th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nazwa komponentu
+                  </th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                    Ilość
+                  </th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                    Status
+                  </th>
+                  <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                    Usuń
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {orders.map((order) => (
+                  <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
+                      {order.id}
+                    </td>
+                    <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
+                      {new Date(order.created_at).toLocaleDateString('pl-PL', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      })}{' '}
+                      {new Date(order.created_at).toLocaleTimeString('pl-PL', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </td>
+                    <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
+                      {order.component_catalog_index}
+                    </td>
+                    <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
+                      {order.component_full_name}
+                    </td>
+                    <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                      {order.quantity}
+                    </td>
+                    <td className="px-2 py-2 whitespace-nowrap text-xs text-center">
+                      <span
+                        className={
+                          order.is_produced
+                            ? 'bg-green-100 text-green-800 px-2 py-1 rounded font-semibold'
+                            : 'bg-orange-100 text-orange-800 px-2 py-1 rounded font-semibold'
+                        }
+                      >
+                        {order.is_produced ? 'Wyprodukowano' : 'Do produkcji'}
+                      </span>
+                    </td>
+                    <td className="px-2 py-2 whitespace-nowrap text-right text-xs font-medium">
+                      <button
+                        type="button"
+                        onClick={() => openDeleteModal(order)}
+                        className="text-red-600 hover:text-red-900 transition-colors p-1 rounded"
+                        title="Usuń zlecenie"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+      {/* MODALNE */}
+      {/* Możesz dodać modale do potwierdzenia/usuwania jeśli chcesz */}
+      {showSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="bg-green-500 text-white px-8 py-4 rounded-xl shadow-lg text-lg font-semibold animate-fade-in-out">
+            Dodano zlecenie!
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -27,6 +27,8 @@ from .serializers import (
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
+
+
 # --- Django views ---
 
 def index(request):
@@ -224,7 +226,7 @@ def diffusor_types_list(request):
 
 @api_view(['GET'])
 def components_for_order(request):
-    queryset = Component.objects.filter(r="Produkt")
+    queryset = Component.objects.filter(r__in=["Produkt", "Towar"])
     serializer = ComponentSerializer(queryset, many=True)
     return Response(serializer.data)
 
@@ -477,3 +479,10 @@ def product_to_production_detail(request, order_id):
             return Response({"message": "Order deleted successfully"}, status=204)
     except ProductToProduction.DoesNotExist:
         return Response({"error": "Order not found"}, status=404)
+
+@api_view(['GET'])
+def components_towar(request):
+    """Zwraca tylko komponenty typu 'Towar'."""
+    queryset = Component.objects.filter(r='Towar')
+    serializer = ComponentSerializer(queryset, many=True)
+    return Response(serializer.data)

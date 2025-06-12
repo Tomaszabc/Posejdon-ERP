@@ -6,7 +6,7 @@ from .views import (
     OrderViewSet, production_orders, produce_order, undo_produce_order,
     ComponentListCreateView, ComponentDetailView, import_components_csv,
     diffusor_types_list, components_for_order, ProductToProductionListCreateView,
-    import_merchandise_csv, MerchandiseViewSet
+    import_merchandise_csv, MerchandiseViewSet, components_towar,
 )
 
 router = routers.DefaultRouter()
@@ -41,6 +41,7 @@ urlpatterns = [
     path('api/product-parts/<int:component_id>/', views.product_parts),
     path("api/merchandise/import/", import_merchandise_csv, name="merchandise-import"),
     path('diffusor-types/', diffusor_types_list),
+    path('api/components-towar/', components_towar, name='components-towar'),
     
     # Router na końcu (obsługuje pozostałe ścieżki w tym parts-builder/)
     path('api/', include(router.urls)),
