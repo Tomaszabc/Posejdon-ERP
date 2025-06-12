@@ -38,14 +38,41 @@ export default function ComponentProduction() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    let newErrors = [];
-    if (!form.component) newErrors.push('Wybierz komponent.');
-    if (!form.quantity) newErrors.push('Podaj ilość.');
-    setErrors(newErrors);
-    if (newErrors.length === 0) handleConfirmSubmit();
+function handleSubmit(e) {
+  e.preventDefault();
+  let newErrors = [];
+  if (!form.component) newErrors.push('Wybierz komponent.');
+  if (!form.quantity) newErrors.push('Podaj ilość.');
+  setErrors(newErrors);
+  if (newErrors.length === 0) {
+    // Najpierw sprawdź dostępność materiałów
+    fetch('http://127.0.0.1:8000/api/check-materials-availability/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        component: form.component,
+        quantity: form.quantity,
+      }),
+    })
+      .then(res => res.json().then(data => ({ status: res.status, data })))
+      .then(({ status, data }) => {
+        if (status === 200) {
+          handleConfirmSubmit(); // Materiały OK, złóż zlecenie
+        } else if (data.missing) {
+          setErrors([
+            data.error,
+            ...data.missing.map(
+              m =>
+                `Brakuje: ${m.name} (${m.sku}) – potrzeba ${m.needed} ${m.unit}, dostępne: ${m.available} ${m.unit}`
+            ),
+          ]);
+        } else {
+          setErrors([data.error || 'Błąd sprawdzania dostępności materiałów.']);
+        }
+      })
+      .catch(() => setErrors(['Błąd połączenia z serwerem.']));
   }
+}
 
   function handleConfirmSubmit() {
     fetch('http://127.0.0.1:8000/api/product-to-production/', {

@@ -486,3 +486,29 @@ def components_towar(request):
     queryset = Component.objects.filter(r='Towar')
     serializer = ComponentSerializer(queryset, many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+def check_materials_availability(request):
+    component_id = request.data.get('component')
+    quantity = float(request.data.get('quantity', 1))
+    try:
+        component = Component.objects.get(id=component_id)
+        parts = PartsBuilder.objects.filter(product=component)
+        missing = []
+        for part in parts:
+            material = part.material
+            qty_needed = float(part.quantity_needed) * quantity
+            if float(material.stock) < qty_needed:
+                missing.append({
+                    "name": material.full_name,
+                    "sku": material.catalog_index,
+                    "needed": qty_needed,
+                    "available": float(material.stock),
+                    "missing_qty": qty_needed - float(material.stock),
+                    "unit": material.unit,
+                })
+        if missing:
+            return Response({"missing": missing, "error": "Brak wystarczającej ilości materiałów."}, status=400)
+        return Response({"ok": True})
+    except Component.DoesNotExist:
+        return Response({"error": "Nie znaleziono komponentu."}, status=404)
