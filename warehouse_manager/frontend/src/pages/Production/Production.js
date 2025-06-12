@@ -85,20 +85,20 @@ export default function Production() {
   }, []);
 
   // API calls
- const fetchOrders = () => {
-  setLoading(true);
-  fetch('http://127.0.0.1:8000/api/product-to-production/')
-    .then((res) => res.json())
-    .then((data) => {
-      // Tylko zamówienia na produkty
-      setOrders(data.filter(order => order.component_r === 'Produkt'));
-      setLoading(false);
-    })
-    .catch(() => {
-      setOrders([]);
-      setLoading(false);
-    });
-};
+  const fetchOrders = () => {
+    setLoading(true);
+    fetch('http://127.0.0.1:8000/api/product-to-production/')
+      .then((res) => res.json())
+      .then((data) => {
+        // Tylko zamówienia na produkty
+        setOrders(data.filter((order) => order.component_r === 'Produkt'));
+        setLoading(false);
+      })
+      .catch(() => {
+        setOrders([]);
+        setLoading(false);
+      });
+  };
 
   // Production confirmation handlers
   const handleAskConfirmProduce = (order) => {

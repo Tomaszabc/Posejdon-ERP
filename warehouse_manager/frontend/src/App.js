@@ -118,7 +118,7 @@ function App() {
             <Route path="/warehouse/parts-builder" element={<PartsBuilderIndex />} />
             <Route path="/warehouse/products" element={<ProductsAndGoods />} />
             <Route path="/order/:orderId" element={<OrderDetail />} />
-            
+
             <Route path="/warehouse/parts-builder/parts" element={<PartsBuilder />} />
             <Route path="/warehouse/parts-builder/components" element={<ComponentsBuilder />} />
             {/* ...inne chronione trasy w ten sam sposób... */}

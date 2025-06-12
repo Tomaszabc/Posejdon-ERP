@@ -24,7 +24,7 @@ export default function ComponentsBuilder() {
 
   useEffect(() => {
     fetchComponents().then(setComponents); // pobierz tylko komponenty (r === 'Komponent')
-    fetchMaterials().then(setMaterials);   // pobierz tylko towary (r === 'Towar')
+    fetchMaterials().then(setMaterials); // pobierz tylko towary (r === 'Towar')
   }, []);
 
   useEffect(() => {
@@ -141,9 +141,7 @@ export default function ComponentsBuilder() {
 
       <div className="max-w-3xl mx-auto py-10">
         <h1 className="text-3xl font-bold mb-6">Components Builder</h1>
-        <p className="text-gray-700 mb-4">
-          Tutaj możesz przypisywać towary do komponentów.
-        </p>
+        <p className="text-gray-700 mb-4">Tutaj możesz przypisywać towary do komponentów.</p>
 
         {/* Wybór komponentu */}
         <div className="mb-6">

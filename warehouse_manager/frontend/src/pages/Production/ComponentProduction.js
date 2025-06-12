@@ -3,7 +3,6 @@ import OrderDeleteModal from '../../components/modals/OrderDeleteModal';
 import MissingErrorModal from '../../components/modals/MissingErrorModal';
 import ConfirmProductionModal from './ConfirmProductionModal'; // dodaj import
 
-
 export default function ComponentProduction() {
   const [form, setForm] = useState({ component: '', quantity: '' });
   const [orders, setOrders] = useState([]);
@@ -17,13 +16,19 @@ export default function ComponentProduction() {
   const [missingMaterials, setMissingMaterials] = useState([]);
   const [missingMessage, setMissingMessage] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [orderToProduce, setOrderToProduce] = useState(null);
+  const [showProduceModal, setShowProduceModal] = useState(false);
 
+  const openProduceModal = (order) => {
+    setOrderToProduce(order);
+    setShowProduceModal(true);
+  };
 
   useEffect(() => {
     // Pobierz tylko komponenty (r === 'Towar')
     fetch('http://127.0.0.1:8000/api/components-for-order/')
       .then((res) => res.json())
-      .then((data) => setComponents(data.filter(c => c.r === 'Towar')));
+      .then((data) => setComponents(data.filter((c) => c.r === 'Towar')));
   }, []);
 
   useEffect(() => {
@@ -35,7 +40,7 @@ export default function ComponentProduction() {
       .then((res) => res.json())
       .then((data) => {
         // Pokaż tylko zamówienia na komponenty typu 'Towar'
-        setOrders(data.filter(o => o.component_r === 'Towar'));
+        setOrders(data.filter((o) => o.component_r === 'Towar'));
       })
       .catch(() => {
         setOrders([]);
@@ -46,14 +51,61 @@ export default function ComponentProduction() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-function handleSubmit(e) {
-  e.preventDefault();
-  let newErrors = [];
-  if (!form.component) newErrors.push('Wybierz komponent.');
-  if (!form.quantity) newErrors.push('Podaj ilość.');
-  setErrors(newErrors);
-  if (newErrors.length === 0) {
-    fetch('http://127.0.0.1:8000/api/check-materials-availability/', {
+  const handleProduceOrder = () => {
+    fetch(`http://127.0.0.1:8000/api/production/produce/${orderToProduce.id}/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((res) => res.json().then((data) => ({ status: res.status, data })))
+      .then(({ status, data }) => {
+        if (status === 200) {
+          fetchOrders();
+        } else {
+          alert(data.error || 'Błąd podczas produkcji.');
+        }
+        setShowProduceModal(false);
+        setOrderToProduce(null);
+      })
+      .catch(() => {
+        alert('Błąd połączenia z serwerem.');
+        setShowProduceModal(false);
+        setOrderToProduce(null);
+      });
+  };
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    let newErrors = [];
+    if (!form.component) newErrors.push('Wybierz komponent.');
+    if (!form.quantity) newErrors.push('Podaj ilość.');
+    setErrors(newErrors);
+    if (newErrors.length === 0) {
+      fetch('http://127.0.0.1:8000/api/check-materials-availability/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          component: form.component,
+          quantity: form.quantity,
+        }),
+      })
+        .then((res) => res.json().then((data) => ({ status: res.status, data })))
+        .then(({ status, data }) => {
+          if (status === 200) {
+            setShowConfirmModal(true);
+          } else if (data.missing) {
+            setMissingMaterials(data.missing);
+            setMissingMessage(data.error || 'Brak wystarczającej ilości materiałów.');
+            setShowMissingModal(true);
+          } else {
+            setErrors([data.error || 'Błąd sprawdzania dostępności materiałów.']);
+          }
+        })
+        .catch(() => setErrors(['Błąd połączenia z serwerem.']));
+    }
+  }
+
+  function handleConfirmSubmit() {
+    fetch('http://127.0.0.1:8000/api/product-to-production/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -61,49 +113,23 @@ function handleSubmit(e) {
         quantity: form.quantity,
       }),
     })
-      .then(res => res.json().then(data => ({ status: res.status, data })))
+      .then((res) => res.json().then((data) => ({ status: res.status, data })))
       .then(({ status, data }) => {
-        if (status === 200) {
-          setShowConfirmModal(true);
-        } else if (data.missing) {
-          setMissingMaterials(data.missing);
-          setMissingMessage(data.error || 'Brak wystarczającej ilości materiałów.');
-          setShowMissingModal(true);
+        if (status === 201) {
+          setShowSuccess(true);
+          setForm({ component: '', quantity: '' });
+          fetchOrders();
+          setTimeout(() => setShowSuccess(false), 1200);
         } else {
-          setErrors([data.error || 'Błąd sprawdzania dostępności materiałów.']);
+          setErrors([data.error || 'Błąd podczas dodawania zlecenia.']);
         }
+        setShowConfirmModal(false); // zamknij modal po próbie
       })
-      .catch(() => setErrors(['Błąd połączenia z serwerem.']));
+      .catch(() => {
+        setErrors(['Błąd połączenia z serwerem.']);
+        setShowConfirmModal(false);
+      });
   }
-}
-
-
-function handleConfirmSubmit() {
-  fetch('http://127.0.0.1:8000/api/product-to-production/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      component: form.component,
-      quantity: form.quantity,
-    }),
-  })
-    .then((res) => res.json().then((data) => ({ status: res.status, data })))
-    .then(({ status, data }) => {
-      if (status === 201) {
-        setShowSuccess(true);
-        setForm({ component: '', quantity: '' });
-        fetchOrders();
-        setTimeout(() => setShowSuccess(false), 1200);
-      } else {
-        setErrors([data.error || 'Błąd podczas dodawania zlecenia.']);
-      }
-      setShowConfirmModal(false); // zamknij modal po próbie
-    })
-    .catch(() => {
-      setErrors(['Błąd połączenia z serwerem.']);
-      setShowConfirmModal(false);
-    });
-}
 
   function openDeleteModal(order) {
     setOrderToDelete(order);
@@ -189,92 +215,122 @@ function handleConfirmSubmit() {
         </section>
         {/* PRAWA STRONA - LISTA ZLECEŃ */}
         <section className="bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Lista zleceń produkcji komponentów</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            Lista zleceń produkcji komponentów
+          </h2>
           <div className="w-full overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
                     Nr
-                  </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                </th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                     Data zlecenia
-                  </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                </th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                     SKU
-                  </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Nazwa komponentu
-                  </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                </th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
                     Ilość
-                  </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                </th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                     Status
-                  </th>
-                  <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
-                    Usuń
-                  </th>
+                </th>
+                <th className="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                    Akcje
+                </th>
                 </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
                 {orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
-                      {order.id}
+                    {order.id}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-                      {new Date(order.created_at).toLocaleDateString('pl-PL', {
+                    {new Date(order.created_at).toLocaleDateString('pl-PL', {
                         day: '2-digit',
                         month: '2-digit',
                         year: 'numeric',
-                      })}{' '}
-                      {new Date(order.created_at).toLocaleTimeString('pl-PL', {
+                    })}{' '}
+                    {new Date(order.created_at).toLocaleTimeString('pl-PL', {
                         hour: '2-digit',
                         minute: '2-digit',
-                      })}
+                    })}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-                      {order.component_catalog_index}
+                    {order.component_catalog_index}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-                      {order.component_full_name}
+                    {order.component_full_name}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
-                      {order.quantity}
+                    {order.quantity}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-center">
-                      <span
+                    <span
                         className={
-                          order.is_produced
+                        order.is_produced
                             ? 'bg-green-100 text-green-800 px-2 py-1 rounded font-semibold'
                             : 'bg-orange-100 text-orange-800 px-2 py-1 rounded font-semibold'
                         }
-                      >
+                    >
                         {order.is_produced ? 'Wyprodukowano' : 'Do produkcji'}
-                      </span>
+                    </span>
                     </td>
-                    <td className="px-2 py-2 whitespace-nowrap text-right text-xs font-medium">
-                      <button
+                    <td className="px-2 py-2 whitespace-nowrap text-xs font-medium">
+                    <div className="flex justify-center gap-2">
+                        <button
+                        type="button"
+                        onClick={() => openProduceModal(order)}
+                        className="text-green-600 hover:text-green-900 transition-colors p-1 rounded"
+                        title="Zatwierdź produkcję"
+                        disabled={order.is_produced}
+                        >
+                        <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M5 13l4 4L19 7"
+                            />
+                        </svg>
+                        </button>
+                        <button
                         type="button"
                         onClick={() => openDeleteModal(order)}
                         className="text-red-600 hover:text-red-900 transition-colors p-1 rounded"
                         title="Usuń zlecenie"
-                      >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
+                        >
+                        <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth="2"
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
+                            />
                         </svg>
-                      </button>
+                        </button>
+                    </div>
                     </td>
-                  </tr>
+                </tr>
                 ))}
-              </tbody>
-            </table>
+            </tbody>
+           </table>
           </div>
         </section>
       </div>
@@ -309,17 +365,27 @@ function handleConfirmSubmit() {
         missing={missingMaterials}
         onClose={() => setShowMissingModal(false)}
       />
+      {/* Modal do potwierdzenia dodania nowego zlecenia */}
       <ConfirmProductionModal
         order={{
-            id: null,
-            component_catalog_index: components.find(c => c.id == form.component)?.catalog_index || '',
-            component_full_name: components.find(c => c.id == form.component)?.full_name || '',
-            quantity: form.quantity,
+          id: null,
+          component_catalog_index:
+            components.find((c) => c.id == form.component)?.catalog_index || '',
+          component_full_name: components.find((c) => c.id == form.component)?.full_name || '',
+          quantity: form.quantity,
         }}
         show={showConfirmModal}
         onCancel={() => setShowConfirmModal(false)}
         onConfirm={handleConfirmSubmit}
-        />
+      />
+
+      {/* Modal do potwierdzenia produkcji istniejącego zlecenia */}
+      <ConfirmProductionModal
+        order={orderToProduce}
+        show={showProduceModal}
+        onCancel={() => setShowProduceModal(false)}
+        onConfirm={handleProduceOrder}
+      />
     </div>
   );
 }

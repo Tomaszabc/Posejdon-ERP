@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 export default function PartsBuilderIndex() {
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
-      <h1 className="text-3xl font-bold mb-8 text-center text-ocean-900">Wybierz moduł produkcji:</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center text-ocean-900">
+        Wybierz moduł produkcji:
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Kafelek 1: Parts Builder */}
         <Link
@@ -53,7 +55,7 @@ export default function PartsBuilderIndex() {
           <span className="text-sm text-gray-500 mt-2 text-center">
             Zarządzaj komponentami magazynowymi
           </span>
-      </Link>
+        </Link>
       </div>
     </div>
   );

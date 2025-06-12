@@ -141,9 +141,7 @@ export default function PartsBuilder() {
 
       <div className="max-w-3xl mx-auto py-10">
         <h1 className="text-3xl font-bold mb-6">Parts Builder</h1>
-        <p className="text-gray-700 mb-4">
-          Tutaj możesz przypisywać materiały do produktów.
-        </p>
+        <p className="text-gray-700 mb-4">Tutaj możesz przypisywać materiały do produktów.</p>
 
         {/* Wybór produktu */}
         <div className="mb-6">
@@ -166,7 +164,6 @@ export default function PartsBuilder() {
         {selectedProduct && (
           <form onSubmit={handleAdd} className="mb-8 flex gap-4 items-end">
             <div className="flex-1">
-             
               <select
                 className="w-full border px-3 py-2 rounded"
                 value={selectedMaterial}
@@ -174,11 +171,13 @@ export default function PartsBuilder() {
                 required
               >
                 <option value="">-- wybierz komponent --</option>
-                {materials.filter((mat) => mat.r === 'Towar').map((mat) => (
-                  <option key={mat.id} value={mat.id}>
+                {materials
+                  .filter((mat) => mat.r === 'Towar')
+                  .map((mat) => (
+                    <option key={mat.id} value={mat.id}>
                       📦 {mat.full_name}
-                        </option>
-                ))}
+                    </option>
+                  ))}
               </select>
             </div>
             <div>
