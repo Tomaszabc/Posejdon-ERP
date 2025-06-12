@@ -22,7 +22,7 @@ export default function Navbar({ user, setUser }) {
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="text-white font-bold text-xl tracking-wide">E-Posejdon Produkcja</Link>
             {/* Desktop menu */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-4">
               <Link to="/" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Strona główna</Link>
               {user && (
                 <>
@@ -67,8 +67,7 @@ export default function Navbar({ user, setUser }) {
                 <Link to="/login" className="bg-ocean-500 hover:bg-ocean-600 text-white px-4 py-2 rounded-lg">Zaloguj się</Link>
               )}
             </div>
-            {/* Hamburger */}
-            <div className="md:hidden flex items-center">
+            <div className="lg:hidden flex items-center">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-ocean-200 hover:text-white focus:outline-none"
@@ -84,7 +83,7 @@ export default function Navbar({ user, setUser }) {
       </nav>
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-ocean-900 text-white text-base px-4 py-6 space-y-4 fixed top-16 left-0 w-full z-30">
+        <div className="lg:hidden bg-ocean-900 text-white text-base px-4 py-6 space-y-4 fixed top-16 left-0 w-full z-30">
           <Link to="/" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Strona główna</Link>
           {user ? (
             <>
