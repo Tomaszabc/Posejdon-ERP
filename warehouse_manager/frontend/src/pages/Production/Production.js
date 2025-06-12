@@ -1,19 +1,18 @@
-import React, { useEffect, useState, useRef  } from "react";
-import OrdersToProduceSection from "./OrdersToProduceSection";
-import ProducedOrdersSection from "./ProducedOrdersSection";
-import UndoModal from "./UndoModal";
-import SuccessModal from "./SuccessModal";
-import ConfirmProductionModal from "./ConfirmProductionModal";
-import UndoSuccessModal from "./UndoSuccessModal";
-import ErrorModal from "../../components/modals/MissingErrorModal"; // dostosuj ścieżkę
-
+import React, { useEffect, useState, useRef } from 'react';
+import OrdersToProduceSection from './OrdersToProduceSection';
+import ProducedOrdersSection from './ProducedOrdersSection';
+import UndoModal from './UndoModal';
+import SuccessModal from './SuccessModal';
+import ConfirmProductionModal from './ConfirmProductionModal';
+import UndoSuccessModal from './UndoSuccessModal';
+import ErrorModal from '../../components/modals/MissingErrorModal'; // dostosuj ścieżkę
 
 export default function Production() {
   // States
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
-  
+
   // Modal states
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [orderToConfirm, setOrderToConfirm] = useState(null);
@@ -23,54 +22,60 @@ export default function Production() {
   const ORDERS_LIMIT = 100;
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
-    sku: "",
-    quantity: ""
+    startDate: '',
+    endDate: '',
+    sku: '',
+    quantity: '',
   });
-  const [errorModal, setErrorModal] = useState({ show: false, message: "" });
+  const [errorModal, setErrorModal] = useState({ show: false, message: '' });
   const ws = useRef(null);
 
   useEffect(() => {
-    ws.current = new window.WebSocket("ws://localhost:8000/ws/warehouse/");
+    ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
     ws.current.onmessage = (event) => {
       const msg = JSON.parse(event.data);
-      if (msg.action === "refresh") {
+      if (msg.action === 'refresh') {
         fetchOrders();
       }
     };
     return () => ws.current && ws.current.close();
   }, []);
-  
+
   // Effect do filtrowania
   const filteredOrders = orders
-    .filter(order => {
-      if (filters.startDate && new Date(order.created_at) < new Date(filters.startDate)) return false;
+    .filter((order) => {
+      if (filters.startDate && new Date(order.created_at) < new Date(filters.startDate))
+        return false;
       if (filters.endDate && new Date(order.created_at) > new Date(filters.endDate)) return false;
-      if (filters.quantity && !String(order.quantity).startsWith(String(filters.quantity))) return false;
-      if (filters.sku && !order.component_catalog_index?.toLowerCase().includes(filters.sku.toLowerCase())) return false;
+      if (filters.quantity && !String(order.quantity).startsWith(String(filters.quantity)))
+        return false;
+      if (
+        filters.sku &&
+        !order.component_catalog_index?.toLowerCase().includes(filters.sku.toLowerCase())
+      )
+        return false;
       return true;
     })
     .slice(0, ORDERS_LIMIT);
 
-  const producedOrders = filteredOrders.filter(order => order.is_produced);
-  const ordersToProduce = filteredOrders.filter(order => !order.is_produced);
+  const producedOrders = filteredOrders.filter((order) => order.is_produced);
+  const ordersToProduce = filteredOrders.filter((order) => !order.is_produced);
 
   // Handlery dla filtrów
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
-  
+
   const handleClearFilters = () => {
     setFilters({
-      startDate: "",
-      endDate: "",
-      sku: "",
-      quantity: ""
+      startDate: '',
+      endDate: '',
+      sku: '',
+      quantity: '',
     });
   };
 
@@ -82,9 +87,9 @@ export default function Production() {
   // API calls
   const fetchOrders = () => {
     setLoading(true);
-    fetch("http://127.0.0.1:8000/api/product-to-production/")
-      .then(res => res.json())
-      .then(data => {
+    fetch('http://127.0.0.1:8000/api/product-to-production/')
+      .then((res) => res.json())
+      .then((data) => {
         setOrders(data);
         setLoading(false);
       })
@@ -100,30 +105,30 @@ export default function Production() {
     setShowConfirmModal(true);
   };
 
-const confirmProduce = () => {
-  if (!orderToConfirm) return;
+  const confirmProduce = () => {
+    if (!orderToConfirm) return;
 
-  fetch(`/api/production/produce/${orderToConfirm.id}/`, { method: "POST" })
-    .then(res => res.json().then(data => ({ ok: res.ok, data })))
-    .then(({ ok, data }) => {
-  if (!ok) {
-    setErrorModal({
-      show: true,
-      message: data.error || "Błąd produkcji",
-      missing: data.missing || []
-    });
-    return;
-  }
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 1000);
-      setShowConfirmModal(false);
-      setOrderToConfirm(null);
-      fetchOrders();
-    })
-    .catch(error => {
-      setErrorModal({ show: true, message: error.message });
-    });
-};
+    fetch(`/api/production/produce/${orderToConfirm.id}/`, { method: 'POST' })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          setErrorModal({
+            show: true,
+            message: data.error || 'Błąd produkcji',
+            missing: data.missing || [],
+          });
+          return;
+        }
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 1000);
+        setShowConfirmModal(false);
+        setOrderToConfirm(null);
+        fetchOrders();
+      })
+      .catch((error) => {
+        setErrorModal({ show: true, message: error.message });
+      });
+  };
 
   const cancelConfirmProduce = () => {
     setShowConfirmModal(false);
@@ -136,17 +141,17 @@ const confirmProduce = () => {
     setShowUndoModal(true);
   };
 
- const confirmUndoProduce = () => {
+  const confirmUndoProduce = () => {
     if (!orderToUndo) return;
 
     fetch(`http://127.0.0.1:8000/api/production/undo/${orderToUndo.id}/`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json"
-      }
+        'Content-Type': 'application/json',
+      },
     })
-      .then(res => {
-        if (!res.ok) throw new Error("Błąd podczas cofania produkcji");
+      .then((res) => {
+        if (!res.ok) throw new Error('Błąd podczas cofania produkcji');
         return res.json();
       })
       .then(() => {
@@ -156,7 +161,7 @@ const confirmProduce = () => {
         setTimeout(() => setShowUndoSuccess(false), 1000);
         fetchOrders();
       })
-      .catch(error => {
+      .catch((error) => {
         alert(error.message);
       });
   };
@@ -166,8 +171,6 @@ const confirmProduce = () => {
     setOrderToUndo(null);
   };
 
-
-  
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -206,7 +209,7 @@ const confirmProduce = () => {
         show={errorModal.show}
         message={errorModal.message}
         missing={errorModal.missing}
-        onClose={() => setErrorModal({ show: false, message: "", missing: [] })}
+        onClose={() => setErrorModal({ show: false, message: '', missing: [] })}
       />
     </div>
   );

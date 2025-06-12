@@ -1,6 +1,6 @@
-import React from "react";
-import { formatDateTime } from "./utils";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { formatDateTime } from './utils';
+import { useNavigate } from 'react-router-dom';
 
 export default function OrdersToProduceSection({ orders, loading, onProduce }) {
   const navigate = useNavigate();
@@ -15,37 +15,57 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Nr</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">SKU</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produkt</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ilość</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Data zam.</th>
-                <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Zatwierdź</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                  Nr
+                </th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                  SKU
+                </th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Produkt
+                </th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                  Ilość
+                </th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                  Data zam.
+                </th>
+                <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                  Zatwierdź
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {orders.map(order => (
+              {orders.map((order) => (
                 <tr
                   key={order.id}
                   className="hover:bg-ocean-50 transition-colors cursor-pointer"
-                  onClick={e => {
+                  onClick={(e) => {
                     // Nie nawiguj jeśli kliknięto przycisk
-                    if (e.target.closest("button")) return;
+                    if (e.target.closest('button')) return;
                     navigate(`/order/${order.id}`);
                   }}
                   title="Kliknij, aby zobaczyć szczegóły zamówienia"
                 >
-                  <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">{order.id}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_catalog_index}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_full_name}</td>
-                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.quantity}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
+                    {order.id}
+                  </td>
+                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
+                    {order.component_catalog_index}
+                  </td>
+                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
+                    {order.component_full_name}
+                  </td>
+                  <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                    {order.quantity}
+                  </td>
                   <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
                     {formatDateTime(order.created_at)}
                   </td>
                   <td className="px-2 py-2 whitespace-nowrap text-right text-xs font-medium">
                     <button
                       type="button"
-                      onClick={e => {
+                      onClick={(e) => {
                         e.stopPropagation();
                         onProduce(order);
                       }}

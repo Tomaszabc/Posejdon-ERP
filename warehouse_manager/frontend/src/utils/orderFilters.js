@@ -1,14 +1,10 @@
 export function filterOrders(orders, filters, ORDERS_LIMIT) {
-  const {
-    startDate, endDate, diameter, shape, size, color, quantity
-  } = filters;
+  const { startDate, endDate, diameter, shape, size, color, quantity } = filters;
 
-  const filtered = orders.filter(order => {
+  const filtered = orders.filter((order) => {
     const orderDate = new Date(order.created_at);
     const start = startDate ? new Date(startDate) : null;
-    const end = endDate
-      ? new Date(new Date(endDate).setHours(23, 59, 59, 999))
-      : null;
+    const end = endDate ? new Date(new Date(endDate).setHours(23, 59, 59, 999)) : null;
 
     if (start && orderDate < start) return false;
     if (end && orderDate > end) return false;

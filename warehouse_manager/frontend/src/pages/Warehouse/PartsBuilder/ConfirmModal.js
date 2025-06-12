@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export default function ConfirmModal({ open, title, message, onConfirm, onCancel }) {
   if (!open) return null;
@@ -8,10 +8,7 @@ export default function ConfirmModal({ open, title, message, onConfirm, onCancel
         <h2 className="text-lg font-bold mb-2">{title}</h2>
         <p className="mb-4">{message}</p>
         <div className="flex justify-end gap-2">
-          <button
-            className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
-            onClick={onCancel}
-          >
+          <button className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300" onClick={onCancel}>
             Anuluj
           </button>
           <button

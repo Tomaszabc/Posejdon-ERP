@@ -1,12 +1,12 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const modal = document.getElementById('order-delete-modal');
   const yesBtn = document.getElementById('order-delete-yes');
   const noBtn = document.getElementById('order-delete-no');
   const details = document.getElementById('order-delete-details');
   let formToDelete = null;
 
-  document.querySelectorAll('.order-delete-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
+  document.querySelectorAll('.order-delete-btn').forEach((btn) => {
+    btn.addEventListener('click', function () {
       formToDelete = document.getElementById(btn.getAttribute('data-form-id'));
       // Pobierz szczegóły zamówienia z data-*
       const id = btn.getAttribute('data-order-id');
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  yesBtn.addEventListener('click', function() {
+  yesBtn.addEventListener('click', function () {
     if (formToDelete) {
       formToDelete.submit();
       formToDelete = null;
@@ -30,13 +30,13 @@ document.addEventListener('DOMContentLoaded', function() {
     details.innerHTML = '';
   });
 
-  noBtn.addEventListener('click', function() {
+  noBtn.addEventListener('click', function () {
     modal.classList.add('hidden');
     formToDelete = null;
     details.innerHTML = '';
   });
 
-  modal.addEventListener('click', function(e) {
+  modal.addEventListener('click', function (e) {
     if (e.target === modal) {
       modal.classList.add('hidden');
       formToDelete = null;

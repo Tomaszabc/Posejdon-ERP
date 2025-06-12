@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:8000";
+const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://127.0.0.1:8000';
 
 export default function Footer() {
   return (

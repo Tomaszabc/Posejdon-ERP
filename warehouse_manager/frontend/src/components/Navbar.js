@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Navbar({ user, setUser }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -9,10 +9,10 @@ export default function Navbar({ user, setUser }) {
 
   function handleLogout(e) {
     e.preventDefault();
-    localStorage.removeItem("access");
-    localStorage.removeItem("refresh");
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
     setUser && setUser(null);
-    navigate("/login");
+    navigate('/login');
   }
 
   return (
@@ -20,13 +20,16 @@ export default function Navbar({ user, setUser }) {
       <nav className="bg-gradient-to-r from-ocean-800 to-ocean-900 shadow-xl fixed w-full z-20 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="text-white font-bold text-xl tracking-wide">E-Posejdon Produkcja</Link>
+            <Link to="/" className="text-white font-bold text-xl tracking-wide">
+              E-Posejdon Produkcja
+            </Link>
             {/* Desktop menu */}
             <div className="hidden lg:flex items-center space-x-4">
-              <Link to="/" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Strona główna</Link>
+              <Link to="/" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
+                Strona główna
+              </Link>
               {user && (
                 <>
-                 
                   {/* Dropdown desktop */}
                   <div className="relative">
                     <button
@@ -34,8 +37,18 @@ export default function Navbar({ user, setUser }) {
                       className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg flex items-center focus:outline-none"
                     >
                       Zarządzanie Sprzedażą
-                      <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <svg
+                        className="ml-2 w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </button>
                     {salesDropdownOpen && (
@@ -43,16 +56,42 @@ export default function Navbar({ user, setUser }) {
                         className="absolute left-0 mt-2 w-56 bg-white text-gray-800 rounded-lg shadow-lg z-40"
                         onMouseLeave={() => setSalesDropdownOpen(false)}
                       >
-                        <a href="#" className="block px-4 py-2 hover:bg-ocean-100">Uruchom dodatek PrintNode</a>
-                        <a href="#" className="block px-4 py-2 hover:bg-ocean-100">Uruchom dodatek WfSync</a>
-                        <a href="https://panel.baselinker.com/login.php" target="_blank" rel="noopener" className="block px-4 py-2 hover:bg-ocean-100">Przeglądaj Sprzedaż</a>
+                        <a href="#" className="block px-4 py-2 hover:bg-ocean-100">
+                          Uruchom dodatek PrintNode
+                        </a>
+                        <a href="#" className="block px-4 py-2 hover:bg-ocean-100">
+                          Uruchom dodatek WfSync
+                        </a>
+                        <a
+                          href="https://panel.baselinker.com/login.php"
+                          target="_blank"
+                          rel="noopener"
+                          className="block px-4 py-2 hover:bg-ocean-100"
+                        >
+                          Przeglądaj Sprzedaż
+                        </a>
                       </div>
                     )}
                   </div>
-                  <Link to="/warehouse" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Magazyn</Link>
-                  <Link to="/orders" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Zamówienie produkcyjne</Link>
-                  <Link to="/production" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Produkcja</Link>
-                   <a href="/user" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
+                  <Link
+                    to="/warehouse"
+                    className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg"
+                  >
+                    Magazyn
+                  </Link>
+                  <Link
+                    to="/orders"
+                    className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg"
+                  >
+                    Zamówienie produkcyjne
+                  </Link>
+                  <Link
+                    to="/production"
+                    className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg"
+                  >
+                    Produkcja
+                  </Link>
+                  <a href="/user" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
                     Moje konto: {user?.username || user?.user_id}
                   </a>
                   <button
@@ -64,7 +103,12 @@ export default function Navbar({ user, setUser }) {
                 </>
               )}
               {!user && (
-                <Link to="/login" className="bg-ocean-500 hover:bg-ocean-600 text-white px-4 py-2 rounded-lg">Zaloguj się</Link>
+                <Link
+                  to="/login"
+                  className="bg-ocean-500 hover:bg-ocean-600 text-white px-4 py-2 rounded-lg"
+                >
+                  Zaloguj się
+                </Link>
               )}
             </div>
             <div className="lg:hidden flex items-center">
@@ -73,8 +117,12 @@ export default function Navbar({ user, setUser }) {
                 className="text-ocean-200 hover:text-white focus:outline-none"
               >
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 </svg>
               </button>
             </div>
@@ -84,10 +132,11 @@ export default function Navbar({ user, setUser }) {
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-ocean-900 text-white text-base px-4 py-6 space-y-4 fixed top-16 left-0 w-full z-30">
-          <Link to="/" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Strona główna</Link>
+          <Link to="/" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+            Strona główna
+          </Link>
           {user ? (
             <>
-             
               {/* Dropdown mobile */}
               <div>
                 <button
@@ -95,23 +144,50 @@ export default function Navbar({ user, setUser }) {
                   className="w-full text-left block px-4 py-2 rounded-lg hover:bg-ocean-800 flex items-center focus:outline-none"
                 >
                   Zarządzanie Sprzedażą
-                  <svg className="ml-2 w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className="ml-2 w-4 h-4 inline"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
                 {mobileSalesDropdownOpen && (
                   <div className="pl-4 mt-2 space-y-1">
-                    <a href="#" className="block px-4 py-2 rounded-lg hover:bg-ocean-700">Uruchom dodatek PrintNode</a>
-                    <a href="#" className="block px-4 py-2 rounded-lg hover:bg-ocean-700">Uruchom dodatek WfSync</a>
-                    <a href="https://panel.baselinker.com/login.php" target="_blank" rel="noopener" className="block px-4 py-2 rounded-lg hover:bg-ocean-700">Przeglądaj Sprzedaż</a>
+                    <a href="#" className="block px-4 py-2 rounded-lg hover:bg-ocean-700">
+                      Uruchom dodatek PrintNode
+                    </a>
+                    <a href="#" className="block px-4 py-2 rounded-lg hover:bg-ocean-700">
+                      Uruchom dodatek WfSync
+                    </a>
+                    <a
+                      href="https://panel.baselinker.com/login.php"
+                      target="_blank"
+                      rel="noopener"
+                      className="block px-4 py-2 rounded-lg hover:bg-ocean-700"
+                    >
+                      Przeglądaj Sprzedaż
+                    </a>
                   </div>
                 )}
               </div>
 
-              <a href="/warehouse" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Magazyn</a>
-              <a href="/orders" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Zamówienia</a>
-              <a href="/production" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Produkcja</a>
-               <a href="/user" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+              <a href="/warehouse" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+                Magazyn
+              </a>
+              <a href="/orders" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+                Zamówienia
+              </a>
+              <a href="/production" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+                Produkcja
+              </a>
+              <a href="/user" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
                 Moje konto: {user?.username || user?.user_id}
               </a>
               <button
@@ -122,7 +198,9 @@ export default function Navbar({ user, setUser }) {
               </button>
             </>
           ) : (
-            <a href="/login" className="block px-4 py-2 rounded-lg bg-ocean-500 hover:bg-ocean-600">Zaloguj się</a>
+            <a href="/login" className="block px-4 py-2 rounded-lg bg-ocean-500 hover:bg-ocean-600">
+              Zaloguj się
+            </a>
           )}
         </div>
       )}

@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
 export default function OrderConfirmModal({ order, onConfirm, onCancel, components }) {
-  const selectedComponent = components?.find(c => c.id === parseInt(order.component));
+  const selectedComponent = components?.find((c) => c.id === parseInt(order.component));
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
@@ -13,9 +13,16 @@ export default function OrderConfirmModal({ order, onConfirm, onCancel, componen
               Czy chcesz zatwierdzić zamówienie o parametrach:
             </p>
             <div className="text-left space-y-2 text-sm">
-              <p><span className="font-semibold">SKU:</span> {selectedComponent?.catalog_index}</p>
-              <p><span className="font-semibold">Nazwa produktu:</span> {selectedComponent?.full_name}</p>
-              <p><span className="font-semibold">Ilość:</span> {order.quantity}</p>
+              <p>
+                <span className="font-semibold">SKU:</span> {selectedComponent?.catalog_index}
+              </p>
+              <p>
+                <span className="font-semibold">Nazwa produktu:</span>{' '}
+                {selectedComponent?.full_name}
+              </p>
+              <p>
+                <span className="font-semibold">Ilość:</span> {order.quantity}
+              </p>
             </div>
           </div>
           <div className="flex justify-center gap-4 mt-6">

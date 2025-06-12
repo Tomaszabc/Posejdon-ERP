@@ -1,15 +1,12 @@
 module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./public/index.html"
-  ],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   theme: {
     extend: {
       keyframes: {
         'fade-in-out': {
           '0%,100%': { opacity: 0 },
           '10%,90%': { opacity: 1 },
-        }
+        },
       }, // <-- tutaj musi być przecinek!
       animation: {
         'fade-in-out': 'fade-in-out 2s ease-in-out',
@@ -26,9 +23,9 @@ module.exports = {
           700: '#0369a1',
           800: '#075985',
           900: '#0c4a6e',
-        }
-      }
-    }
+        },
+      },
+    },
   },
   plugins: [],
-}
+};

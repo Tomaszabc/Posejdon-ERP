@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export default function OrderDeleteModal({ order, onDelete, onCancel }) {
   if (!order) return null;

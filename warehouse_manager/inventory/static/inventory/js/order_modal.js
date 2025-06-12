@@ -1,5 +1,4 @@
-
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('form');
   const btn = document.getElementById('order-submit-btn');
   const modal = document.getElementById('custom-confirm-modal');
@@ -9,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let submitAfterConfirm = false;
 
   if (form && btn && modal && yesBtn && noBtn && summary) {
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
       if (submitAfterConfirm) {
         submitAfterConfirm = false;
         return;
@@ -37,18 +36,18 @@ document.addEventListener('DOMContentLoaded', function() {
       // Jeśli niepoprawny, pozwól przeglądarce pokazać błędy
     });
 
-    yesBtn.addEventListener('click', function() {
+    yesBtn.addEventListener('click', function () {
       modal.classList.add('hidden');
       submitAfterConfirm = true;
       form.requestSubmit();
     });
 
-    noBtn.addEventListener('click', function() {
+    noBtn.addEventListener('click', function () {
       modal.classList.add('hidden');
       submitAfterConfirm = false;
     });
 
-    modal.addEventListener('click', function(e) {
+    modal.addEventListener('click', function (e) {
       if (e.target === modal) {
         modal.classList.add('hidden');
         submitAfterConfirm = false;

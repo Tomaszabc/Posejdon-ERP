@@ -1,16 +1,16 @@
 // filepath: c:\Users\Posejdon\Desktop\Cyfryzacja\Warehouse_manager\Warehouse_Management\warehouse_manager\frontend\src\pages\Production\ProducedOrdersSection.js
-import React from "react";
-import { formatDateTime } from "./utils";
+import React from 'react';
+import { formatDateTime } from './utils';
 
-export default function ProducedOrdersSection({ 
-  producedOrders, 
+export default function ProducedOrdersSection({
+  producedOrders,
   onUndo,
   showFilters,
   setShowFilters,
   filters,
   handleFilterChange,
   handleClearFilters,
-  ORDERS_LIMIT
+  ORDERS_LIMIT,
 }) {
   return (
     <section className="bg-white shadow-2xl rounded-3xl p-6 border border-gray-100">
@@ -21,12 +21,20 @@ export default function ProducedOrdersSection({
           {!filters.startDate && !filters.endDate && !filters.sku && !filters.quantity && (
             <span className="ml-1 relative group">
               <span className="inline-block align-middle cursor-pointer group">
-                <svg xmlns="http://www.w3.org/2000/svg" 
-                     className="inline w-7 h-7 text-gray-400" 
-                     fill="none" viewBox="0 0 24 24" 
-                     stroke="currentColor">
-                  <circle cx="12" cy="12" r="10" strokeWidth="2" fill="white"/>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 16v-4m0-4h.01" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="inline w-7 h-7 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <circle cx="12" cy="12" r="10" strokeWidth="2" fill="white" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 16v-4m0-4h.01"
+                  />
                 </svg>
                 <span className="absolute left-1/2 -translate-x-1/2 mt-2 px-3 py-1 rounded bg-gray-800 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
                   {ORDERS_LIMIT} najnowszych
@@ -112,21 +120,41 @@ export default function ProducedOrdersSection({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Nr</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">SKU</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produkt</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Ilość</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Data prod.</th>
-              <th className="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Cofnij</th>
+              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                Nr
+              </th>
+              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                SKU
+              </th>
+              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Produkt
+              </th>
+              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                Ilość
+              </th>
+              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                Data prod.
+              </th>
+              <th className="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                Cofnij
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {producedOrders.map(order => (
+            {producedOrders.map((order) => (
               <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">{order.id}</td>
-                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_catalog_index}</td>
-                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">{order.component_full_name}</td>
-                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">{order.quantity}</td>
+                <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
+                  {order.id}
+                </td>
+                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
+                  {order.component_catalog_index}
+                </td>
+                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
+                  {order.component_full_name}
+                </td>
+                <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
+                  {order.quantity}
+                </td>
                 <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
                   {formatDateTime(order.produced_at)}
                 </td>
@@ -138,8 +166,12 @@ export default function ProducedOrdersSection({
                     title="Cofnij produkcję"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
                     </svg>
                   </button>
                 </td>

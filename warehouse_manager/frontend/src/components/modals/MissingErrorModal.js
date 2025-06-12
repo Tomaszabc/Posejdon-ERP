@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export default function ErrorModal({ show, message, missing = [], onClose }) {
   if (!show) return null;
@@ -12,7 +12,18 @@ export default function ErrorModal({ show, message, missing = [], onClose }) {
             {missing.map((item, idx) => (
               <li key={idx}>
                 <b>{item.name}</b> (SKU: {item.sku})<br />
-                Potrzeba: <b>{item.needed} {item.unit}</b>, dostępne: <b>{item.available} {item.unit}</b>, brakuje: <b>{item.missing_qty} {item.unit}</b>
+                Potrzeba:{' '}
+                <b>
+                  {item.needed} {item.unit}
+                </b>
+                , dostępne:{' '}
+                <b>
+                  {item.available} {item.unit}
+                </b>
+                , brakuje:{' '}
+                <b>
+                  {item.missing_qty} {item.unit}
+                </b>
               </li>
             ))}
           </ul>

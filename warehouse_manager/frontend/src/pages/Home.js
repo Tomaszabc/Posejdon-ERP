@@ -1,5 +1,5 @@
-import React from "react";
-import { Pie, Line, Bar, Radar, PolarArea } from "react-chartjs-2";
+import React from 'react';
+import { Pie, Line, Bar, Radar, PolarArea } from 'react-chartjs-2';
 import {
   Chart,
   ArcElement,
@@ -11,7 +11,7 @@ import {
   RadialLinearScale,
   Tooltip,
   Legend,
-} from "chart.js";
+} from 'chart.js';
 
 Chart.register(
   ArcElement,
@@ -27,64 +27,59 @@ Chart.register(
 
 export default function Home() {
   const pieData = {
-    labels: ["A", "B", "C"],
+    labels: ['A', 'B', 'C'],
     datasets: [
       {
         data: [30, 50, 20],
-        backgroundColor: ["#2563eb", "#10b981", "#f59e42"],
+        backgroundColor: ['#2563eb', '#10b981', '#f59e42'],
       },
     ],
   };
 
   const lineData = {
-    labels: ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj"],
+    labels: ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj'],
     datasets: [
       {
-        label: "Produkcja",
+        label: 'Produkcja',
         data: [12, 19, 3, 5, 2],
         fill: false,
-        borderColor: "#2563eb",
+        borderColor: '#2563eb',
         tension: 0.1,
       },
     ],
   };
 
   const barData = {
-    labels: ["Pon", "Wt", "Śr", "Czw", "Pt"],
+    labels: ['Pon', 'Wt', 'Śr', 'Czw', 'Pt'],
     datasets: [
       {
-        label: "Zamówienia",
+        label: 'Zamówienia',
         data: [5, 9, 7, 8, 6],
-        backgroundColor: "#10b981",
+        backgroundColor: '#10b981',
       },
     ],
   };
 
   const radarData = {
-    labels: ["Jakość", "Szybkość", "Koszt", "Satysfakcja", "Innowacja"],
+    labels: ['Jakość', 'Szybkość', 'Koszt', 'Satysfakcja', 'Innowacja'],
     datasets: [
       {
-        label: "Ocena",
+        label: 'Ocena',
         data: [4, 3, 5, 4, 2],
-        backgroundColor: "rgba(37,99,235,0.2)",
-        borderColor: "#2563eb",
-        pointBackgroundColor: "#2563eb",
+        backgroundColor: 'rgba(37,99,235,0.2)',
+        borderColor: '#2563eb',
+        pointBackgroundColor: '#2563eb',
       },
     ],
   };
 
   const polarData = {
-    labels: ["Magazyn", "Produkcja", "Sprzedaż", "Logistyka"],
+    labels: ['Magazyn', 'Produkcja', 'Sprzedaż', 'Logistyka'],
     datasets: [
       {
-        label: "Udział",
+        label: 'Udział',
         data: [11, 16, 7, 14],
-        backgroundColor: [
-          "#2563eb",
-          "#10b981",
-          "#f59e42",
-          "#f43f5e"
-        ],
+        backgroundColor: ['#2563eb', '#10b981', '#f59e42', '#f43f5e'],
       },
     ],
   };

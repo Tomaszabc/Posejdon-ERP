@@ -1,68 +1,71 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}E-Posejdon Produkcja{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        ocean: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            300: '#7dd3fc',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                        }
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ocean: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                200: '#bae6fd',
+                300: '#7dd3fc',
+                400: '#38bdf8',
+                500: '#0ea5e9',
+                600: '#0284c7',
+                700: '#0369a1',
+                800: '#075985',
+                900: '#0c4a6e',
+              },
+            },
+          },
+        },
+      };
     </script>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'inventory/css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'inventory/css/main.css' %}" />
     {% block extra_head %}{% endblock %}
-</head>
-<body class="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-blue-50">
+  </head>
+  <body class="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-blue-50">
+    {% include "includes/navbar.html" %}
 
-  {% include "includes/navbar.html" %}
+    <main class="flex-1 max-w-full sm:max-w-7xl mx-auto px-2 sm:px-4 pt-20 sm:pt-24 pb-8">
+      {% block content %} {% endblock %}
+    </main>
 
-  <main class="flex-1 max-w-full sm:max-w-7xl mx-auto px-2 sm:px-4 pt-20 sm:pt-24 pb-8">
-    {% block content %}
-    {% endblock %}
-  </main>
+    {% include "includes/footer.html" %}
 
-  {% include "includes/footer.html" %}
-
-  <!-- Toast notification (zawsze obecny w DOM) -->
-  <div id="toast-success" class="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-    <div class="bg-green-600 text-white px-6 py-4 rounded-xl shadow-lg text-lg font-semibold opacity-0 transition-opacity duration-500" id="toast-message">
-      <!-- Tu pojawi się komunikat -->
+    <!-- Toast notification (zawsze obecny w DOM) -->
+    <div
+      id="toast-success"
+      class="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
+    >
+      <div
+        class="bg-green-600 text-white px-6 py-4 rounded-xl shadow-lg text-lg font-semibold opacity-0 transition-opacity duration-500"
+        id="toast-message"
+      >
+        <!-- Tu pojawi się komunikat -->
+      </div>
     </div>
-  </div>
 
-  <!-- Skrypty -->
-  {% block extra_scripts %}
+    <!-- Skrypty -->
+    {% block extra_scripts %}
     <script src="{% static 'inventory/js/navbar.js' %}"></script>
     <script src="{% static 'inventory/js/order_modal.js' %}"></script>
     <script src="{% static 'inventory/js/order_delete_modal.js' %}"></script>
-  {% endblock %}
+    {% endblock %}
 
-  <!-- Toast logic for Django messages -->
-  {% if messages %}
-  {% for message in messages %}
+    <!-- Toast logic for Django messages -->
+    {% if messages %} {% for message in messages %}
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
         const msg = document.getElementById('toast-message');
-        msg.textContent = "{{ message|escapejs }}";
+        msg.textContent = '{{ message|escapejs }}';
         msg.classList.remove('opacity-0');
         msg.classList.add('opacity-100');
         setTimeout(() => {
@@ -71,7 +74,6 @@
         }, 3000);
       });
     </script>
-  {% endfor %}
-{% endif %}
-</body>
+    {% endfor %} {% endif %}
+  </body>
 </html>

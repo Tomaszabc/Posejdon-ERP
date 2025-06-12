@@ -1,24 +1,24 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // ======== 1. OBŁUGA PRZYCISKU HAMBURGERA (MOBILE MENU) ========
   const menuBtn = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
 
   if (menuBtn && mobileMenu) {
     // Kliknięcie w ikonę hamburgera => pokaż/ukryj menu
-    menuBtn.addEventListener('click', function(e) {
+    menuBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       mobileMenu.classList.toggle('hidden');
     });
 
     // Zamykaj menu, gdy klikniesz w dowolny link wewnątrz mobilnego menu
-    mobileMenu.querySelectorAll('a').forEach(link => {
+    mobileMenu.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => {
         mobileMenu.classList.add('hidden');
       });
     });
 
     // Zamknij mobilne menu, gdy klikniesz PÓŹNIEJ gdzie indziej na stronie
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
       if (!mobileMenu.classList.contains('hidden')) {
         // jeśli kliknięto poza mobilnym menu ORAZ poza przyciskiem hamburgera
         if (!mobileMenu.contains(e.target) && e.target !== menuBtn) {
@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-
 
   // ======== 2. OBŁUGA DESKTOPOWEGO DROPDOWNA "Zarządzanie Sprzedażą" ========
   const salesBtn = document.getElementById('sales-dropdown-btn');
@@ -47,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-
 
   // ======== 3. OBŁUGA MOBILNEGO DROPDOWNA "Zarządzanie Sprzedażą" ========
   const mobileSalesBtn = document.getElementById('mobile-sales-dropdown-btn');

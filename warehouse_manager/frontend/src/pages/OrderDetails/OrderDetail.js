@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
 export default function OrderDetail() {
   const { orderId } = useParams();
@@ -17,23 +17,23 @@ export default function OrderDetail() {
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
+      second: '2-digit',
     });
   };
 
   useEffect(() => {
     fetch(`/api/product-to-production/${orderId}/`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setOrder(data);
         return fetch(`/api/product-parts/${data.component}/`);
       })
-      .then(res => res.json())
-      .then(partsData => {
+      .then((res) => res.json())
+      .then((partsData) => {
         setParts(partsData);
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error:', error);
         setLoading(false);
       });
@@ -65,7 +65,12 @@ export default function OrderDetail() {
             className="flex items-center text-blue-600 hover:text-blue-800 transition-colors mb-4"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             Powrót
           </button>
@@ -82,17 +87,23 @@ export default function OrderDetail() {
               <div className="space-y-4">
                 <div className="flex items-center">
                   <span className="text-sm font-medium text-gray-500 w-20">Produkt:</span>
-                  <span className="text-lg font-semibold text-gray-800">{order.component_full_name}</span>
+                  <span className="text-lg font-semibold text-gray-800">
+                    {order.component_full_name}
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <span className="text-sm font-medium text-gray-500 w-20">SKU:</span>
-                  <span className="bg-gray-100 px-3 py-1 rounded-full text-sm font-mono">{order.component_catalog_index}</span>
+                  <span className="bg-gray-100 px-3 py-1 rounded-full text-sm font-mono">
+                    {order.component_catalog_index}
+                  </span>
                 </div>
               </div>
               <div className="space-y-4">
                 <div className="flex items-center">
                   <span className="text-sm font-medium text-gray-500 w-20">Ilość:</span>
-                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold">{order.quantity}</span>
+                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold">
+                    {order.quantity}
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <span className="text-sm font-medium text-gray-500 w-20">Data:</span>
@@ -108,12 +119,17 @@ export default function OrderDetail() {
           <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
             <h2 className="text-xl font-semibold text-white flex items-center">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
               </svg>
               Materiały i towary ({parts.length})
             </h2>
           </div>
-          
+
           {parts.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
@@ -135,9 +151,11 @@ export default function OrderDetail() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {parts.map((part, index) => (
-                    <tr key={part.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    <tr key={part.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{part.material_full_name}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {part.material_full_name}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-mono">
@@ -145,7 +163,9 @@ export default function OrderDetail() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="text-lg font-semibold text-gray-800">{part.quantity_needed}</span>
+                        <span className="text-lg font-semibold text-gray-800">
+                          {part.quantity_needed}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
@@ -159,8 +179,18 @@ export default function OrderDetail() {
             </div>
           ) : (
             <div className="p-8 text-center text-gray-500">
-              <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              <svg
+                className="w-12 h-12 mx-auto mb-4 text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                />
               </svg>
               <p>Brak materiałów przypisanych do tego produktu</p>
             </div>

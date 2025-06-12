@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import OrderDeleteModal from "../../components/modals/OrderDeleteModal";
-import OrderConfirmModal from "../../components/modals/OrderConfirmModal";
-import OrderList from "./OrderList";
+import React, { useState, useEffect } from 'react';
+import OrderDeleteModal from '../../components/modals/OrderDeleteModal';
+import OrderConfirmModal from '../../components/modals/OrderConfirmModal';
+import OrderList from './OrderList';
 
 export default function Orders() {
-  const [form, setForm] = useState({ component: "", quantity: "" });
+  const [form, setForm] = useState({ component: '', quantity: '' });
   const [orders, setOrders] = useState([]);
   const [errors, setErrors] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -16,15 +16,15 @@ export default function Orders() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
   const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
-    quantity: "",
-    sku: ""
+    startDate: '',
+    endDate: '',
+    quantity: '',
+    sku: '',
   });
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/components-for-order/")
-      .then(res => res.json())
+    fetch('http://127.0.0.1:8000/api/components-for-order/')
+      .then((res) => res.json())
       .then(setComponents);
   }, []);
 
@@ -33,7 +33,7 @@ export default function Orders() {
   }, []);
 
   function fetchOrders() {
-    fetch("http://127.0.0.1:8000/api/product-to-production/")
+    fetch('http://127.0.0.1:8000/api/product-to-production/')
       .then((res) => res.json())
       .then((data) => {
         setOrders(data);
@@ -45,30 +45,37 @@ export default function Orders() {
 
   // Filtrowanie zamówień (po dacie, ilości, SKU)
   const filteredOrders = orders
-    .filter(order => {
-      if (filters.startDate && new Date(order.created_at) < new Date(filters.startDate)) return false;
+    .filter((order) => {
+      if (filters.startDate && new Date(order.created_at) < new Date(filters.startDate))
+        return false;
       if (filters.endDate && new Date(order.created_at) > new Date(filters.endDate)) return false;
       // Zmienione na "zaczyna się od"
-      if (filters.quantity && !String(order.quantity).startsWith(String(filters.quantity))) return false;
-      if (filters.sku && !order.component_catalog_index?.toLowerCase().includes(filters.sku.toLowerCase())) return false;
+      if (filters.quantity && !String(order.quantity).startsWith(String(filters.quantity)))
+        return false;
+      if (
+        filters.sku &&
+        !order.component_catalog_index?.toLowerCase().includes(filters.sku.toLowerCase())
+      )
+        return false;
       return true;
     })
     .slice(0, ORDERS_LIMIT);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleClearFilters = () => setFilters({
-    startDate: "",
-    endDate: "",
-    quantity: "",
-    sku: ""
-  });
+  const handleClearFilters = () =>
+    setFilters({
+      startDate: '',
+      endDate: '',
+      quantity: '',
+      sku: '',
+    });
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -84,31 +91,31 @@ export default function Orders() {
   }
 
   function handleConfirmSubmit() {
-    fetch("http://127.0.0.1:8000/api/product-to-production/", {
-      method: "POST",
+    fetch('http://127.0.0.1:8000/api/product-to-production/', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         component: form.component,
         quantity: form.quantity,
       }),
     })
-      .then(res => {
-        if (!res.ok) throw new Error("Błąd zapisu zamówienia");
+      .then((res) => {
+        if (!res.ok) throw new Error('Błąd zapisu zamówienia');
         return res.json();
       })
       .then(() => {
         fetchOrders();
         setForm({
-          component: "",
-          quantity: "",
+          component: '',
+          quantity: '',
         });
         setShowConfirmModal(false);
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 1000);
       })
-      .catch(err => setErrors([err.message]));
+      .catch((err) => setErrors([err.message]));
   }
 
   function openDeleteModal(order) {
@@ -124,7 +131,7 @@ export default function Orders() {
   function handleDelete() {
     if (!orderToDelete) return;
     fetch(`http://127.0.0.1:8000/api/product-to-production/${orderToDelete.id}/`, {
-      method: "DELETE",
+      method: 'DELETE',
     }).then((res) => {
       if (res.ok) {
         setOrders(orders.filter((o) => o.id !== orderToDelete.id));
@@ -132,7 +139,7 @@ export default function Orders() {
         setShowDeleteSuccess(true);
         setTimeout(() => setShowDeleteSuccess(false), 1000);
       } else {
-        alert("Błąd podczas usuwania zamówienia.");
+        alert('Błąd podczas usuwania zamówienia.');
       }
     });
   }
@@ -146,7 +153,9 @@ export default function Orders() {
           {errors.length > 0 && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
               <ul className="list-disc pl-5">
-                {errors.map((err, i) => <li key={i}>{err}</li>)}
+                {errors.map((err, i) => (
+                  <li key={i}>{err}</li>
+                ))}
               </ul>
             </div>
           )}
@@ -162,7 +171,7 @@ export default function Orders() {
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"
               >
                 <option value="">- Wybierz produkt -</option>
-                {components.map(c => (
+                {components.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.catalog_index} – {c.full_name}
                   </option>
@@ -170,9 +179,7 @@ export default function Orders() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ilość
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Ilość</label>
               <input
                 type="number"
                 name="quantity"
@@ -202,7 +209,7 @@ export default function Orders() {
                 <span className="ml-1 relative group">
                   <span
                     className="inline-block align-middle cursor-pointer group"
-                    style={{ borderBottom: "0px dotted #888" }}
+                    style={{ borderBottom: '0px dotted #888' }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -211,8 +218,20 @@ export default function Orders() {
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="white"/>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 16v-4m0-4h.01" />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        fill="white"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 16v-4m0-4h.01"
+                      />
                     </svg>
                     <span className="absolute left-1/2 -translate-x-1/2 mt-2 px-3 py-1 rounded bg-gray-800 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
                       {ORDERS_LIMIT} najnowszych
@@ -243,7 +262,7 @@ export default function Orders() {
                 maxHeight: showFilters ? 1000 : 0,
                 opacity: showFilters ? 1 : 0,
                 pointerEvents: showFilters ? 'auto' : 'none',
-                transition: "max-height 0.6s cubic-bezier(0.4,0,0.2,1), opacity 0.4s"
+                transition: 'max-height 0.6s cubic-bezier(0.4,0,0.2,1), opacity 0.4s',
               }}
             >
               <div className="p-4">

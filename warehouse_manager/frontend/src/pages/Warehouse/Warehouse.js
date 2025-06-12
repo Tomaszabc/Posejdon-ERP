@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef  } from "react";
-import { Link } from "react-router-dom";
-
+import React, { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Warehouse() {
   const [components, setComponents] = useState([]);
@@ -16,46 +15,96 @@ export default function Warehouse() {
   // Funkcja do eksportu CSV
   const exportToCSV = () => {
     // Jeśli są zaznaczone, eksportuj tylko zaznaczone, w przeciwnym razie wszystkie
-    const exportData = selectedComponents.size > 0
-      ? filteredComponents.filter(comp => selectedComponents.has(comp.id))
-      : filteredComponents;
+    const exportData =
+      selectedComponents.size > 0
+        ? filteredComponents.filter((comp) => selectedComponents.has(comp.id))
+        : filteredComponents;
 
     if (exportData.length === 0) {
-      alert("Brak danych do eksportu!");
+      alert('Brak danych do eksportu!');
       return;
     }
 
     // Ustal nagłówki
     const headers = [
-      "R", "Nazwa cała", "Stan", "Ilość dostępna", "j.m.", "Cena zakupu netto", "Cena sprzedaży netto",
-      "Kod kreskowy", "Indeks katalogowy", "Zarezerwowano", "Nazwa krótka", "Nazwa oryg.",
-      "Dostawcy dostarczą", "Odbiorcy odbiorą", "C. zakupu netto wal.", "Vat sprz.", "Marża [%]", "F",
-      "Producent", "Nr artykułu", "S", "Zał.", "Wyróżnik", "A", "Indeks producenta", "Kod CN",
-      "Kraj pochodzenia", "JPK Klasyfikacja", "Narzut [%]"
+      'R',
+      'Nazwa cała',
+      'Stan',
+      'Ilość dostępna',
+      'j.m.',
+      'Cena zakupu netto',
+      'Cena sprzedaży netto',
+      'Kod kreskowy',
+      'Indeks katalogowy',
+      'Zarezerwowano',
+      'Nazwa krótka',
+      'Nazwa oryg.',
+      'Dostawcy dostarczą',
+      'Odbiorcy odbiorą',
+      'C. zakupu netto wal.',
+      'Vat sprz.',
+      'Marża [%]',
+      'F',
+      'Producent',
+      'Nr artykułu',
+      'S',
+      'Zał.',
+      'Wyróżnik',
+      'A',
+      'Indeks producenta',
+      'Kod CN',
+      'Kraj pochodzenia',
+      'JPK Klasyfikacja',
+      'Narzut [%]',
     ];
 
     // Mapuj dane
-    const rows = exportData.map(comp => [
-      comp.r, comp.full_name, comp.stock, comp.available_quantity, comp.unit, comp.purchase_price_net, comp.sale_price_net,
-      comp.barcode, comp.catalog_index, comp.reserved, comp.short_name, comp.original_name,
-      comp.suppliers_will_deliver, comp.recipients_will_receive, comp.purchase_price_net_currency, comp.vat_sale, comp.margin_percent, comp.f,
-      comp.producer, comp.article_number, comp.s, comp.attachment, comp.marker, comp.a, comp.producer_index, comp.cn_code,
-      comp.country_of_origin, comp.jpk_classification, comp.markup_percent
+    const rows = exportData.map((comp) => [
+      comp.r,
+      comp.full_name,
+      comp.stock,
+      comp.available_quantity,
+      comp.unit,
+      comp.purchase_price_net,
+      comp.sale_price_net,
+      comp.barcode,
+      comp.catalog_index,
+      comp.reserved,
+      comp.short_name,
+      comp.original_name,
+      comp.suppliers_will_deliver,
+      comp.recipients_will_receive,
+      comp.purchase_price_net_currency,
+      comp.vat_sale,
+      comp.margin_percent,
+      comp.f,
+      comp.producer,
+      comp.article_number,
+      comp.s,
+      comp.attachment,
+      comp.marker,
+      comp.a,
+      comp.producer_index,
+      comp.cn_code,
+      comp.country_of_origin,
+      comp.jpk_classification,
+      comp.markup_percent,
     ]);
 
     // Tworzenie CSV
     let csvContent = '';
     csvContent += headers.join(';') + '\n';
-    rows.forEach(row => {
-      csvContent += row.map(val => (val !== null && val !== undefined ? `"${val}"` : "")).join(';') + '\n';
+    rows.forEach((row) => {
+      csvContent +=
+        row.map((val) => (val !== null && val !== undefined ? `"${val}"` : '')).join(';') + '\n';
     });
 
     // Pobieranie pliku
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    link.setAttribute("download", "components_export.csv");
+    link.setAttribute('download', 'components_export.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -90,7 +139,7 @@ export default function Warehouse() {
     cn_code: '',
     country_of_origin: '',
     jpk_classification: '',
-    markup_percent: '0.00'
+    markup_percent: '0.00',
   });
 
   useEffect(() => {
@@ -98,42 +147,41 @@ export default function Warehouse() {
   }, []);
 
   const fetchComponents = () => {
-    fetch("http://localhost:8000/api/components/")
-      .then(res => res.json())
-      .then(data => {
+    fetch('http://localhost:8000/api/components/')
+      .then((res) => res.json())
+      .then((data) => {
         setComponents(data);
         // Filtruj komponenty - ukryj Materiały
-        const nonMaterials = data.filter(comp => comp.r !== "Materiał");
+        const nonMaterials = data.filter((comp) => comp.r !== 'Materiał');
         setFilteredComponents(nonMaterials);
         setLoading(false);
       })
-      .catch(err => {
-        console.error("Błąd pobierania danych:", err);
+      .catch((err) => {
+        console.error('Błąd pobierania danych:', err);
         setLoading(false);
       });
   };
 
-    useEffect(() => {
-    ws.current = new window.WebSocket("ws://localhost:8000/ws/warehouse/");
+  useEffect(() => {
+    ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
     ws.current.onmessage = (event) => {
       const msg = JSON.parse(event.data);
-      if (msg.action === "refresh") {
+      if (msg.action === 'refresh') {
         fetchComponents(); // <-- Twoja funkcja pobierająca stan magazynowy
       }
     };
     return () => ws.current && ws.current.close();
   }, []);
 
-
   const handleAddComponent = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8000/api/components/", {
+      const response = await fetch('http://localhost:8000/api/components/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newComponent)
+        body: JSON.stringify(newComponent),
       });
 
       if (response.ok) {
@@ -167,7 +215,7 @@ export default function Warehouse() {
           cn_code: '',
           country_of_origin: '',
           jpk_classification: '',
-          markup_percent: '0.00'
+          markup_percent: '0.00',
         });
         fetchComponents();
       } else {
@@ -187,7 +235,7 @@ export default function Warehouse() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(editingComponent)
+        body: JSON.stringify(editingComponent),
       });
 
       if (response.ok) {
@@ -210,14 +258,14 @@ export default function Warehouse() {
     }
 
     try {
-      const deletePromises = Array.from(selectedComponents).map(id =>
+      const deletePromises = Array.from(selectedComponents).map((id) =>
         fetch(`http://localhost:8000/api/components/${id}/`, {
-          method: 'DELETE'
+          method: 'DELETE',
         })
       );
 
       const results = await Promise.all(deletePromises);
-      const failedDeletes = results.filter(response => !response.ok);
+      const failedDeletes = results.filter((response) => !response.ok);
 
       if (failedDeletes.length === 0) {
         setSelectedComponents(new Set());
@@ -235,17 +283,17 @@ export default function Warehouse() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewComponent(prev => ({
+    setNewComponent((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
-    setEditingComponent(prev => ({
+    setEditingComponent((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -268,7 +316,7 @@ export default function Warehouse() {
     if (selectedComponents.size === filteredComponents.length) {
       setSelectedComponents(new Set());
     } else {
-      setSelectedComponents(new Set(filteredComponents.map(comp => comp.id)));
+      setSelectedComponents(new Set(filteredComponents.map((comp) => comp.id)));
     }
   };
 
@@ -292,7 +340,7 @@ export default function Warehouse() {
       >
         Przypisz części do produktu (Parts Builder)
       </Link>
-      
+
       {/* Header */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
@@ -305,41 +353,46 @@ export default function Warehouse() {
               type="file"
               accept=".csv"
               id="import-csv"
-              style={{ display: "none" }}
+              style={{ display: 'none' }}
               onChange={async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
                 const formData = new FormData();
-                formData.append("file", file);
+                formData.append('file', file);
 
-                const token = localStorage.getItem("access");
+                const token = localStorage.getItem('access');
                 try {
-                  const response = await fetch("http://localhost:8000/api/components/import/", {
-                    method: "POST",
+                  const response = await fetch('http://localhost:8000/api/components/import/', {
+                    method: 'POST',
                     headers: {
                       Authorization: `Bearer ${token}`,
                     },
                     body: formData,
                   });
                   if (response.ok) {
-                    alert("Import zakończony sukcesem!");
+                    alert('Import zakończony sukcesem!');
                     fetchComponents();
                   } else {
-                    alert("Błąd importu CSV.");
+                    alert('Błąd importu CSV.');
                   }
                 } catch (err) {
-                  alert("Błąd importu CSV.");
+                  alert('Błąd importu CSV.');
                 }
-                e.target.value = "";
+                e.target.value = '';
               }}
             />
             <button
               className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
               title="Importuj z CSV"
-              onClick={() => document.getElementById("import-csv").click()}
+              onClick={() => document.getElementById('import-csv').click()}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+                />
               </svg>
               Importuj CSV
             </button>
@@ -349,7 +402,12 @@ export default function Warehouse() {
               title="Eksportuj do CSV"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 4v16m8-8H4"
+                />
               </svg>
               Eksportuj CSV
             </button>
@@ -359,7 +417,12 @@ export default function Warehouse() {
                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
                 </svg>
                 Usuń zaznaczone ({selectedComponents.size})
               </button>
@@ -369,7 +432,12 @@ export default function Warehouse() {
               className="bg-ocean-600 hover:bg-ocean-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 4v16m8-8H4"
+                />
               </svg>
               Dodaj komponent
             </button>
@@ -379,7 +447,7 @@ export default function Warehouse() {
         {filteredComponents.length > 0 && (
           <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
-              💡 <strong>Liczba komponentów:</strong> {filteredComponents.length} | 
+              💡 <strong>Liczba komponentów:</strong> {filteredComponents.length} |
               {selectedComponents.size > 0 && (
                 <span className="ml-4">
                   <strong>Zaznaczone:</strong> {selectedComponents.size} pozycji
@@ -397,8 +465,18 @@ export default function Warehouse() {
             <div className="p-6">
               <div className="flex items-center mb-4">
                 <div className="flex-shrink-0">
-                  <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.083 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  <svg
+                    className="w-10 h-10 text-red-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.083 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
                   </svg>
                 </div>
                 <div className="ml-4">
@@ -410,7 +488,8 @@ export default function Warehouse() {
               </div>
               <div className="bg-gray-50 rounded-lg p-3 mb-4">
                 <p className="text-xs text-gray-600">
-                  Ta operacja jest nieodwracalna. Wszystkie dane o zaznaczonych komponentach zostaną trwale usunięte.
+                  Ta operacja jest nieodwracalna. Wszystkie dane o zaznaczonych komponentach zostaną
+                  trwale usunięte.
                 </p>
               </div>
               <div className="flex justify-end gap-3">
@@ -444,7 +523,12 @@ export default function Warehouse() {
                   className="text-gray-400 hover:text-gray-600"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -454,7 +538,9 @@ export default function Warehouse() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Podstawowe informacje */}
                 <div className="col-span-full">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Podstawowe informacje</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Podstawowe informacje
+                  </h3>
                 </div>
 
                 <div>
@@ -471,7 +557,9 @@ export default function Warehouse() {
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nazwa pełna *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nazwa pełna *
+                  </label>
                   <input
                     type="text"
                     name="full_name"
@@ -484,7 +572,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nazwa krótka</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nazwa krótka
+                  </label>
                   <input
                     type="text"
                     name="short_name"
@@ -495,7 +585,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Jednostka miary</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Jednostka miary
+                  </label>
                   <input
                     type="text"
                     name="unit"
@@ -506,7 +598,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Stan magazynowy</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Stan magazynowy
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -523,7 +617,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cena zakupu netto (zł)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cena zakupu netto (zł)
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -535,7 +631,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cena sprzedaży netto (zł)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cena sprzedaży netto (zł)
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -547,7 +645,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">VAT sprzedaży (%)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    VAT sprzedaży (%)
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -564,7 +664,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Kod kreskowy</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Kod kreskowy
+                  </label>
                   <input
                     type="text"
                     name="barcode"
@@ -575,7 +677,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Indeks katalogowy</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Indeks katalogowy
+                  </label>
                   <input
                     type="text"
                     name="catalog_index"
@@ -597,7 +701,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Numer artykułu</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Numer artykułu
+                  </label>
                   <input
                     type="text"
                     name="article_number"
@@ -608,7 +714,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Kraj pochodzenia</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Kraj pochodzenia
+                  </label>
                   <input
                     type="text"
                     name="country_of_origin"
@@ -651,7 +759,12 @@ export default function Warehouse() {
                   className="text-gray-400 hover:text-gray-600"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -661,7 +774,9 @@ export default function Warehouse() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Podstawowe informacje */}
                 <div className="col-span-full">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Podstawowe informacje</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Podstawowe informacje
+                  </h3>
                 </div>
 
                 <div>
@@ -679,7 +794,9 @@ export default function Warehouse() {
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nazwa pełna *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nazwa pełna *
+                  </label>
                   <input
                     type="text"
                     name="full_name"
@@ -691,7 +808,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nazwa krótka</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nazwa krótka
+                  </label>
                   <input
                     type="text"
                     name="short_name"
@@ -702,7 +821,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Jednostka miary</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Jednostka miary
+                  </label>
                   <input
                     type="text"
                     name="unit"
@@ -713,7 +834,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Stan magazynowy</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Stan magazynowy
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -730,7 +853,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cena zakupu netto (zł)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cena zakupu netto (zł)
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -742,7 +867,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cena sprzedaży netto (zł)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cena sprzedaży netto (zł)
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -754,7 +881,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">VAT sprzedaży (%)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    VAT sprzedaży (%)
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -771,7 +900,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Kod kreskowy</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Kod kreskowy
+                  </label>
                   <input
                     type="text"
                     name="barcode"
@@ -782,7 +913,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Indeks katalogowy</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Indeks katalogowy
+                  </label>
                   <input
                     type="text"
                     name="catalog_index"
@@ -804,7 +937,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Numer artykułu</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Numer artykułu
+                  </label>
                   <input
                     type="text"
                     name="article_number"
@@ -815,7 +950,9 @@ export default function Warehouse() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Kraj pochodzenia</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Kraj pochodzenia
+                  </label>
                   <input
                     type="text"
                     name="country_of_origin"
@@ -855,41 +992,104 @@ export default function Warehouse() {
                 <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
                   <input
                     type="checkbox"
-                    checked={filteredComponents.length > 0 && selectedComponents.size === filteredComponents.length}
+                    checked={
+                      filteredComponents.length > 0 &&
+                      selectedComponents.size === filteredComponents.length
+                    }
                     onChange={selectAllComponents}
                     className="rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
                   />
                 </th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Akcje</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">R</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider min-w-[200px]">Nazwa cała</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Stan</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Ilość dostępna</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">j.m.</th>
-                <th className="px-3 py-4 text-right text-xs font-semibold uppercase tracking-wider">Cena zakupu netto</th>
-                <th className="px-3 py-4 text-right text-xs font-semibold uppercase tracking-wider">Cena sprzedaży netto</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">Kod kreskowy</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">Indeks katalogowy</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Zarezerwowano</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">Nazwa krótka</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">Nazwa oryg.</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Dostawcy dostarczą</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Odbiorcy odbiorą</th>
-                <th className="px-3 py-4 text-right text-xs font-semibold uppercase tracking-wider">C. zakupu netto wal.</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Vat sprz.</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Marża [%]</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">F</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">Producent</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">Nr artykułu</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">S</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Zał.</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">Wyróżnik</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">A</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">Indeks producenta</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">Kod CN</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">Kraj pochodzenia</th>
-                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">JPK Klasyfikacja</th>
-                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">Narzut [%]</th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  Akcje
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  R
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider min-w-[200px]">
+                  Nazwa cała
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  Stan
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  Ilość dostępna
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  j.m.
+                </th>
+                <th className="px-3 py-4 text-right text-xs font-semibold uppercase tracking-wider">
+                  Cena zakupu netto
+                </th>
+                <th className="px-3 py-4 text-right text-xs font-semibold uppercase tracking-wider">
+                  Cena sprzedaży netto
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  Kod kreskowy
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  Indeks katalogowy
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  Zarezerwowano
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  Nazwa krótka
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  Nazwa oryg.
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  Dostawcy dostarczą
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  Odbiorcy odbiorą
+                </th>
+                <th className="px-3 py-4 text-right text-xs font-semibold uppercase tracking-wider">
+                  C. zakupu netto wal.
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  Vat sprz.
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  Marża [%]
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  F
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  Producent
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  Nr artykułu
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  S
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  Zał.
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  Wyróżnik
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  A
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  Indeks producenta
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  Kod CN
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  Kraj pochodzenia
+                </th>
+                <th className="px-3 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  JPK Klasyfikacja
+                </th>
+                <th className="px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                  Narzut [%]
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -897,18 +1097,32 @@ export default function Warehouse() {
                 <tr>
                   <td colSpan={31} className="text-center py-12 text-gray-500">
                     <div className="flex flex-col items-center">
-                      <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      <svg
+                        className="w-16 h-16 text-gray-300 mb-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1"
+                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                        />
                       </svg>
-                      <p className="text-lg font-medium text-gray-400">Brak komponentów w magazynie</p>
-                      <p className="text-sm text-gray-400">Dodaj pierwszy komponent, aby rozpocząć</p>
+                      <p className="text-lg font-medium text-gray-400">
+                        Brak komponentów w magazynie
+                      </p>
+                      <p className="text-sm text-gray-400">
+                        Dodaj pierwszy komponent, aby rozpocząć
+                      </p>
                     </div>
                   </td>
                 </tr>
               ) : (
                 filteredComponents.map((comp, index) => (
-                  <tr 
-                    key={comp.id} 
+                  <tr
+                    key={comp.id}
                     className={`hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
                     } ${selectedComponents.has(comp.id) ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`}
@@ -927,16 +1141,31 @@ export default function Warehouse() {
                         className="bg-blue-100 hover:bg-blue-200 text-blue-700 p-2 rounded-lg transition-colors"
                         title="Edytuj komponent"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                          />
                         </svg>
                       </button>
                     </td>
                     <td className="px-3 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        comp.r === 'Towar' ? 'bg-green-100 text-green-800' : 
-                        comp.r === 'Usługa' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          comp.r === 'Towar'
+                            ? 'bg-green-100 text-green-800'
+                            : comp.r === 'Usługa'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
                         {comp.r || 'N/A'}
                       </span>
                     </td>
@@ -944,14 +1173,22 @@ export default function Warehouse() {
                       <div className="text-sm font-medium text-gray-900">{comp.full_name}</div>
                     </td>
                     <td className="px-3 py-4 text-center">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        parseFloat(comp.stock) > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          parseFloat(comp.stock) > 0
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
                         {comp.stock}
                       </span>
                     </td>
-                    <td className="px-3 py-4 text-center text-sm text-gray-700">{comp.available_quantity}</td>
-                    <td className="px-3 py-4 text-center text-sm text-gray-700 font-medium">{comp.unit}</td>
+                    <td className="px-3 py-4 text-center text-sm text-gray-700">
+                      {comp.available_quantity}
+                    </td>
+                    <td className="px-3 py-4 text-center text-sm text-gray-700 font-medium">
+                      {comp.unit}
+                    </td>
                     <td className="px-3 py-4 text-right text-sm font-medium text-gray-900">
                       {parseFloat(comp.purchase_price_net).toFixed(2)} zł
                     </td>
@@ -979,26 +1216,42 @@ export default function Warehouse() {
                     <td className="px-3 py-4 text-sm text-gray-700">
                       {comp.original_name || <span className="text-gray-400">—</span>}
                     </td>
-                    <td className="px-3 py-4 text-center text-sm text-gray-700">{comp.suppliers_will_deliver}</td>
-                    <td className="px-3 py-4 text-center text-sm text-gray-700">{comp.recipients_will_receive}</td>
+                    <td className="px-3 py-4 text-center text-sm text-gray-700">
+                      {comp.suppliers_will_deliver}
+                    </td>
+                    <td className="px-3 py-4 text-center text-sm text-gray-700">
+                      {comp.recipients_will_receive}
+                    </td>
                     <td className="px-3 py-4 text-right text-sm text-gray-700">
                       {parseFloat(comp.purchase_price_net_currency).toFixed(2)}
                     </td>
-                    <td className="px-3 py-4 text-center text-sm text-gray-700">{comp.vat_sale}%</td>
-                    <td className="px-3 py-4 text-center text-sm font-medium text-blue-600">{comp.margin_percent}%</td>
-                    <td className="px-3 py-4 text-center text-sm text-gray-700">{comp.f || <span className="text-gray-400">—</span>}</td>
+                    <td className="px-3 py-4 text-center text-sm text-gray-700">
+                      {comp.vat_sale}%
+                    </td>
+                    <td className="px-3 py-4 text-center text-sm font-medium text-blue-600">
+                      {comp.margin_percent}%
+                    </td>
+                    <td className="px-3 py-4 text-center text-sm text-gray-700">
+                      {comp.f || <span className="text-gray-400">—</span>}
+                    </td>
                     <td className="px-3 py-4 text-sm text-gray-700">
                       {comp.producer || <span className="text-gray-400">—</span>}
                     </td>
                     <td className="px-3 py-4 text-sm text-gray-700">
                       {comp.article_number || <span className="text-gray-400">—</span>}
                     </td>
-                    <td className="px-3 py-4 text-center text-sm text-gray-700">{comp.s || <span className="text-gray-400">—</span>}</td>
-                    <td className="px-3 py-4 text-center text-sm text-gray-700">{comp.attachment || <span className="text-gray-400">—</span>}</td>
+                    <td className="px-3 py-4 text-center text-sm text-gray-700">
+                      {comp.s || <span className="text-gray-400">—</span>}
+                    </td>
+                    <td className="px-3 py-4 text-center text-sm text-gray-700">
+                      {comp.attachment || <span className="text-gray-400">—</span>}
+                    </td>
                     <td className="px-3 py-4 text-sm text-gray-700">
                       {comp.marker || <span className="text-gray-400">—</span>}
                     </td>
-                    <td className="px-3 py-4 text-center text-sm text-gray-700">{comp.a || <span className="text-gray-400">—</span>}</td>
+                    <td className="px-3 py-4 text-center text-sm text-gray-700">
+                      {comp.a || <span className="text-gray-400">—</span>}
+                    </td>
                     <td className="px-3 py-4 text-sm text-gray-700">
                       {comp.producer_index || <span className="text-gray-400">—</span>}
                     </td>
@@ -1011,7 +1264,9 @@ export default function Warehouse() {
                     <td className="px-3 py-4 text-sm text-gray-700">
                       {comp.jpk_classification || <span className="text-gray-400">—</span>}
                     </td>
-                    <td className="px-3 py-4 text-center text-sm text-gray-700">{comp.markup_percent}%</td>
+                    <td className="px-3 py-4 text-center text-sm text-gray-700">
+                      {comp.markup_percent}%
+                    </td>
                   </tr>
                 ))
               )}
@@ -1023,7 +1278,8 @@ export default function Warehouse() {
       {/* Footer info */}
       {filteredComponents.length > 0 && (
         <div className="mt-6 text-center text-sm text-gray-500">
-          Wyświetlono {filteredComponents.length} komponentów • Przewiń w prawo, aby zobaczyć wszystkie kolumny
+          Wyświetlono {filteredComponents.length} komponentów • Przewiń w prawo, aby zobaczyć
+          wszystkie kolumny
         </div>
       )}
     </div>

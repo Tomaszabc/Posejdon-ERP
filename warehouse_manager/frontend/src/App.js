@@ -1,39 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Orders from "./pages/Order/Orders";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import Login from "./components/Login";
-import { jwtDecode } from "jwt-decode";
-import UserProfile from "./pages/UserProfile";
-import Home from "./pages/Home";
-import ProtectedRoute from "./ProtectedRoute";
-import Production from "./pages/Production/Production";
-import Warehouse from "./pages/Warehouse/Warehouse";
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Orders from './pages/Order/Orders';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Login from './components/Login';
+import { jwtDecode } from 'jwt-decode';
+import UserProfile from './pages/UserProfile';
+import Home from './pages/Home';
+import ProtectedRoute from './ProtectedRoute';
+import Production from './pages/Production/Production';
+import Warehouse from './pages/Warehouse/Warehouse';
 
-import PartsBuilder from "./pages/Warehouse/PartsBuilder/PartsBuilder.js";
-import ProductsAndGoods from "./pages/Warehouse/ProductsAndGoods/ProductsAndGoods.js";
-import WarehouseIndex from "./pages/Warehouse/WarehouseIndex";
-import OrderDetail from "./pages/OrderDetails/OrderDetail";
+import PartsBuilder from './pages/Warehouse/PartsBuilder/PartsBuilder.js';
+import ProductsAndGoods from './pages/Warehouse/ProductsAndGoods/ProductsAndGoods.js';
+import WarehouseIndex from './pages/Warehouse/WarehouseIndex';
+import OrderDetail from './pages/OrderDetails/OrderDetail';
 
 function App() {
   const [user, setUser] = useState(undefined);
 
   useEffect(() => {
     // Użyj tego samego tokena co w logowaniu
-    const token = localStorage.getItem("access");
+    const token = localStorage.getItem('access');
     if (token) {
-      fetch("http://localhost:8000/api/auth/user/", {
+      fetch('http://localhost:8000/api/auth/user/', {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
+          'Content-Type': 'application/json',
+        },
       })
-        .then(res => {
+        .then((res) => {
           if (!res.ok) throw new Error();
           return res.json();
         })
-        .then(data => setUser({ username: data.username, email: data.email }))
+        .then((data) => setUser({ username: data.username, email: data.email }))
         .catch(() => setUser(null));
     }
   }, []);
@@ -86,7 +86,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-             <Route
+            <Route
               path="/warehouse/components"
               element={
                 <ProtectedRoute user={user}>
