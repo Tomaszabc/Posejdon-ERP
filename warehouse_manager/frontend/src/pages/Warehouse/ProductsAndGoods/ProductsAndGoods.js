@@ -338,7 +338,7 @@ export default function ProductsAndGoods() {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-ocean-900 mb-2">🧱 Materiały produkcyjne</h1>
+            <h1 className="text-4xl font-bold text-ocean-900 mb-2">🧱 Surowce produkcyjne</h1>
             <p className="text-gray-600">Materiały magazynowe (typ R = "Materiał")</p>
           </div>
           <div className="flex gap-3">

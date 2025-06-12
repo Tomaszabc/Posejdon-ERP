@@ -338,7 +338,7 @@ export default function Warehouse() {
         to="/warehouse/parts-builder"
         className="inline-block mt-4 px-4 py-2 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 transition"
       >
-        Przypisz części do produktu (Parts Builder)
+        Przypisz komponenty do produktu (Parts Builder)
       </Link>
 
       {/* Header */}

@@ -53,7 +53,7 @@ export default function WarehouseIndex() {
           </svg>
           <span className="text-lg font-semibold text-ocean-900">Parts Builder</span>
           <span className="text-sm text-gray-500 mt-2 text-center">
-            Przypisz części do produktów
+            Przypisz komponenty do produktów
           </span>
         </Link>
         {/* Kafelek 3 */}
@@ -79,9 +79,9 @@ export default function WarehouseIndex() {
             />
             <path d="M8 2v4M16 2v4M4 10h16" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span className="text-lg font-semibold text-ocean-900">Produkty i towary</span>
+          <span className="text-lg font-semibold text-ocean-900">Surowce</span>
           <span className="text-sm text-gray-500 mt-2 text-center">
-            Lista gotowych produktów i towarów
+            Lista surowców do budowy komponentów
           </span>
         </Link>
       </div>
