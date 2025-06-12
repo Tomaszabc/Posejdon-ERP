@@ -1,3 +1,6 @@
+Formatowanie:
+npx prettier --write .
+
 Frontend to React. Backend Python.
 
 Żeby uruchomić projekt Backend trzeba zainstalować wtyczki z requirements:
@@ -8,8 +11,8 @@ Oraz wszystko czego brakuje w requirements ale wymaga tego aplikacja.
 Potem tworzenie bazy:
 python manage.py migrate
 
-Uruchomienie serwera:
-python manage.py runserver
+Uruchomienie serwera backend z websockets (Channels):
+daphne warehouse_manager.asgi:application
 
 `http://127.0.0.1:8000/`
 
