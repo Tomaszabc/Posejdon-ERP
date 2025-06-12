@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import OrderDeleteModal from '../../components/modals/OrderDeleteModal';
 import MissingErrorModal from '../../components/modals/MissingErrorModal';
+import ConfirmProductionModal from './ConfirmProductionModal'; // dodaj import
 
 
 export default function ComponentProduction() {
@@ -15,6 +16,8 @@ export default function ComponentProduction() {
   const [showMissingModal, setShowMissingModal] = useState(false);
   const [missingMaterials, setMissingMaterials] = useState([]);
   const [missingMessage, setMissingMessage] = useState('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
 
   useEffect(() => {
     // Pobierz tylko komponenty (r === 'Towar')
@@ -61,7 +64,7 @@ function handleSubmit(e) {
       .then(res => res.json().then(data => ({ status: res.status, data })))
       .then(({ status, data }) => {
         if (status === 200) {
-          handleConfirmSubmit();
+          setShowConfirmModal(true);
         } else if (data.missing) {
           setMissingMaterials(data.missing);
           setMissingMessage(data.error || 'Brak wystarczającej ilości materiałów.');
@@ -74,32 +77,33 @@ function handleSubmit(e) {
   }
 }
 
-  function handleConfirmSubmit() {
-    fetch('http://127.0.0.1:8000/api/product-to-production/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        component: form.component,
-        quantity: form.quantity,
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Błąd zapisu zlecenia produkcji komponentu');
-        return res.json();
-      })
-      .then(() => {
-        fetchOrders();
-        setForm({
-          component: '',
-          quantity: '',
-        });
+
+function handleConfirmSubmit() {
+  fetch('http://127.0.0.1:8000/api/product-to-production/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      component: form.component,
+      quantity: form.quantity,
+    }),
+  })
+    .then((res) => res.json().then((data) => ({ status: res.status, data })))
+    .then(({ status, data }) => {
+      if (status === 201) {
         setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 1000);
-      })
-      .catch((err) => setErrors([err.message]));
-  }
+        setForm({ component: '', quantity: '' });
+        fetchOrders();
+        setTimeout(() => setShowSuccess(false), 1200);
+      } else {
+        setErrors([data.error || 'Błąd podczas dodawania zlecenia.']);
+      }
+      setShowConfirmModal(false); // zamknij modal po próbie
+    })
+    .catch(() => {
+      setErrors(['Błąd połączenia z serwerem.']);
+      setShowConfirmModal(false);
+    });
+}
 
   function openDeleteModal(order) {
     setOrderToDelete(order);
@@ -305,6 +309,17 @@ function handleSubmit(e) {
         missing={missingMaterials}
         onClose={() => setShowMissingModal(false)}
       />
+      <ConfirmProductionModal
+        order={{
+            id: null,
+            component_catalog_index: components.find(c => c.id == form.component)?.catalog_index || '',
+            component_full_name: components.find(c => c.id == form.component)?.full_name || '',
+            quantity: form.quantity,
+        }}
+        show={showConfirmModal}
+        onCancel={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmSubmit}
+        />
     </div>
   );
 }

@@ -245,8 +245,15 @@ class ProductToProductionListCreateView(generics.ListCreateAPIView):
             if material.stock < 0:
                 material.stock = 0
             material.save()
-
-
+        # Wyślij refresh do Channels tylko raz po wszystkich zmianach
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "warehouse",
+            {
+                "type": "warehouse_update",
+                "data": {"action": "refresh"}
+            }
+        )
 
 @api_view(['POST'])
 def produce_product_to_production(request, order_id):
