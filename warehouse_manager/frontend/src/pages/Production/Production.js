@@ -5,7 +5,7 @@ import UndoModal from "./UndoModal";
 import SuccessModal from "./SuccessModal";
 import ConfirmProductionModal from "./ConfirmProductionModal";
 import UndoSuccessModal from "./UndoSuccessModal";
-import ErrorModal from "../../components/MissingErrorModal"; // dostosuj ścieżkę
+import ErrorModal from "../../components/modals/MissingErrorModal"; // dostosuj ścieżkę
 
 
 export default function Production() {

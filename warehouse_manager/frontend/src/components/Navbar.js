@@ -26,9 +26,7 @@ export default function Navbar({ user, setUser }) {
               <Link to="/" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Strona główna</Link>
               {user && (
                 <>
-                  <a href="/user" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
-                    Moje konto: {user?.username || user?.user_id}
-                  </a>
+                 
                   {/* Dropdown desktop */}
                   <div className="relative">
                     <button
@@ -54,6 +52,9 @@ export default function Navbar({ user, setUser }) {
                   <Link to="/warehouse" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Magazyn</Link>
                   <Link to="/orders" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Zamówienie produkcyjne</Link>
                   <Link to="/production" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">Produkcja</Link>
+                   <a href="/user" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
+                    Moje konto: {user?.username || user?.user_id}
+                  </a>
                   <button
                     onClick={handleLogout}
                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
@@ -87,9 +88,7 @@ export default function Navbar({ user, setUser }) {
           <Link to="/" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Strona główna</Link>
           {user ? (
             <>
-              <a href="/user" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
-                Moje konto: {user?.username || user?.user_id}
-              </a>
+             
               {/* Dropdown mobile */}
               <div>
                 <button
@@ -109,8 +108,13 @@ export default function Navbar({ user, setUser }) {
                   </div>
                 )}
               </div>
+
+              <a href="/warehouse" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Magazyn</a>
               <a href="/orders" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Zamówienia</a>
               <a href="/production" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">Produkcja</a>
+               <a href="/user" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+                Moje konto: {user?.username || user?.user_id}
+              </a>
               <button
                 onClick={handleLogout}
                 className="block w-full text-left px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700"
