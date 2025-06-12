@@ -230,10 +230,21 @@ def components_for_order(request):
     serializer = ComponentSerializer(queryset, many=True)
     return Response(serializer.data)
 
-# ProductToProduction
 class ProductToProductionListCreateView(generics.ListCreateAPIView):
-    queryset = ProductToProduction.objects.all().order_by('-created_at')
+    queryset = ProductToProduction.objects.all()
     serializer_class = ProductToProductionSerializer
+
+    def perform_create(self, serializer):
+        order = serializer.save()
+        # Odejmij materiały ze stanu magazynowego
+        parts = PartsBuilder.objects.filter(product=order.component)
+        for part in parts:
+            material = part.material
+            qty_to_subtract = float(part.quantity_needed) * order.quantity
+            material.stock = float(material.stock) - qty_to_subtract
+            if material.stock < 0:
+                material.stock = 0
+            material.save()
 
 
 
