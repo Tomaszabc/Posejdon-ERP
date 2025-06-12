@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import OrderDeleteModal from '../../components/modals/OrderDeleteModal';
+import MissingErrorModal from '../../components/modals/MissingErrorModal';
+
 
 export default function ComponentProduction() {
   const [form, setForm] = useState({ component: '', quantity: '' });
@@ -10,6 +12,9 @@ export default function ComponentProduction() {
   const [showModal, setShowModal] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState(null);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
+  const [showMissingModal, setShowMissingModal] = useState(false);
+  const [missingMaterials, setMissingMaterials] = useState([]);
+  const [missingMessage, setMissingMessage] = useState('');
 
   useEffect(() => {
     // Pobierz tylko komponenty (r === 'Towar')
@@ -45,7 +50,6 @@ function handleSubmit(e) {
   if (!form.quantity) newErrors.push('Podaj ilość.');
   setErrors(newErrors);
   if (newErrors.length === 0) {
-    // Najpierw sprawdź dostępność materiałów
     fetch('http://127.0.0.1:8000/api/check-materials-availability/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -57,15 +61,11 @@ function handleSubmit(e) {
       .then(res => res.json().then(data => ({ status: res.status, data })))
       .then(({ status, data }) => {
         if (status === 200) {
-          handleConfirmSubmit(); // Materiały OK, złóż zlecenie
+          handleConfirmSubmit();
         } else if (data.missing) {
-          setErrors([
-            data.error,
-            ...data.missing.map(
-              m =>
-                `Brakuje: ${m.name} (${m.sku}) – potrzeba ${m.needed} ${m.unit}, dostępne: ${m.available} ${m.unit}`
-            ),
-          ]);
+          setMissingMaterials(data.missing);
+          setMissingMessage(data.error || 'Brak wystarczającej ilości materiałów.');
+          setShowMissingModal(true);
         } else {
           setErrors([data.error || 'Błąd sprawdzania dostępności materiałów.']);
         }
@@ -299,6 +299,12 @@ function handleSubmit(e) {
           </div>
         </div>
       )}
+      <MissingErrorModal
+        show={showMissingModal}
+        message={missingMessage}
+        missing={missingMaterials}
+        onClose={() => setShowMissingModal(false)}
+      />
     </div>
   );
 }
