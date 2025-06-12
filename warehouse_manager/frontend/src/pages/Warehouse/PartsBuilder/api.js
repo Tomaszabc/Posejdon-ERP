@@ -32,3 +32,10 @@ export async function postRecipeItem(product, material, quantity) {
     body: JSON.stringify({ product, material, quantity_needed: quantity }),
   });
 }
+
+export async function fetchComponents() {
+  const res = await fetch('/api/components/?r=Komponent');
+  if (!res.ok) return [];
+  return await res.json();
+}
+

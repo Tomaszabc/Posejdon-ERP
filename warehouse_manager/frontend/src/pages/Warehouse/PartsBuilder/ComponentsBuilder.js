@@ -4,18 +4,18 @@ import ConfirmAddModal from './ConfirmAddModal';
 import ConfirmEditModal from './ConfirmEditModal';
 
 import {
-  fetchProducts,
   fetchMaterials,
+  fetchComponents, // Dodaj funkcję pobierającą tylko komponenty
   fetchRecipe,
   deleteRecipeItem,
   patchRecipeItem,
   postRecipeItem,
 } from './api';
 
-export default function PartsBuilder() {
-  const [products, setProducts] = useState([]);
+export default function ComponentsBuilder() {
+  const [components, setComponents] = useState([]);
   const [materials, setMaterials] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState('');
+  const [selectedComponent, setSelectedComponent] = useState('');
   const [selectedMaterial, setSelectedMaterial] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [recipe, setRecipe] = useState([]);
@@ -23,9 +23,21 @@ export default function PartsBuilder() {
   const [modal, setModal] = useState({ open: false, action: null, payload: null });
 
   useEffect(() => {
-    fetchProducts().then(setProducts);
-    fetchMaterials().then(setMaterials);
+    fetchComponents().then(setComponents); // pobierz tylko komponenty (r === 'Komponent')
+    fetchMaterials().then(setMaterials);   // pobierz tylko towary (r === 'Towar')
   }, []);
+
+  useEffect(() => {
+    if (selectedComponent) {
+      setLoading(true);
+      fetchRecipe(selectedComponent).then((data) => {
+        setRecipe(data);
+        setLoading(false);
+      });
+    } else {
+      setRecipe([]);
+    }
+  }, [selectedComponent]);
 
   const handleDelete = (id) => {
     setModal({
@@ -46,21 +58,9 @@ export default function PartsBuilder() {
     setModal({ open: false, action: null, payload: null });
   };
 
-  useEffect(() => {
-    if (selectedProduct) {
-      setLoading(true);
-      fetchRecipe(selectedProduct).then((data) => {
-        setRecipe(data);
-        setLoading(false);
-      });
-    } else {
-      setRecipe([]);
-    }
-  }, [selectedProduct]);
-
   const handleAdd = (e) => {
     e.preventDefault();
-    if (!selectedProduct || !selectedMaterial || quantity <= 0) return;
+    if (!selectedComponent || !selectedMaterial || quantity <= 0) return;
     const found = recipe.find((r) => String(r.material) === String(selectedMaterial));
     setModal({
       open: true,
@@ -78,13 +78,13 @@ export default function PartsBuilder() {
 
   const confirmAdd = async () => {
     const { materialId, quantity } = modal.payload;
-    const res = await postRecipeItem(selectedProduct, materialId, quantity);
+    const res = await postRecipeItem(selectedComponent, materialId, quantity);
     if (!res.ok) {
       alert('Błąd dodawania materiału do produktu.');
       setModal({ open: false, action: null, payload: null });
       return;
     }
-    fetchRecipe(selectedProduct).then(setRecipe);
+    fetchRecipe(selectedComponent).then(setRecipe);
     setSelectedMaterial('');
     setQuantity(1);
     setModal({ open: false, action: null, payload: null });
@@ -100,7 +100,7 @@ export default function PartsBuilder() {
       setModal({ open: false, action: null, payload: null });
       return;
     }
-    fetchRecipe(selectedProduct).then(setRecipe);
+    fetchRecipe(selectedComponent).then(setRecipe);
     setSelectedMaterial('');
     setQuantity(1);
     setModal({ open: false, action: null, payload: null });
@@ -142,62 +142,46 @@ export default function PartsBuilder() {
       <div className="max-w-3xl mx-auto py-10">
         <h1 className="text-3xl font-bold mb-6">Components Builder</h1>
         <p className="text-gray-700 mb-4">
-          Tutaj możesz przypisywać materiały do produktów.
+          Tutaj możesz przypisywać towary do komponentów.
         </p>
 
-        {/* Wybór produktu */}
+        {/* Wybór komponentu */}
         <div className="mb-6">
-          <label className="block mb-1 font-medium">Wybierz produkt:</label>
-         <select
+          <label className="block mb-1 font-medium">Wybierz komponent:</label>
+          <select
             className="w-full border px-3 py-2 rounded"
-            value={selectedMaterial}
-            onChange={(e) => setSelectedMaterial(e.target.value)}
-            required
-            >
-            <option value="">-- wybierz towar --</option>
-            {materials
-                .filter((mat) => mat.r === 'Towar')
-                .map((mat) => (
-                <option key={mat.id} value={mat.id}>
-                    📦 {mat.full_name}
+            value={selectedComponent}
+            onChange={(e) => setSelectedComponent(e.target.value)}
+          >
+            <option value="">-- wybierz komponent --</option>
+            {components
+              .filter((comp) => comp.r === 'Towar')
+              .map((comp) => (
+                <option key={comp.id} value={comp.id}>
+                  📦 {comp.full_name}
                 </option>
-                ))}
-            </select>
+              ))}
+          </select>
         </div>
 
-        {/* Formularz dodawania/edycji materiału */}
-        {selectedProduct && (
+        {/* Formularz dodawania materiału */}
+        {selectedComponent && (
           <form onSubmit={handleAdd} className="mb-8 flex gap-4 items-end">
             <div className="flex-1">
-              <label className="block mb-1 font-medium flex items-center gap-4">
-                Materiał:
-                <span className="text-sm font-normal flex items-center gap-2">
-                  <span title="Materiał" className="flex items-center">
-                    <span role="img" aria-label="materiał">
-                      🧱
-                    </span>{' '}
-                    Materiał
-                  </span>
-                  <span title="Towar" className="flex items-center">
-                    <span role="img" aria-label="towar">
-                      📦
-                    </span>{' '}
-                    Towar
-                  </span>
-                </span>
-              </label>
               <select
                 className="w-full border px-3 py-2 rounded"
                 value={selectedMaterial}
                 onChange={(e) => setSelectedMaterial(e.target.value)}
                 required
               >
-                <option value="">-- wybierz materiał lub towar --</option>
-                {materials.map((mat) => (
-                  <option key={mat.id} value={mat.id}>
-                    {mat.r === 'Materiał' ? '🧱' : mat.r === 'Towar' ? '📦' : '🔧'} {mat.full_name}
-                  </option>
-                ))}
+                <option value="">-- wybierz materiał --</option>
+                {materials
+                  .filter((mat) => mat.r === 'Materiał')
+                  .map((mat) => (
+                    <option key={mat.id} value={mat.id}>
+                      🧱 {mat.full_name}
+                    </option>
+                  ))}
               </select>
             </div>
             <div>
@@ -214,15 +198,15 @@ export default function PartsBuilder() {
             </div>
             <button
               type="submit"
-              className={`px-6 py-2 rounded text-white ${isEdit ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-ocean-600 hover:bg-ocean-700'}`}
+              className="px-6 py-2 rounded text-white bg-ocean-600 hover:bg-ocean-700"
             >
-              {isEdit ? 'Edytuj ilość' : 'Dodaj materiał'}
+              Dodaj towar
             </button>
           </form>
         )}
 
         {/* Lista materiałów przypisanych do produktu */}
-        {selectedProduct && (
+        {selectedComponent && (
           <div>
             <h2 className="text-xl font-semibold mb-2">Materiały przypisane do produktu:</h2>
             {loading ? (
