@@ -142,24 +142,27 @@ export default function PartsBuilder() {
       <div className="max-w-3xl mx-auto py-10">
         <h1 className="text-3xl font-bold mb-6">Components Builder</h1>
         <p className="text-gray-700 mb-4">
-          Tutaj możesz przypisywać materiały do produktów produkcyjnych (BOM).
+          Tutaj możesz przypisywać materiały do produktów.
         </p>
 
         {/* Wybór produktu */}
         <div className="mb-6">
           <label className="block mb-1 font-medium">Wybierz produkt:</label>
-          <select
+         <select
             className="w-full border px-3 py-2 rounded"
-            value={selectedProduct}
-            onChange={(e) => setSelectedProduct(e.target.value)}
-          >
-            <option value="">-- wybierz produkt --</option>
-            {products.map((prod) => (
-              <option key={prod.id} value={prod.id}>
-                {prod.full_name}
-              </option>
-            ))}
-          </select>
+            value={selectedMaterial}
+            onChange={(e) => setSelectedMaterial(e.target.value)}
+            required
+            >
+            <option value="">-- wybierz towar --</option>
+            {materials
+                .filter((mat) => mat.r === 'Towar')
+                .map((mat) => (
+                <option key={mat.id} value={mat.id}>
+                    📦 {mat.full_name}
+                </option>
+                ))}
+            </select>
         </div>
 
         {/* Formularz dodawania/edycji materiału */}

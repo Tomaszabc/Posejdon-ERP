@@ -142,7 +142,7 @@ export default function PartsBuilder() {
       <div className="max-w-3xl mx-auto py-10">
         <h1 className="text-3xl font-bold mb-6">Parts Builder</h1>
         <p className="text-gray-700 mb-4">
-          Tutaj możesz przypisywać materiały do produktów produkcyjnych (BOM).
+          Tutaj możesz przypisywać materiały do produktów.
         </p>
 
         {/* Wybór produktu */}
@@ -166,34 +166,18 @@ export default function PartsBuilder() {
         {selectedProduct && (
           <form onSubmit={handleAdd} className="mb-8 flex gap-4 items-end">
             <div className="flex-1">
-              <label className="block mb-1 font-medium flex items-center gap-4">
-                Materiał:
-                <span className="text-sm font-normal flex items-center gap-2">
-                  <span title="Materiał" className="flex items-center">
-                    <span role="img" aria-label="materiał">
-                      🧱
-                    </span>{' '}
-                    Materiał
-                  </span>
-                  <span title="Towar" className="flex items-center">
-                    <span role="img" aria-label="towar">
-                      📦
-                    </span>{' '}
-                    Towar
-                  </span>
-                </span>
-              </label>
+             
               <select
                 className="w-full border px-3 py-2 rounded"
                 value={selectedMaterial}
                 onChange={(e) => setSelectedMaterial(e.target.value)}
                 required
               >
-                <option value="">-- wybierz materiał lub towar --</option>
-                {materials.map((mat) => (
+                <option value="">-- wybierz komponent --</option>
+                {materials.filter((mat) => mat.r === 'Towar').map((mat) => (
                   <option key={mat.id} value={mat.id}>
-                    {mat.r === 'Materiał' ? '🧱' : mat.r === 'Towar' ? '📦' : '🔧'} {mat.full_name}
-                  </option>
+                      📦 {mat.full_name}
+                        </option>
                 ))}
               </select>
             </div>
