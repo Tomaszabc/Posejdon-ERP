@@ -165,18 +165,20 @@ export default function Orders() {
                 Wybierz produkt
               </label>
               <select
-                name="component"
-                value={form.component}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"
-              >
-                <option value="">- Wybierz produkt -</option>
-                {components.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.catalog_index} – {c.full_name}
-                  </option>
-                ))}
-              </select>
+  name="component"
+  value={form.component}
+  onChange={handleChange}
+  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"
+>
+  <option value="">- Wybierz komponent -</option>
+  {components
+    .filter((c) => c.r === "Produkt")
+    .map((c) => (
+      <option key={c.id} value={c.id}>
+        {c.catalog_index} – {c.full_name}
+      </option>
+    ))}
+</select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Ilość</label>
