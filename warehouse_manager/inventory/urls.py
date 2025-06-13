@@ -6,7 +6,7 @@ from .views import (
     OrderViewSet, production_orders, produce_order, undo_produce_order,
     ComponentListCreateView, ComponentDetailView, import_components_csv,
     diffusor_types_list, components_for_order, ProductToProductionListCreateView,
-     components_towar, check_materials_availability,
+     components_towar, check_materials_availability, ProductToProductionDetailView
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -37,7 +37,7 @@ urlpatterns = [
     path('api/product-recipe/<int:product_id>/', views.product_recipe, name='product_recipe'),
     path('api/calculate-production-needs/', views.calculate_production_needs, name='calculate_production_needs'),
     path('api/product-to-production/', ProductToProductionListCreateView.as_view(), name='product-to-production-list-create'),
-    path('api/product-to-production/<int:order_id>/', views.product_to_production_detail),  # GET i DELETE w jednym
+    path('api/product-to-production/<int:pk>/', ProductToProductionDetailView.as_view()),
     path('api/production/produce/<int:order_id>/', views.produce_product_to_production, name='produce_product_to_production'),
     path('api/production/undo/<int:order_id>/', views.undo_product_to_production, name='undo_product_to_production'),
     path('api/product-parts/<int:component_id>/', views.product_parts),
@@ -45,7 +45,7 @@ urlpatterns = [
     path('diffusor-types/', diffusor_types_list),
     path('api/components-towar/', components_towar, name='components-towar'),
     path('api/check-materials-availability/', check_materials_availability),
-
+    path('api/product-to-production/<int:pk>/', ProductToProductionDetailView.as_view()),
     
     # Router na końcu (obsługuje pozostałe ścieżki w tym parts-builder/)
     path('api/', include(router.urls)),

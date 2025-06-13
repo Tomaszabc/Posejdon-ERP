@@ -462,3 +462,8 @@ def check_materials_availability(request):
         return Response({"ok": True})
     except Component.DoesNotExist:
         return Response({"error": "Nie znaleziono komponentu."}, status=404)
+
+
+class ProductToProductionDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ProductToProduction.objects.all()
+    serializer_class = ProductToProductionSerializer

@@ -427,26 +427,62 @@ export default function ComponentProduction() {
                       className="px-2 py-2 whitespace-nowrap text-xs text-gray-500"
                       title={order.komentarz || ''}
                     >
-                      <input
-                        type="text"
-                        value={order.komentarz || ''}
-                        maxLength={100}
-                        className="w-28 truncate bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-400"
-                        onChange={(e) => {
-                          const newValue = e.target.value;
-                          setOrders((prev) =>
-                            prev.map((o) => (o.id === order.id ? { ...o, komentarz: newValue } : o))
-                          );
-                        }}
-                        onBlur={(e) => {
-                          // Zapisz do API po opuszczeniu pola
-                          fetch(`http://127.0.0.1:8000/api/product-to-production/${order.id}/`, {
-                            method: 'PATCH',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ komentarz: e.target.value }),
-                          });
-                        }}
-                      />
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="text"
+                          value={order.komentarz || ''}
+                          maxLength={100}
+                          className="w-24 truncate bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-400"
+                          onChange={(e) => {
+                            const newValue = e.target.value;
+                            setOrders((prev) =>
+                              prev.map((o) =>
+                                o.id === order.id ? { ...o, komentarz: newValue } : o
+                              )
+                            );
+                          }}
+                          onBlur={(e) => {
+                            // Zapisz do API po opuszczeniu pola
+                            fetch(`http://127.0.0.1:8000/api/product-to-production/${order.id}/`, {
+                              method: 'PATCH',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ komentarz: e.target.value }),
+                            });
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            // Zapisz komentarz do API
+                            fetch(`http://127.0.0.1:8000/api/product-to-production/${order.id}/`, {
+                              method: 'PATCH',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ komentarz: order.komentarz }),
+                            }).then((res) => {
+                              if (res.ok) {
+                                // Opcjonalnie: pokaż krótki komunikat sukcesu
+                                console.log('Komentarz zapisany');
+                              }
+                            });
+                          }}
+                          className="text-blue-600 hover:text-blue-900 transition-colors p-0.5 rounded"
+                          title="Zatwierdź komentarz"
+                        >
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-center">
                       {order.is_produced ? (

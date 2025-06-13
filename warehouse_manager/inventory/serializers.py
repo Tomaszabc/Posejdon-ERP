@@ -25,7 +25,8 @@ class ProductToProductionSerializer(serializers.ModelSerializer):
         model = ProductToProduction
         fields = [
             'id', 'component', 'quantity', 'created_at', 'is_produced',
-            'component_catalog_index', 'component_full_name', 'component_r', 'uwagi', 'pilne'
+            'component_catalog_index', 'component_full_name', 'component_r',
+            'uwagi', 'pilne', 'komentarz'
         ]
 
 
