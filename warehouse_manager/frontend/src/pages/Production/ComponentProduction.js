@@ -161,9 +161,9 @@ export default function ComponentProduction() {
 
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-10 gap-8">
         {/* LEWA STRONA - NOWY FORMULARZ */}
-        <section className="bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
+        <section className="xl:col-span-3 bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Zleć produkcję komponentu</h1>
           {errors.length > 0 && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -216,7 +216,7 @@ export default function ComponentProduction() {
           </form>
         </section>
         {/* PRAWA STRONA - LISTA ZLECEŃ */}
-        <section className="bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
+        <section className="xl:col-span-7 bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">
             Lista zleceń produkcji komponentów
           </h2>
