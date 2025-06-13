@@ -25,15 +25,20 @@ export default function UserProfile({ user }) {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
   };
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    setMsg('');
-    if (passwords.new_password !== passwords.confirm_new_password) {
-      setMsg('Nowe hasła nie są identyczne.');
-      return;
-    }
-    const token = localStorage.getItem('access');
-    const res = await fetch('http://localhost:8000/api/auth/password/change/', {
+const handlePasswordChange = async (e) => {
+  e.preventDefault();
+  setMsg('');
+  
+  if (passwords.new_password !== passwords.confirm_new_password) {
+    setMsg('Nowe hasła nie są identyczne.');
+    return;
+  }
+
+  const token = localStorage.getItem('access');
+  
+  try {
+    // ✅ ZMIANA: Użyj custom endpointu
+    const res = await fetch('http://localhost:8000/api/custom/password/change/', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -45,15 +50,35 @@ export default function UserProfile({ user }) {
         new_password2: passwords.confirm_new_password,
       }),
     });
+
+    const data = await res.json();
+    
+    console.log('Status:', res.status);
+    console.log('Response data:', data);
+
     if (res.ok) {
-      setMsg('Hasło zostało zmienione.');
+      setMsg('Hasło zostało zmienione pomyślnie.');
       setPasswords({ old_password: '', new_password: '', confirm_new_password: '' });
     } else {
-      setMsg('Błąd zmiany hasła. Sprawdź stare hasło.');
+      // Szczegółowa obsługa błędów
+      if (data.old_password) {
+        setMsg(`${data.old_password.join(', ')}`);
+      } else if (data.new_password1) {
+        setMsg(`Błąd nowego hasła: ${data.new_password1.join(', ')}`);
+      } else if (data.new_password2) {
+        setMsg(`${data.new_password2.join(', ')}`);
+      } else if (data.error) {
+        setMsg(data.error);
+      } else {
+        setMsg(`Błąd zmiany hasła. Status: ${res.status}`);
+      }
     }
-  };
+  } catch (error) {
+    console.error('Error changing password:', error);
+    setMsg('Błąd połączenia z serwerem.');
+  }
+};
 
-  // ...existing code...
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mt-2 bg-white rounded-xl shadow-lg p-6 sm:p-8 lg:p-10">

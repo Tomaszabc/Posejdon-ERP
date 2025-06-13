@@ -25,6 +25,7 @@ from .serializers import (
 )
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.contrib.auth.hashers import check_password
 
 
 
@@ -465,3 +466,52 @@ class ProductToProductionDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ProductToProduction.objects.all()
     serializer_class = ProductToProductionSerializer
     permission_classes = [IsAuthenticated]
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    """
+    Custom view do zmiany hasła z poprawną walidacją starego hasła
+    """
+    old_password = request.data.get('old_password')
+    new_password1 = request.data.get('new_password1')
+    new_password2 = request.data.get('new_password2')
+    
+    # Walidacja danych
+    if not all([old_password, new_password1, new_password2]):
+        return Response({
+            'error': 'Wszystkie pola są wymagane.'
+        }, status=400)
+    
+    # Sprawdź czy nowe hasła są identyczne
+    if new_password1 != new_password2:
+        return Response({
+            'new_password2': ['Nowe hasła nie są identyczne.']
+        }, status=400)
+    
+    user = request.user
+    
+    # ✅ KLUCZOWE: Sprawdź stare hasło
+    if not check_password(old_password, user.password):
+        return Response({
+            'old_password': ['Nieprawidłowe stare hasło.']
+        }, status=400)
+    
+    # Sprawdź czy nowe hasło spełnia wymagania Django
+    from django.contrib.auth.password_validation import validate_password
+    from django.core.exceptions import ValidationError
+    
+    try:
+        validate_password(new_password1, user)
+    except ValidationError as e:
+        return Response({
+            'new_password1': list(e.messages)
+        }, status=400)
+    
+    # Zmień hasło
+    user.set_password(new_password1)
+    user.save()
+    
+    return Response({
+        'detail': 'Hasło zostało zmienione pomyślnie.'
+    })
