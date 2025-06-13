@@ -28,6 +28,8 @@ from channels.layers import get_channel_layer
 
 
 
+
+
 # --- Django views ---
 
 def index(request):
@@ -232,9 +234,18 @@ def components_for_order(request):
 class ProductToProductionListCreateView(generics.ListCreateAPIView):
     queryset = ProductToProduction.objects.all()
     serializer_class = ProductToProductionSerializer
+    permission_classes = [IsAuthenticated] 
 
     def perform_create(self, serializer):
-        order = serializer.save()
+        # Debug - sprawdź użytkownika
+        print(f"Request user: {self.request.user}")
+        print(f"Is authenticated: {self.request.user.is_authenticated}")
+        print(f"User type: {type(self.request.user)}")
+        
+        # Przypisz zalogowanego użytkownika
+        order = serializer.save(created_by=self.request.user)
+        print(f"Order created with created_by: {order.created_by}")
+        
         # Odejmij materiały ze stanu magazynowego
         parts = PartsBuilder.objects.filter(product=order.component)
         for part in parts:
@@ -244,7 +255,7 @@ class ProductToProductionListCreateView(generics.ListCreateAPIView):
             if material.stock < 0:
                 material.stock = 0
             material.save()
-        # Wyślij refresh do Channels tylko raz po wszystkich zmianach
+        
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             "warehouse",
@@ -416,20 +427,6 @@ def product_parts(request, component_id):
     ]
     return Response(data)
 
-
-@api_view(['GET', 'DELETE'])
-def product_to_production_detail(request, order_id):
-    try:
-        order = ProductToProduction.objects.get(id=order_id)
-        if request.method == 'GET':
-            serializer = ProductToProductionSerializer(order)
-            return Response(serializer.data)
-        elif request.method == 'DELETE':
-            order.delete()
-            return Response({"message": "Order deleted successfully"}, status=204)
-    except ProductToProduction.DoesNotExist:
-        return Response({"error": "Order not found"}, status=404)
-
 @api_view(['GET'])
 def components_towar(request):
     """Zwraca tylko komponenty typu 'Towar'."""
@@ -467,3 +464,4 @@ def check_materials_availability(request):
 class ProductToProductionDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ProductToProduction.objects.all()
     serializer_class = ProductToProductionSerializer
+    permission_classes = [IsAuthenticated]

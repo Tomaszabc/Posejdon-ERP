@@ -33,7 +33,19 @@ export default function Orders() {
   }, []);
 
   function fetchOrders() {
-    fetch('http://127.0.0.1:8000/api/product-to-production/')
+    // Pobierz token z localStorage
+    const token = localStorage.getItem('access');
+
+    const headers = {};
+
+    // Dodaj token jeśli istnieje
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    fetch('http://127.0.0.1:8000/api/product-to-production/', {
+      headers: headers, // ZMIANA: używaj zdefiniowanych headers
+    })
       .then((res) => res.json())
       .then((data) => {
         setOrders(data);
@@ -91,11 +103,21 @@ export default function Orders() {
   }
 
   function handleConfirmSubmit() {
+    // Pobierz token z localStorage
+    const token = localStorage.getItem('access');
+
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    // Dodaj token jeśli istnieje
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     fetch('http://127.0.0.1:8000/api/product-to-production/', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: headers,
       body: JSON.stringify({
         component: form.component,
         quantity: form.quantity,
@@ -130,8 +152,20 @@ export default function Orders() {
 
   function handleDelete() {
     if (!orderToDelete) return;
+
+    // Pobierz token z localStorage
+    const token = localStorage.getItem('access');
+
+    const headers = {};
+
+    // Dodaj token jeśli istnieje
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     fetch(`http://127.0.0.1:8000/api/product-to-production/${orderToDelete.id}/`, {
       method: 'DELETE',
+      headers: headers, // ZMIANA: dodaj headers z tokenem
     }).then((res) => {
       if (res.ok) {
         setOrders(orders.filter((o) => o.id !== orderToDelete.id));

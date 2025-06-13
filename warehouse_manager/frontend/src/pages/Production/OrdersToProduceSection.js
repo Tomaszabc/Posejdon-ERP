@@ -10,7 +10,7 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
 
   return (
     <section className="bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Produkty do produkcji:</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-2">Produkty do produkcji (Zuza):</h1>
       {loading ? (
         <div>Ładowanie...</div>
       ) : sortedOrders.length > 0 ? (
@@ -33,8 +33,8 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
                 <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                   Data zam.
                 </th>
-                <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
-                  Zatwierdź
+                <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-8">
+                  Zatw.
                 </th>
               </tr>
             </thead>

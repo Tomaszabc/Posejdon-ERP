@@ -56,7 +56,19 @@ export default function ComponentProduction() {
   }, []);
 
   function fetchOrders() {
-    fetch('http://127.0.0.1:8000/api/product-to-production/')
+    // Pobierz token z localStorage
+    const token = localStorage.getItem('access');
+
+    const headers = {};
+
+    // Dodaj token jeśli istnieje
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    fetch('http://127.0.0.1:8000/api/product-to-production/', {
+      headers: headers, // ✅ Dodaj headers
+    })
       .then((res) => res.json())
       .then((data) => {
         // Pokaż tylko zamówienia na komponenty typu 'Towar' i posortuj po ID
@@ -173,9 +185,21 @@ export default function ComponentProduction() {
   };
 
   function handleConfirmSubmit() {
+    // Pobierz token z localStorage
+    const token = localStorage.getItem('access');
+
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    // Dodaj token jeśli istnieje
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     fetch('http://127.0.0.1:8000/api/product-to-production/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body: JSON.stringify({
         component: form.component,
         quantity: form.quantity,
@@ -193,7 +217,7 @@ export default function ComponentProduction() {
         } else {
           setErrors([data.error || 'Błąd podczas dodawania zlecenia.']);
         }
-        setShowConfirmModal(false); // zamknij modal po próbie
+        setShowConfirmModal(false);
       })
       .catch(() => {
         setErrors(['Błąd połączenia z serwerem.']);

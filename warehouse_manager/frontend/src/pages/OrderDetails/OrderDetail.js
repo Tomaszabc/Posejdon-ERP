@@ -22,21 +22,56 @@ export default function OrderDetail() {
   };
 
   useEffect(() => {
-    fetch(`/api/product-to-production/${orderId}/`)
-      .then((res) => res.json())
-      .then((data) => {
-        setOrder(data);
-        return fetch(`/api/product-parts/${data.component}/`);
-      })
-      .then((res) => res.json())
-      .then((partsData) => {
-        setParts(partsData);
+    const fetchOrderDetails = async () => {
+      try {
+        // Pobierz token z localStorage
+        const token = localStorage.getItem('access');
+
+        const headers = {};
+
+        // Dodaj token jeśli istnieje
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        // Pobierz szczegóły zamówienia
+        const orderResponse = await fetch(
+          `http://127.0.0.1:8000/api/product-to-production/${orderId}/`,
+          {
+            headers: headers, // ZMIANA: dodaj headers z tokenem
+          }
+        );
+
+        if (orderResponse.ok) {
+          const orderData = await orderResponse.json();
+          console.log('Order data:', orderData); // DEBUG - sprawdź co otrzymujesz
+          console.log('created_by_username:', orderData.created_by_username); // DEBUG
+          setOrder(orderData);
+
+          // Pobierz części produktu
+          const partsResponse = await fetch(
+            `http://127.0.0.1:8000/api/product-parts/${orderData.component}/`,
+            {
+              headers: headers, // ZMIANA: dodaj headers także tutaj
+            }
+          );
+
+          if (partsResponse.ok) {
+            const partsData = await partsResponse.json();
+            setParts(partsData);
+          }
+        }
+
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error:', error);
         setLoading(false);
-      });
+      }
+    };
+
+    if (orderId) {
+      fetchOrderDetails();
+    }
   }, [orderId]);
 
   if (loading) {
@@ -156,6 +191,12 @@ export default function OrderDetail() {
                 <div className="flex items-center">
                   <span className="text-sm font-medium text-gray-500 w-20">Data:</span>
                   <span className="text-gray-700">{formatDateTime(order.created_at)}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-sm font-medium text-gray-500 w-20">Utworzył:</span>
+                  <span className="text-gray-800 font-medium">
+                    {order.created_by_username || 'Nieznany użytkownik'}
+                  </span>
                 </div>
               </div>
             </div>

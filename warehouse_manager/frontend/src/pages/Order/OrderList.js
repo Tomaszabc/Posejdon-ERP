@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 export default function OrderList({ orders, openDeleteModal }) {
   const navigate = useNavigate();
 
+  // Sortuj zamówienia - najnowsze na górze (malejąco po ID)
+  const sortedOrders = [...orders].sort((a, b) => b.id - a.id);
+
   return (
     <div className="w-full overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -33,7 +36,7 @@ export default function OrderList({ orders, openDeleteModal }) {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {orders.map((order) => (
+          {sortedOrders.map((order) => (
             <tr
               key={order.id}
               className="hover:bg-gray-50 transition-colors cursor-pointer"

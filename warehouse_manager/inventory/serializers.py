@@ -20,15 +20,18 @@ class ProductToProductionSerializer(serializers.ModelSerializer):
     component_full_name = serializers.CharField(source='component.full_name', read_only=True)
     component_catalog_index = serializers.CharField(source='component.catalog_index', read_only=True)
     component_r = serializers.CharField(source='component.r', read_only=True)
+    created_by_username = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductToProduction
         fields = [
-            'id', 'component', 'quantity', 'created_at', 'is_produced',
+            'id', 'component', 'quantity', 'created_at', 'is_produced', 'produced_at',
             'component_catalog_index', 'component_full_name', 'component_r',
-            'uwagi', 'pilne', 'komentarz'
+            'uwagi', 'pilne', 'komentarz', 'created_by_username'
         ]
-
+        
+    def get_created_by_username(self, obj):
+        return obj.created_by.username if obj.created_by else None
 
 class PartsBuilderSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.full_name', read_only=True)

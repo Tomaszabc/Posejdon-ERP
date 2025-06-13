@@ -45,7 +45,7 @@ urlpatterns = [
     path('diffusor-types/', diffusor_types_list),
     path('api/components-towar/', components_towar, name='components-towar'),
     path('api/check-materials-availability/', check_materials_availability),
-    path('api/product-to-production/<int:pk>/', ProductToProductionDetailView.as_view()),
+    
     
     # Router na końcu (obsługuje pozostałe ścieżki w tym parts-builder/)
     path('api/', include(router.urls)),
