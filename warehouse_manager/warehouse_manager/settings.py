@@ -35,6 +35,7 @@ CORS_ALLOW_CREDENTIALS = True
 INSTALLED_APPS = [
     "corsheaders",
     # domyślne Django:
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -53,11 +54,11 @@ INSTALLED_APPS = [
     # 'allauth.socialaccount.providers.google',
     "crispy_forms",
     "crispy_bootstrap5",
-    "grappelli",
     'rest_framework',
     "dj_rest_auth",
     'rest_framework.authtoken',
     'channels',
+    
 ]
 # --------------------------------------
 
@@ -136,6 +137,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
