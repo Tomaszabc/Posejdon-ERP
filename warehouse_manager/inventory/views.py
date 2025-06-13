@@ -77,6 +77,24 @@ def product_order(request):
 def user_profile(request):
     return render(request, "account/user_profile.html")
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_profile_api(request):
+    """
+    API endpoint zwracający pełne dane profilu użytkownika
+    """
+    user = request.user
+    return Response({
+        'pk': user.pk,
+        'username': user.username,
+        'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'date_joined': user.date_joined,  # ✅ To jest potrzebne
+        'last_login': user.last_login,
+        'is_staff': user.is_staff,
+    })
+
 def delete_order(request, order_id):
     if request.method == "POST":
         order = get_object_or_404(Order, id=order_id)

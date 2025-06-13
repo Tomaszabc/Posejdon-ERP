@@ -11,73 +11,77 @@ export default function UserProfile({ user }) {
 
   useEffect(() => {
     const token = localStorage.getItem('access');
-    fetch('http://localhost:8000/api/auth/user/', {
+    fetch('http://localhost:8000/api/user/profile/', {
+      // ✅ Nowy endpoint
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     })
       .then((res) => res.json())
-      .then((data) => setProfile(data));
+      .then((data) => {
+        console.log('🔍 Profile data:', data);
+        setProfile(data);
+      });
   }, []);
 
   const handleChange = (e) => {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
   };
 
-const handlePasswordChange = async (e) => {
-  e.preventDefault();
-  setMsg('');
-  
-  if (passwords.new_password !== passwords.confirm_new_password) {
-    setMsg('Nowe hasła nie są identyczne.');
-    return;
-  }
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setMsg('');
 
-  const token = localStorage.getItem('access');
-  
-  try {
-    // ✅ ZMIANA: Użyj custom endpointu
-    const res = await fetch('http://localhost:8000/api/custom/password/change/', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        old_password: passwords.old_password,
-        new_password1: passwords.new_password,
-        new_password2: passwords.confirm_new_password,
-      }),
-    });
-
-    const data = await res.json();
-    
-    console.log('Status:', res.status);
-    console.log('Response data:', data);
-
-    if (res.ok) {
-      setMsg('Hasło zostało zmienione pomyślnie.');
-      setPasswords({ old_password: '', new_password: '', confirm_new_password: '' });
-    } else {
-      // Szczegółowa obsługa błędów
-      if (data.old_password) {
-        setMsg(`${data.old_password.join(', ')}`);
-      } else if (data.new_password1) {
-        setMsg(`Błąd nowego hasła: ${data.new_password1.join(', ')}`);
-      } else if (data.new_password2) {
-        setMsg(`${data.new_password2.join(', ')}`);
-      } else if (data.error) {
-        setMsg(data.error);
-      } else {
-        setMsg(`Błąd zmiany hasła. Status: ${res.status}`);
-      }
+    if (passwords.new_password !== passwords.confirm_new_password) {
+      setMsg('Nowe hasła nie są identyczne.');
+      return;
     }
-  } catch (error) {
-    console.error('Error changing password:', error);
-    setMsg('Błąd połączenia z serwerem.');
-  }
-};
+
+    const token = localStorage.getItem('access');
+
+    try {
+      // ✅ ZMIANA: Użyj custom endpointu
+      const res = await fetch('http://localhost:8000/api/custom/password/change/', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          old_password: passwords.old_password,
+          new_password1: passwords.new_password,
+          new_password2: passwords.confirm_new_password,
+        }),
+      });
+
+      const data = await res.json();
+
+      console.log('Status:', res.status);
+      console.log('Response data:', data);
+
+      if (res.ok) {
+        setMsg('Hasło zostało zmienione pomyślnie.');
+        setPasswords({ old_password: '', new_password: '', confirm_new_password: '' });
+      } else {
+        // Szczegółowa obsługa błędów
+        if (data.old_password) {
+          setMsg(`${data.old_password.join(', ')}`);
+        } else if (data.new_password1) {
+          setMsg(`Błąd nowego hasła: ${data.new_password1.join(', ')}`);
+        } else if (data.new_password2) {
+          setMsg(`${data.new_password2.join(', ')}`);
+        } else if (data.error) {
+          setMsg(data.error);
+        } else {
+          setMsg(`Błąd zmiany hasła. Status: ${res.status}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      setMsg('Błąd połączenia z serwerem.');
+    }
+  };
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -109,7 +113,13 @@ const handlePasswordChange = async (e) => {
                   <div className="text-lg font-semibold text-ocean-800">Data utworzenia konta</div>
                   <div className="mt-2 p-3 bg-gray-50 rounded-lg text-gray-700">
                     {profile.date_joined
-                      ? new Date(profile.date_joined).toLocaleString('pl-PL')
+                      ? new Date(profile.date_joined).toLocaleDateString('pl-PL', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
                       : 'brak danych'}
                   </div>
                 </div>

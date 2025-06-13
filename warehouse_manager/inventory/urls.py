@@ -7,7 +7,7 @@ from .views import (
     ComponentListCreateView, ComponentDetailView, import_components_csv,
     diffusor_types_list, components_for_order, ProductToProductionListCreateView,
      components_towar, check_materials_availability, ProductToProductionDetailView,
-     change_password
+     change_password, user_profile_api
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -47,6 +47,7 @@ urlpatterns = [
     path('diffusor-types/', diffusor_types_list),
     path('api/components-towar/', components_towar, name='components-towar'),
     path('api/check-materials-availability/', check_materials_availability),
+    path('api/user/profile/', user_profile_api, name='user_profile_api'),
     path('api/custom/password/change/', change_password, name='custom_password_change'),
     
     # Router na końcu (obsługuje pozostałe ścieżki w tym parts-builder/)
