@@ -362,8 +362,8 @@ export default function ComponentProduction() {
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                     SKU
                   </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nazwa komponentu
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                    Komponent
                   </th>
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
                     Ilość
@@ -375,9 +375,9 @@ export default function ComponentProduction() {
                     Uwagi
                   </th>
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
-                    Komentarz
+                    Koment.
                   </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-14">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
                     Status
                   </th>
                   <th className="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
@@ -477,7 +477,8 @@ export default function ComponentProduction() {
                           order.komentarz ? order.komentarz : 'Brak komentarza - kliknij aby dodać'
                         }
                       >
-                        <div className="w-24 truncate">
+                        <div className="w-16
+                         truncate">
                           {order.komentarz ? (
                             order.komentarz
                           ) : (
