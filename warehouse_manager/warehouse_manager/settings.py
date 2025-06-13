@@ -163,3 +163,30 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",  # do testów, do produkcji użyj Redis
     },
 }
+
+JAZZMIN_SETTINGS = {
+    "site_title": "E-Posejdon ERP – Panel administracyjny",
+    "site_header": "E-Posejdon ERP – Panel administracyjny",
+    "site_brand": "E-Posejdon ERP",
+    "welcome_sign": "Witaj w panelu E-Posejdon ERP",
+    "copyright": "Copyright © 2025 . All rights reserved.",
+    "show_ui_builder": False,  # ukryj przycisk Jazzmin UI builder
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [
+        "socialaccount",  # ukryj całą aplikację kont społecznościowych
+        "authtoken",      # ukryj tokeny uwierzytelniające
+    ],
+    "hide_models": [
+        "socialaccount.socialaccount",
+        "socialaccount.socialapp",
+        "socialaccount.socialtoken",
+        "authtoken.token",
+    ],
+    "site_logo": None,  # możesz tu podać ścieżkę do własnego logo w static
+    "site_logo_classes": "img-circle",
+    "site_icon": None,
+    "user_avatar": None,
+    "show_footer": True,
+    "show_powered_by": False,  # ukryj napis "Powered by Jazzmin"
+}
