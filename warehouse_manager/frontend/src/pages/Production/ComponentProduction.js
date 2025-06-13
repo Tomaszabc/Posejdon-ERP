@@ -179,7 +179,7 @@ export default function ComponentProduction() {
       .then(({ status, data }) => {
         if (status === 201) {
           setShowSuccess(true);
-          setForm({ component: '', quantity: '', uwagi: ''  });
+          setForm({ component: '', quantity: '', uwagi: '' });
           fetchOrders();
           setTimeout(() => setShowSuccess(false), 1200);
         } else {
@@ -358,8 +358,13 @@ export default function ComponentProduction() {
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
                       {order.quantity}
                     </td>
-                    <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-                      {order.uwagi || ''}
+                    <td
+                      className="px-2 py-2 whitespace-nowrap text-xs text-gray-500"
+                      title={order.uwagi || ''}
+                    >
+                      {order.uwagi && order.uwagi.length > 8
+                        ? order.uwagi.slice(0, 8) + '...'
+                        : order.uwagi || ''}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-center">
                       {order.is_produced ? (
