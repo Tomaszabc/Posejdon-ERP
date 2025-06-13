@@ -3,34 +3,10 @@ from django.core.exceptions import ValidationError
 
 
 class Product(models.Model):
-    SHAPE_CHOICES = [
-        ("okrągły", "Okrągły"),
-        ("kwadratowy", "Kwadratowy"),
-        ("niestandardowy", "Niestandardowy"),
-    ]
-    SIZE_CHOICES = [
-        ("S", "S"),
-        ("M", "M"),
-        ("L", "L"),
-    ]
-    COLOR_CHOICES = [
-        ("W", "W"),
-        ("B", "B"),
-        ("G", "G"),
-    ]
-
-    DIAMETER_CHOICES = [
-        ("100", "100"),
-        ("125", "125"),
-        ("160", "160"),
-    ]
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     diameter = models.DecimalField(max_digits=6, decimal_places=2)
-    shape = models.CharField(max_length=20, choices=SHAPE_CHOICES)
-    size = models.CharField(max_length=2, choices=SIZE_CHOICES)
-    color = models.CharField(max_length=50, choices=COLOR_CHOICES)
+
 
     def __str__(self):
         return f"{self.shape} {self.size} {self.color} ({self.diameter} mm)"
@@ -135,6 +111,7 @@ class ProductToProduction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_produced = models.BooleanField(default=False)
     produced_at = models.DateTimeField(null=True, blank=True)
+    uwagi = models.TextField(blank=True, null=True) 
 
     def __str__(self):
         return f"{self.component.full_name} ({self.component.catalog_index}) x {self.quantity}"

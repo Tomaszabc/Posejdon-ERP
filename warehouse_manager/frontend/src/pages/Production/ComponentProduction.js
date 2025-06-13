@@ -7,7 +7,7 @@ import UndoSuccessModal from '../../components/modals/UndoSuccessModal';
 import ConfirmProductionModal from './ConfirmProductionModal';
 
 export default function ComponentProduction() {
-  const [form, setForm] = useState({ component: '', quantity: '' });
+  const [form, setForm] = useState({ component: '', quantity: '', uwagi: '' });
   const [orders, setOrders] = useState([]);
   const [errors, setErrors] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -172,13 +172,14 @@ export default function ComponentProduction() {
       body: JSON.stringify({
         component: form.component,
         quantity: form.quantity,
+        uwagi: form.uwagi,
       }),
     })
       .then((res) => res.json().then((data) => ({ status: res.status, data })))
       .then(({ status, data }) => {
         if (status === 201) {
           setShowSuccess(true);
-          setForm({ component: '', quantity: '' });
+          setForm({ component: '', quantity: '', uwagi: ''  });
           fetchOrders();
           setTimeout(() => setShowSuccess(false), 1200);
         } else {
@@ -266,6 +267,17 @@ export default function ComponentProduction() {
                 placeholder="0"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Uwagi</label>
+              <input
+                type="text"
+                name="uwagi"
+                value={form.uwagi}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"
+                placeholder="Wpisz uwagi (opcjonalnie)"
+              />
+            </div>
             <div className="pt-4">
               <button
                 type="submit"
@@ -299,6 +311,9 @@ export default function ComponentProduction() {
                   </th>
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
                     Ilość
+                  </th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Uwagi
                   </th>
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-14">
                     Status
@@ -342,6 +357,9 @@ export default function ComponentProduction() {
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
                       {order.quantity}
+                    </td>
+                    <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
+                      {order.uwagi || ''}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-center">
                       {order.is_produced ? (
