@@ -8,6 +8,8 @@ from .views import (
     diffusor_types_list, components_for_order, ProductToProductionListCreateView,
      components_towar, check_materials_availability,
 )
+from django.conf import settings
+from django.conf.urls.static import static
 
 router = routers.DefaultRouter()
 router.register(r'orders', OrderViewSet)
@@ -48,3 +50,6 @@ urlpatterns = [
     # Router na końcu (obsługuje pozostałe ścieżki w tym parts-builder/)
     path('api/', include(router.urls)),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
