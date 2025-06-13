@@ -87,11 +87,26 @@ export default function Production() {
   // API calls
   const fetchOrders = () => {
     setLoading(true);
-    fetch('http://127.0.0.1:8000/api/product-to-production/')
-      .then((res) => res.json())
+    const token = localStorage.getItem('access'); // pobierz token JWT
+    fetch('http://127.0.0.1:8000/api/product-to-production/', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          setOrders([]);
+          setLoading(false);
+          // Możesz dodać info o wylogowaniu lub przekierować na login
+          return [];
+        }
+        return res.json();
+      })
       .then((data) => {
-        // Tylko zamówienia na produkty
-        setOrders(data.filter((order) => order.component_r === 'Produkt'));
+        if (Array.isArray(data)) {
+          setOrders(data.filter((order) => order.component_r === 'Produkt'));
+        }
         setLoading(false);
       })
       .catch(() => {
