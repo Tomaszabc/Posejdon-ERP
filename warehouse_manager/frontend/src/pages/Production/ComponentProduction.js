@@ -359,10 +359,10 @@ export default function ComponentProduction() {
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                     Data zlecenia
                   </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                     SKU
                   </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                     Komponent
                   </th>
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
@@ -420,10 +420,14 @@ export default function ComponentProduction() {
                       })}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-                      {order.component_catalog_index}
+                      <div className="w-20 truncate" title={order.component_catalog_index}>
+                        {order.component_catalog_index}
+                      </div>
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-                      {order.component_full_name}
+                      <div className="w-32 truncate" title={order.component_full_name}>
+                        {order.component_full_name}
+                      </div>
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
                       {order.quantity}
@@ -477,8 +481,10 @@ export default function ComponentProduction() {
                           order.komentarz ? order.komentarz : 'Brak komentarza - kliknij aby dodać'
                         }
                       >
-                        <div className="w-16
-                         truncate">
+                        <div
+                          className="w-16
+                         truncate"
+                        >
                           {order.komentarz ? (
                             order.komentarz
                           ) : (
