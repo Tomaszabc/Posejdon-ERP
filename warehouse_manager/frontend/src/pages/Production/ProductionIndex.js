@@ -12,14 +12,14 @@ export default function ProductionIndex() {
           className="cursor-pointer rounded-lg shadow-lg p-8 bg-white hover:bg-ocean-50 transition"
           onClick={() => navigate('/production/production')}
         >
-          <h2 className="text-xl font-semibold mb-2">Produkcja wyrobów</h2>
+          <h2 className="text-xl font-semibold mb-2">Produkcja wyrobów (Zuza)</h2>
           <p className="text-gray-600">Przejdź do produkcji gotowych wyrobów.</p>
         </div>
         <div
           className="cursor-pointer rounded-lg shadow-lg p-8 bg-white hover:bg-ocean-50 transition"
           onClick={() => navigate('/production/component-production')}
         >
-          <h2 className="text-xl font-semibold mb-2">Produkcja komponentów</h2>
+          <h2 className="text-xl font-semibold mb-2">Produkcja komponentów (Ignacy)</h2>
           <p className="text-gray-600">Przejdź do produkcji komponentów.</p>
         </div>
       </div>

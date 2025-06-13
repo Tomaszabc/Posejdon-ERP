@@ -149,7 +149,7 @@ export default function Orders() {
       <div className="grid grid-cols-1 xl:grid-cols-10 gap-8">
         {/* LEWA STRONA - NOWY FORMULARZ (30%) */}
         <section className="xl:col-span-3 bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Zamów gotowy produkt</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Zamów gotowy produkt (Ewelina)</h1>
           {errors.length > 0 && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
               <ul className="list-disc pl-5">
