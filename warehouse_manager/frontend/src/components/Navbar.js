@@ -20,7 +20,7 @@ export default function Navbar({ user, setUser }) {
       <nav className="bg-gradient-to-r from-ocean-800 to-ocean-900 shadow-xl fixed w-full z-20 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16">
-           <Link to="/" className="flex items-center text-white font-bold text-xl tracking-wide">
+            <Link to="/" className="flex items-center text-white font-bold text-xl tracking-wide">
               <svg
                 viewBox="0 0 1024 1024"
                 className="w-8 h-8 mr-2"

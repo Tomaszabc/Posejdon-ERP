@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import OrdersToProduceSection from './OrdersToProduceSection';
 import ProducedOrdersSection from './ProducedOrdersSection';
-import UndoModal from './UndoModal';
+import UndoModal from '../../components/modals/UndoModal';
 import SuccessModal from './SuccessModal';
 import ConfirmProductionModal from './ConfirmProductionModal';
-import UndoSuccessModal from './UndoSuccessModal';
+import UndoSuccessModal from '../../components/modals/UndoSuccessModal';
 import ErrorModal from '../../components/modals/MissingErrorModal'; // dostosuj ścieżkę
 
 export default function Production() {

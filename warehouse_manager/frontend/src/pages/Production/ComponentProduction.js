@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OrderDeleteModal from '../../components/modals/OrderDeleteModal';
 import MissingErrorModal from '../../components/modals/MissingErrorModal';
+import UndoModal from '../../components/modals/UndoModal';
+import UndoSuccessModal from '../../components/modals/UndoSuccessModal';
 import ConfirmProductionModal from './ConfirmProductionModal';
 
 export default function ComponentProduction() {
@@ -19,11 +21,24 @@ export default function ComponentProduction() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [orderToProduce, setOrderToProduce] = useState(null);
   const [showProduceModal, setShowProduceModal] = useState(false);
+  const [showUndoModal, setShowUndoModal] = useState(false);
+  const [orderToUndo, setOrderToUndo] = useState(null);
+  const [showUndoSuccess, setShowUndoSuccess] = useState(false);
   const navigate = useNavigate();
 
   const openProduceModal = (order) => {
     setOrderToProduce(order);
     setShowProduceModal(true);
+  };
+
+  const openUndoModal = (order) => {
+    setOrderToUndo(order);
+    setShowUndoModal(true);
+  };
+
+  const closeUndoModal = () => {
+    setShowUndoModal(false);
+    setOrderToUndo(null);
   };
 
   useEffect(() => {
@@ -37,120 +52,145 @@ export default function ComponentProduction() {
     fetchOrders();
   }, []);
 
-function fetchOrders() {
-  fetch('http://127.0.0.1:8000/api/product-to-production/')
-    .then((res) => res.json())
-    .then((data) => {
-      // Pokaż tylko zamówienia na komponenty typu 'Towar' i posortuj po ID
-      const filteredOrders = data
-        .filter((o) => o.component_r === 'Towar')
-        .sort((a, b) => b.id - a.id); // Sortowanie malejące (najnowsze na górze)
-      
-      setOrders(filteredOrders);
-    })
-    .catch(() => {
-      setOrders([]);
-    });
-}
+  function fetchOrders() {
+    fetch('http://127.0.0.1:8000/api/product-to-production/')
+      .then((res) => res.json())
+      .then((data) => {
+        // Pokaż tylko zamówienia na komponenty typu 'Towar' i posortuj po ID
+        const filteredOrders = data
+          .filter((o) => o.component_r === 'Towar')
+          .sort((a, b) => b.id - a.id); // Sortowanie malejące (najnowsze na górze)
+
+        setOrders(filteredOrders);
+      })
+      .catch(() => {
+        setOrders([]);
+      });
+  }
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-const handleProduceOrder = () => {
-  // Najpierw sprawdź dostępność materiałów
-  fetch('http://127.0.0.1:8000/api/check-materials-availability/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      component: orderToProduce.component || orderToProduce.id,
-      quantity: orderToProduce.quantity,
-    }),
-  })
-    .then((res) => res.json().then((data) => ({ status: res.status, data })))
-    .then(({ status, data }) => {
-      if (status === 200) {
-        // Materiały dostępne - kontynuuj produkcję
-        proceedWithProduction();
-      } else if (data.missing) {
-        // Brak materiałów - pokaż modal błędu
-        setMissingMaterials(data.missing);
-        setMissingMessage(data.error || 'Brak wystarczającej ilości materiałów.');
-        setShowMissingModal(true);
+  const handleProduceOrder = () => {
+    // Najpierw sprawdź dostępność materiałów
+    fetch('http://127.0.0.1:8000/api/check-materials-availability/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        component: orderToProduce.component || orderToProduce.id,
+        quantity: orderToProduce.quantity,
+      }),
+    })
+      .then((res) => res.json().then((data) => ({ status: res.status, data })))
+      .then(({ status, data }) => {
+        if (status === 200) {
+          // Materiały dostępne - kontynuuj produkcję
+          proceedWithProduction();
+        } else if (data.missing) {
+          // Brak materiałów - pokaż modal błędu
+          setMissingMaterials(data.missing);
+          setMissingMessage(data.error || 'Brak wystarczającej ilości materiałów.');
+          setShowMissingModal(true);
+          setShowProduceModal(false);
+          setOrderToProduce(null);
+        } else {
+          alert(data.error || 'Błąd sprawdzania dostępności materiałów.');
+          setShowProduceModal(false);
+          setOrderToProduce(null);
+        }
+      })
+      .catch(() => {
+        alert('Błąd połączenia z serwerem.');
         setShowProduceModal(false);
         setOrderToProduce(null);
-      } else {
-        alert(data.error || 'Błąd sprawdzania dostępności materiałów.');
+      });
+  };
+
+  const proceedWithProduction = () => {
+    fetch(`http://127.0.0.1:8000/api/production/produce/${orderToProduce.id}/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((res) => res.json().then((data) => ({ status: res.status, data })))
+      .then(({ status, data }) => {
+        if (status === 200) {
+          fetchOrders();
+        } else {
+          alert(data.error || 'Błąd podczas produkcji.');
+        }
         setShowProduceModal(false);
         setOrderToProduce(null);
-      }
-    })
-    .catch(() => {
-      alert('Błąd połączenia z serwerem.');
-      setShowProduceModal(false);
-      setOrderToProduce(null);
-    });
-};
+      })
+      .catch(() => {
+        alert('Błąd połączenia z serwerem.');
+        setShowProduceModal(false);
+        setOrderToProduce(null);
+      });
+  };
 
-const proceedWithProduction = () => {
-  fetch(`http://127.0.0.1:8000/api/production/produce/${orderToProduce.id}/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-  })
-    .then((res) => res.json().then((data) => ({ status: res.status, data })))
-    .then(({ status, data }) => {
-      if (status === 200) {
-        fetchOrders();
-      } else {
-        alert(data.error || 'Błąd podczas produkcji.');
-      }
-      setShowProduceModal(false);
-      setOrderToProduce(null);
-    })
-    .catch(() => {
-      alert('Błąd połączenia z serwerem.');
-      setShowProduceModal(false);
-      setOrderToProduce(null);
-    });
-};
-
- function handleSubmit(e) {
-  e.preventDefault();
-  let newErrors = [];
-  if (!form.component) newErrors.push('Wybierz komponent.');
-  if (!form.quantity) newErrors.push('Podaj ilość.');
-  setErrors(newErrors);
-  if (newErrors.length === 0) {
-    setShowConfirmModal(true);
+  function handleSubmit(e) {
+    e.preventDefault();
+    let newErrors = [];
+    if (!form.component) newErrors.push('Wybierz komponent.');
+    if (!form.quantity) newErrors.push('Podaj ilość.');
+    setErrors(newErrors);
+    if (newErrors.length === 0) {
+      setShowConfirmModal(true);
+    }
   }
-}
 
-function handleConfirmSubmit() {
-  fetch('http://127.0.0.1:8000/api/product-to-production/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      component: form.component,
-      quantity: form.quantity,
-    }),
-  })
-    .then((res) => res.json().then((data) => ({ status: res.status, data })))
-    .then(({ status, data }) => {
-      if (status === 201) {
-        setShowSuccess(true);
-        setForm({ component: '', quantity: '' });
-        fetchOrders();
-        setTimeout(() => setShowSuccess(false), 1200);
-      } else {
-        setErrors([data.error || 'Błąd podczas dodawania zlecenia.']);
-      }
-      setShowConfirmModal(false); // zamknij modal po próbie
+  const handleUndoProduction = () => {
+    if (!orderToUndo) return;
+
+    fetch(`http://127.0.0.1:8000/api/production/undo/${orderToUndo.id}/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
     })
-    .catch(() => {
-      setErrors(['Błąd połączenia z serwerem.']);
-      setShowConfirmModal(false);
-    });
-}
+      .then((res) => res.json().then((data) => ({ status: res.status, data })))
+      .then(({ status, data }) => {
+        if (status === 200) {
+          fetchOrders();
+          closeUndoModal();
+          setShowUndoSuccess(true);
+          setTimeout(() => setShowUndoSuccess(false), 2000);
+        } else {
+          alert(data.error || 'Błąd podczas cofania produkcji.');
+          closeUndoModal();
+        }
+      })
+      .catch(() => {
+        alert('Błąd połączenia z serwerem.');
+        closeUndoModal();
+      });
+  };
+
+  function handleConfirmSubmit() {
+    fetch('http://127.0.0.1:8000/api/product-to-production/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        component: form.component,
+        quantity: form.quantity,
+      }),
+    })
+      .then((res) => res.json().then((data) => ({ status: res.status, data })))
+      .then(({ status, data }) => {
+        if (status === 201) {
+          setShowSuccess(true);
+          setForm({ component: '', quantity: '' });
+          fetchOrders();
+          setTimeout(() => setShowSuccess(false), 1200);
+        } else {
+          setErrors([data.error || 'Błąd podczas dodawania zlecenia.']);
+        }
+        setShowConfirmModal(false); // zamknij modal po próbie
+      })
+      .catch(() => {
+        setErrors(['Błąd połączenia z serwerem.']);
+        setShowConfirmModal(false);
+      });
+  }
 
   function openDeleteModal(order) {
     setOrderToDelete(order);
@@ -314,27 +354,49 @@ function handleConfirmSubmit() {
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs font-medium">
                       <div className="flex justify-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => openProduceModal(order)}
-                          className="text-green-600 hover:text-green-900 transition-colors p-1 rounded"
-                          title="Zatwierdź produkcję"
-                          disabled={order.is_produced}
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                        {order.is_produced ? (
+                          <button
+                            type="button"
+                            onClick={() => openUndoModal(order)}
+                            className="text-orange-600 hover:text-orange-900 transition-colors p-1 rounded"
+                            title="Cofnij produkcję"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                        </button>
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                              />
+                            </svg>
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => openProduceModal(order)}
+                            className="text-green-600 hover:text-green-900 transition-colors p-1 rounded"
+                            title="Zatwierdź produkcję"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </button>
+                        )}
                         <button
                           type="button"
                           onClick={() => openDeleteModal(order)}
@@ -416,6 +478,19 @@ function handleConfirmSubmit() {
         onCancel={() => setShowProduceModal(false)}
         onConfirm={handleProduceOrder}
       />
+
+      {/* Modal do potwierdzenia cofnięcia produkcji */}
+      {showUndoModal && orderToUndo && (
+        <UndoModal
+          order={orderToUndo}
+          onConfirm={handleUndoProduction}
+          onCancel={closeUndoModal}
+          show={showUndoModal}
+        />
+      )}
+
+      {/* Modal sukcesu cofnięcia */}
+      <UndoSuccessModal show={showUndoSuccess} />
     </div>
   );
 }
