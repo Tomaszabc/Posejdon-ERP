@@ -5,12 +5,15 @@ import { useNavigate } from 'react-router-dom';
 export default function OrdersToProduceSection({ orders, loading, onProduce }) {
   const navigate = useNavigate();
 
+  // Sortowanie zamówień po ID malejąco (najnowsze na górze)
+  const sortedOrders = [...orders].sort((a, b) => b.id - a.id);
+
   return (
     <section className="bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Zamówienia do produkcji</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-2">Produkty do produkcji:</h1>
       {loading ? (
         <div>Ładowanie...</div>
-      ) : orders.length > 0 ? (
+      ) : sortedOrders.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -36,7 +39,7 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {orders.map((order) => (
+              {sortedOrders.map((order) => (
                 <tr
                   key={order.id}
                   className="hover:bg-ocean-50 transition-colors cursor-pointer"

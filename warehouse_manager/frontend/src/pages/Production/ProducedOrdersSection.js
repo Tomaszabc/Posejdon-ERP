@@ -12,12 +12,15 @@ export default function ProducedOrdersSection({
   handleClearFilters,
   ORDERS_LIMIT,
 }) {
+  // Sortowanie zamówień po ID malejąco (najnowsze na górze)
+  const sortedProducedOrders = [...producedOrders].sort((a, b) => b.id - a.id);
+
   return (
     <section className="bg-white shadow-2xl rounded-3xl p-6 border border-gray-100">
       {/* Header z tytułem i przyciskami filtrów */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          Wyprodukowane produkty
+          Wyprodukowane produkty:
           {!filters.startDate && !filters.endDate && !filters.sku && !filters.quantity && (
             <span className="ml-1 relative group">
               <span className="inline-block align-middle cursor-pointer group">
@@ -141,7 +144,7 @@ export default function ProducedOrdersSection({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {producedOrders.map((order) => (
+            {sortedProducedOrders.map((order) => (
               <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
                   {order.id}
@@ -156,7 +159,7 @@ export default function ProducedOrdersSection({
                   {order.quantity}
                 </td>
                 <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-                  {formatDateTime(order.produced_at)}
+                  {order.produced_at ? formatDateTime(order.produced_at) : 'Brak daty'}
                 </td>
                 <td className="px-2 py-2 whitespace-nowrap text-center">
                   <button

@@ -37,17 +37,21 @@ export default function ComponentProduction() {
     fetchOrders();
   }, []);
 
-  function fetchOrders() {
-    fetch('http://127.0.0.1:8000/api/product-to-production/')
-      .then((res) => res.json())
-      .then((data) => {
-        // Pokaż tylko zamówienia na komponenty typu 'Towar'
-        setOrders(data.filter((o) => o.component_r === 'Towar'));
-      })
-      .catch(() => {
-        setOrders([]);
-      });
-  }
+function fetchOrders() {
+  fetch('http://127.0.0.1:8000/api/product-to-production/')
+    .then((res) => res.json())
+    .then((data) => {
+      // Pokaż tylko zamówienia na komponenty typu 'Towar' i posortuj po ID
+      const filteredOrders = data
+        .filter((o) => o.component_r === 'Towar')
+        .sort((a, b) => b.id - a.id); // Sortowanie malejące (najnowsze na górze)
+      
+      setOrders(filteredOrders);
+    })
+    .catch(() => {
+      setOrders([]);
+    });
+}
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
