@@ -169,13 +169,13 @@ JAZZMIN_SETTINGS = {
     "site_header": "E-Posejdon ERP – Panel administracyjny",
     "site_brand": "E-Posejdon ERP",
     "welcome_sign": "Witaj w panelu E-Posejdon ERP",
-    "copyright": "Copyright © 2025 . All rights reserved.",
-    "show_ui_builder": False,  # ukryj przycisk Jazzmin UI builder
+    "copyright": "Copyright © 2025. All rights reserved.",
+    "show_ui_builder": False,
     "show_sidebar": True,
     "navigation_expanded": True,
     "hide_apps": [
-        "socialaccount",  # ukryj całą aplikację kont społecznościowych
-        "authtoken",      # ukryj tokeny uwierzytelniające
+        "socialaccount",
+        "authtoken",
     ],
     "hide_models": [
         "socialaccount.socialaccount",
@@ -183,10 +183,11 @@ JAZZMIN_SETTINGS = {
         "socialaccount.socialtoken",
         "authtoken.token",
     ],
-    "site_logo": None,  # możesz tu podać ścieżkę do własnego logo w static
+    "site_logo": None,
     "site_logo_classes": "img-circle",
     "site_icon": None,
     "user_avatar": None,
-    "show_footer": True,
-    "show_powered_by": False,  # ukryj napis "Powered by Jazzmin"
+    "show_footer": False,
+    "show_powered_by": False,
+    "show_jazzmin_version": False,  # <-- to ukryje wersję Jazzmin w stopce
 }
