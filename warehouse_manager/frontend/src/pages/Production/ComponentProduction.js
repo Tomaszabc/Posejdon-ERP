@@ -79,63 +79,43 @@ function fetchOrders() {
       });
   };
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    let newErrors = [];
-    if (!form.component) newErrors.push('Wybierz komponent.');
-    if (!form.quantity) newErrors.push('Podaj ilość.');
-    setErrors(newErrors);
-    if (newErrors.length === 0) {
-      fetch('http://127.0.0.1:8000/api/check-materials-availability/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          component: form.component,
-          quantity: form.quantity,
-        }),
-      })
-        .then((res) => res.json().then((data) => ({ status: res.status, data })))
-        .then(({ status, data }) => {
-          if (status === 200) {
-            setShowConfirmModal(true);
-          } else if (data.missing) {
-            setMissingMaterials(data.missing);
-            setMissingMessage(data.error || 'Brak wystarczającej ilości materiałów.');
-            setShowMissingModal(true);
-          } else {
-            setErrors([data.error || 'Błąd sprawdzania dostępności materiałów.']);
-          }
-        })
-        .catch(() => setErrors(['Błąd połączenia z serwerem.']));
-    }
+ function handleSubmit(e) {
+  e.preventDefault();
+  let newErrors = [];
+  if (!form.component) newErrors.push('Wybierz komponent.');
+  if (!form.quantity) newErrors.push('Podaj ilość.');
+  setErrors(newErrors);
+  if (newErrors.length === 0) {
+    setShowConfirmModal(true);
   }
+}
 
-  function handleConfirmSubmit() {
-    fetch('http://127.0.0.1:8000/api/product-to-production/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        component: form.component,
-        quantity: form.quantity,
-      }),
+function handleConfirmSubmit() {
+  fetch('http://127.0.0.1:8000/api/product-to-production/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      component: form.component,
+      quantity: form.quantity,
+    }),
+  })
+    .then((res) => res.json().then((data) => ({ status: res.status, data })))
+    .then(({ status, data }) => {
+      if (status === 201) {
+        setShowSuccess(true);
+        setForm({ component: '', quantity: '' });
+        fetchOrders();
+        setTimeout(() => setShowSuccess(false), 1200);
+      } else {
+        setErrors([data.error || 'Błąd podczas dodawania zlecenia.']);
+      }
+      setShowConfirmModal(false); // zamknij modal po próbie
     })
-      .then((res) => res.json().then((data) => ({ status: res.status, data })))
-      .then(({ status, data }) => {
-        if (status === 201) {
-          setShowSuccess(true);
-          setForm({ component: '', quantity: '' });
-          fetchOrders();
-          setTimeout(() => setShowSuccess(false), 1200);
-        } else {
-          setErrors([data.error || 'Błąd podczas dodawania zlecenia.']);
-        }
-        setShowConfirmModal(false); // zamknij modal po próbie
-      })
-      .catch(() => {
-        setErrors(['Błąd połączenia z serwerem.']);
-        setShowConfirmModal(false);
-      });
-  }
+    .catch(() => {
+      setErrors(['Błąd połączenia z serwerem.']);
+      setShowConfirmModal(false);
+    });
+}
 
   function openDeleteModal(order) {
     setOrderToDelete(order);
