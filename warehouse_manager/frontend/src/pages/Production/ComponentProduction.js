@@ -57,27 +57,62 @@ function fetchOrders() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  const handleProduceOrder = () => {
-    fetch(`http://127.0.0.1:8000/api/production/produce/${orderToProduce.id}/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+const handleProduceOrder = () => {
+  // Najpierw sprawdź dostępność materiałów
+  fetch('http://127.0.0.1:8000/api/check-materials-availability/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      component: orderToProduce.component || orderToProduce.id,
+      quantity: orderToProduce.quantity,
+    }),
+  })
+    .then((res) => res.json().then((data) => ({ status: res.status, data })))
+    .then(({ status, data }) => {
+      if (status === 200) {
+        // Materiały dostępne - kontynuuj produkcję
+        proceedWithProduction();
+      } else if (data.missing) {
+        // Brak materiałów - pokaż modal błędu
+        setMissingMaterials(data.missing);
+        setMissingMessage(data.error || 'Brak wystarczającej ilości materiałów.');
+        setShowMissingModal(true);
+        setShowProduceModal(false);
+        setOrderToProduce(null);
+      } else {
+        alert(data.error || 'Błąd sprawdzania dostępności materiałów.');
+        setShowProduceModal(false);
+        setOrderToProduce(null);
+      }
     })
-      .then((res) => res.json().then((data) => ({ status: res.status, data })))
-      .then(({ status, data }) => {
-        if (status === 200) {
-          fetchOrders();
-        } else {
-          alert(data.error || 'Błąd podczas produkcji.');
-        }
-        setShowProduceModal(false);
-        setOrderToProduce(null);
-      })
-      .catch(() => {
-        alert('Błąd połączenia z serwerem.');
-        setShowProduceModal(false);
-        setOrderToProduce(null);
-      });
-  };
+    .catch(() => {
+      alert('Błąd połączenia z serwerem.');
+      setShowProduceModal(false);
+      setOrderToProduce(null);
+    });
+};
+
+const proceedWithProduction = () => {
+  fetch(`http://127.0.0.1:8000/api/production/produce/${orderToProduce.id}/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  })
+    .then((res) => res.json().then((data) => ({ status: res.status, data })))
+    .then(({ status, data }) => {
+      if (status === 200) {
+        fetchOrders();
+      } else {
+        alert(data.error || 'Błąd podczas produkcji.');
+      }
+      setShowProduceModal(false);
+      setOrderToProduce(null);
+    })
+    .catch(() => {
+      alert('Błąd połączenia z serwerem.');
+      setShowProduceModal(false);
+      setOrderToProduce(null);
+    });
+};
 
  function handleSubmit(e) {
   e.preventDefault();
