@@ -112,6 +112,7 @@ class ProductToProduction(models.Model):
     is_produced = models.BooleanField(default=False)
     produced_at = models.DateTimeField(null=True, blank=True)
     uwagi = models.TextField(blank=True, null=True) 
+    pilne = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.component.full_name} ({self.component.catalog_index}) x {self.quantity}"

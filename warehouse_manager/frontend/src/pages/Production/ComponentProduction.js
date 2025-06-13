@@ -7,7 +7,7 @@ import UndoSuccessModal from '../../components/modals/UndoSuccessModal';
 import ConfirmProductionModal from './ConfirmProductionModal';
 
 export default function ComponentProduction() {
-  const [form, setForm] = useState({ component: '', quantity: '', uwagi: '' });
+  const [form, setForm] = useState({ component: '', quantity: '', uwagi: '', pilne: false });
   const [orders, setOrders] = useState([]);
   const [errors, setErrors] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -69,7 +69,11 @@ export default function ComponentProduction() {
   }
 
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   }
 
   const handleProduceOrder = () => {
@@ -173,13 +177,14 @@ export default function ComponentProduction() {
         component: form.component,
         quantity: form.quantity,
         uwagi: form.uwagi,
+        pilne: form.pilne,
       }),
     })
       .then((res) => res.json().then((data) => ({ status: res.status, data })))
       .then(({ status, data }) => {
         if (status === 201) {
           setShowSuccess(true);
-          setForm({ component: '', quantity: '', uwagi: '' });
+          setForm({ component: '', quantity: '', uwagi: '', pilne: false });
           fetchOrders();
           setTimeout(() => setShowSuccess(false), 1200);
         } else {
@@ -278,6 +283,19 @@ export default function ComponentProduction() {
                 placeholder="Wpisz uwagi (opcjonalnie)"
               />
             </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="pilne"
+                id="pilne"
+                checked={form.pilne}
+                onChange={handleChange}
+                className="h-5 w-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+              />
+              <label htmlFor="pilne" className="text-sm font-medium text-red-700 select-none">
+                PILNE
+              </label>
+            </div>
             <div className="pt-4">
               <button
                 type="submit"
@@ -312,6 +330,9 @@ export default function ComponentProduction() {
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
                     Ilość
                   </th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                    PILNE
+                  </th>
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                     Uwagi
                   </th>
@@ -324,17 +345,20 @@ export default function ComponentProduction() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {orders.map((order) => (
-                  <tr
+                 {orders.map((order) => (
+                    <tr
                     key={order.id}
-                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    className={
+                        "hover:bg-gray-50 transition-colors cursor-pointer" +
+                        (order.pilne ? " bg-red-100" : "")
+                    }
                     onClick={(e) => {
-                      // Nie nawiguj jeśli kliknięto przycisk
-                      if (e.target.closest('button')) return;
-                      navigate(`/order/${order.id}`);
+                        // Nie nawiguj jeśli kliknięto przycisk
+                        if (e.target.closest('button')) return;
+                        navigate(`/order/${order.id}`);
                     }}
                     title="Kliknij, aby zobaczyć szczegóły zamówienia"
-                  >
+                    >
                     <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
                       {order.id}
                     </td>
@@ -357,6 +381,36 @@ export default function ComponentProduction() {
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
                       {order.quantity}
+                    </td>
+                    <td className="px-2 py-2 whitespace-nowrap text-xs text-center">
+                      {order.pilne ? (
+                        <span title="Pilne">
+                          <svg
+                            className="w-5 h-5 text-red-600 inline"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              fill="none"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M12 6v6l4 2"
+                            />
+                          </svg>
+                        </span>
+                      ) : (
+                        ''
+                      )}
                     </td>
                     <td
                       className="px-2 py-2 whitespace-nowrap text-xs text-gray-500"
