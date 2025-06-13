@@ -6,7 +6,6 @@ import UndoModal from '../../components/modals/UndoModal';
 import UndoSuccessModal from '../../components/modals/UndoSuccessModal';
 import ConfirmProductionModal from './ConfirmProductionModal';
 
-
 export default function ComponentProduction() {
   const [form, setForm] = useState({ component: '', quantity: '', uwagi: '', pilne: false });
   const [orders, setOrders] = useState([]);
@@ -229,41 +228,39 @@ export default function ComponentProduction() {
   }
 
   const openCommentModal = (order) => {
-  setEditingOrder(order);
-  setTempComment(order.komentarz || '');
-  setShowCommentModal(true);
-};
+    setEditingOrder(order);
+    setTempComment(order.komentarz || '');
+    setShowCommentModal(true);
+  };
 
-const closeCommentModal = () => {
-  setShowCommentModal(false);
-  setEditingOrder(null);
-  setTempComment('');
-};
+  const closeCommentModal = () => {
+    setShowCommentModal(false);
+    setEditingOrder(null);
+    setTempComment('');
+  };
 
-const saveComment = () => {
-  if (!editingOrder) return;
-  
-  fetch(`http://127.0.0.1:8000/api/product-to-production/${editingOrder.id}/`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ komentarz: tempComment }),
-  }).then((res) => {
-    if (res.ok) {
-      // Zaktualizuj lokalny stan
-      setOrders((prev) =>
-        prev.map((o) =>
-          o.id === editingOrder.id ? { ...o, komentarz: tempComment } : o
-        )
-      );
-      closeCommentModal();
-      console.log('Komentarz zapisany');
-    }
-  });
-};
+  const saveComment = () => {
+    if (!editingOrder) return;
 
-const clearComment = () => {
-  setTempComment('');
-};
+    fetch(`http://127.0.0.1:8000/api/product-to-production/${editingOrder.id}/`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ komentarz: tempComment }),
+    }).then((res) => {
+      if (res.ok) {
+        // Zaktualizuj lokalny stan
+        setOrders((prev) =>
+          prev.map((o) => (o.id === editingOrder.id ? { ...o, komentarz: tempComment } : o))
+        );
+        closeCommentModal();
+        console.log('Komentarz zapisany');
+      }
+    });
+  };
+
+  const clearComment = () => {
+    setTempComment('');
+  };
 
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
@@ -398,7 +395,12 @@ const clearComment = () => {
                     }
                     onClick={(e) => {
                       // Nie nawiguj jeśli kliknięto przycisk lub div z komentarzem
-                      if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.comment-edit')) return;
+                      if (
+                        e.target.closest('button') ||
+                        e.target.closest('input') ||
+                        e.target.closest('.comment-edit')
+                      )
+                        return;
                       navigate(`/order/${order.id}`);
                     }}
                     title="Kliknij, aby zobaczyć szczegóły zamówienia"
@@ -465,19 +467,25 @@ const clearComment = () => {
                         : order.uwagi || ''}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-  <div 
-    className="comment-edit cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors"
-    onClick={(e) => {
-      e.stopPropagation();
-      openCommentModal(order);
-    }}
-    title="Kliknij aby edytować komentarz"
-  >
-    <div className="w-24 truncate">
-      {order.komentarz ? order.komentarz : <span className="text-gray-400 italic">Brak</span>}
-    </div>
-  </div>
-</td>
+                      <div
+                        className="comment-edit cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openCommentModal(order);
+                        }}
+                        title={
+                          order.komentarz ? order.komentarz : 'Brak komentarza - kliknij aby dodać'
+                        }
+                      >
+                        <div className="w-24 truncate">
+                          {order.komentarz ? (
+                            order.komentarz
+                          ) : (
+                            <span className="text-gray-400 italic">Brak</span>
+                          )}
+                        </div>
+                      </div>
+                    </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-center">
                       {order.is_produced ? (
                         <span className="bg-green-100 text-green-800 px-2 py-1 rounded font-semibold flex items-center justify-center gap-1">
@@ -662,53 +670,49 @@ const clearComment = () => {
       {/* Modal sukcesu cofnięcia */}
       <UndoSuccessModal show={showUndoSuccess} />
       {/* Modal edycji komentarza */}
-{showCommentModal && editingOrder && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl p-6 w-96 max-w-full mx-4 shadow-2xl">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">
-        Edytuj komentarz - Zlecenie #{editingOrder.id}
-      </h3>
-      
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Komentarz:
-        </label>
-        <textarea
-          value={tempComment}
-          onChange={(e) => setTempComment(e.target.value)}
-          maxLength={255}
-          rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 resize-none"
-          placeholder="Wpisz komentarz..."
-        />
-        <div className="text-xs text-gray-500 mt-1">
-          {tempComment.length}/255 znaków
-        </div>
-      </div>
+      {showCommentModal && editingOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-96 max-w-full mx-4 shadow-2xl">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Edytuj komentarz - Zlecenie #{editingOrder.id}
+            </h3>
 
-      <div className="flex gap-3 justify-end">
-        <button
-          onClick={clearComment}
-          className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-        >
-          Wyczyść
-        </button>
-        <button
-          onClick={closeCommentModal}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-        >
-          Anuluj
-        </button>
-        <button
-          onClick={saveComment}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Zapisz
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Komentarz:</label>
+              <textarea
+                value={tempComment}
+                onChange={(e) => setTempComment(e.target.value)}
+                maxLength={255}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 resize-none"
+                placeholder="Wpisz komentarz..."
+              />
+              <div className="text-xs text-gray-500 mt-1">{tempComment.length}/255 znaków</div>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={clearComment}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Wyczyść
+              </button>
+              <button
+                onClick={closeCommentModal}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Anuluj
+              </button>
+              <button
+                onClick={saveComment}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Zapisz
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

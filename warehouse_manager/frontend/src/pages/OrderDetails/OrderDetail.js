@@ -138,7 +138,11 @@ export default function OrderDetail() {
                 <div className="flex items-center">
                   <span className="text-sm font-medium text-gray-500 w-20">Komentarz:</span>
                   <span className="text-gray-800">
-                    {order.komentarz ? order.komentarz : <span className="text-gray-400">Brak</span>}
+                    {order.komentarz ? (
+                      order.komentarz
+                    ) : (
+                      <span className="text-gray-400">Brak</span>
+                    )}
                   </span>
                 </div>
               </div>
