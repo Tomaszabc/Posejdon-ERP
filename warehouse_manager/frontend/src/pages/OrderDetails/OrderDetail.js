@@ -135,6 +135,12 @@ export default function OrderDetail() {
                     {order.uwagi ? order.uwagi : <span className="text-gray-400">Brak</span>}
                   </span>
                 </div>
+                <div className="flex items-center">
+                  <span className="text-sm font-medium text-gray-500 w-20">Komentarz:</span>
+                  <span className="text-gray-800">
+                    {order.komentarz ? order.komentarz : <span className="text-gray-400">Brak</span>}
+                  </span>
+                </div>
               </div>
               <div className="space-y-4">
                 <div className="flex items-center">
