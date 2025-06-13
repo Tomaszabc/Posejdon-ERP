@@ -330,11 +330,14 @@ export default function ComponentProduction() {
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
                     Ilość
                   </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
                     PILNE
                   </th>
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                     Uwagi
+                  </th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Komentarz
                   </th>
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-14">
                     Status
@@ -345,20 +348,20 @@ export default function ComponentProduction() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                 {orders.map((order) => (
-                    <tr
+                {orders.map((order) => (
+                  <tr
                     key={order.id}
                     className={
-                        "hover:bg-gray-50 transition-colors cursor-pointer" +
-                        (order.pilne ? " bg-red-100" : "")
+                      'hover:bg-gray-50 transition-colors cursor-pointer' +
+                      (order.pilne ? ' bg-red-100' : '')
                     }
                     onClick={(e) => {
-                        // Nie nawiguj jeśli kliknięto przycisk
-                        if (e.target.closest('button')) return;
-                        navigate(`/order/${order.id}`);
+                      // Nie nawiguj jeśli kliknięto przycisk
+                      if (e.target.closest('button') || e.target.closest('input')) return;
+                      navigate(`/order/${order.id}`);
                     }}
                     title="Kliknij, aby zobaczyć szczegóły zamówienia"
-                    >
+                  >
                     <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
                       {order.id}
                     </td>
@@ -419,6 +422,31 @@ export default function ComponentProduction() {
                       {order.uwagi && order.uwagi.length > 8
                         ? order.uwagi.slice(0, 8) + '...'
                         : order.uwagi || ''}
+                    </td>
+                    <td
+                      className="px-2 py-2 whitespace-nowrap text-xs text-gray-500"
+                      title={order.komentarz || ''}
+                    >
+                      <input
+                        type="text"
+                        value={order.komentarz || ''}
+                        maxLength={100}
+                        className="w-28 truncate bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-400"
+                        onChange={(e) => {
+                          const newValue = e.target.value;
+                          setOrders((prev) =>
+                            prev.map((o) => (o.id === order.id ? { ...o, komentarz: newValue } : o))
+                          );
+                        }}
+                        onBlur={(e) => {
+                          // Zapisz do API po opuszczeniu pola
+                          fetch(`http://127.0.0.1:8000/api/product-to-production/${order.id}/`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ komentarz: e.target.value }),
+                          });
+                        }}
+                      />
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-center">
                       {order.is_produced ? (

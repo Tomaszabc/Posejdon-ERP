@@ -97,6 +97,44 @@ export default function OrderDetail() {
                     {order.component_catalog_index}
                   </span>
                 </div>
+                <div className="flex items-center">
+                  <span className="text-sm font-medium text-gray-500 w-20">Pilne:</span>
+                  {order.pilne ? (
+                    <span className="flex items-center text-red-700 font-semibold gap-1">
+                      <svg
+                        className="w-5 h-5 text-red-600"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 6v6l4 2"
+                        />
+                      </svg>
+                      TAK
+                    </span>
+                  ) : (
+                    <span className="text-gray-500">Nie</span>
+                  )}
+                </div>
+                <div className="flex items-center">
+                  <span className="text-sm font-medium text-gray-500 w-20">Uwagi:</span>
+                  <span className="text-gray-800">
+                    {order.uwagi ? order.uwagi : <span className="text-gray-400">Brak</span>}
+                  </span>
+                </div>
               </div>
               <div className="space-y-4">
                 <div className="flex items-center">
