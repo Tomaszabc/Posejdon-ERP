@@ -99,6 +99,14 @@ def delete_order(request, order_id):
     if request.method == "POST":
         order = get_object_or_404(Order, id=order_id)
         order.delete()
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "warehouse",
+            {
+                "type": "warehouse_update",
+                "data": {"action": "refresh"}
+            }
+        )
         messages.success(request, "Zamówienie zostało usunięte!")
     return redirect("inventory:product_order")
 
@@ -485,6 +493,19 @@ class ProductToProductionDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ProductToProduction.objects.all()
     serializer_class = ProductToProductionSerializer
     permission_classes = [IsAuthenticated]
+    
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+        # Wyślij sygnał websocket po usunięciu
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "warehouse",
+            {
+                "type": "warehouse_update",
+                "data": {"action": "refresh"}
+            }
+        )
+        return response
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

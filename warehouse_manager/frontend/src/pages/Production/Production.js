@@ -34,6 +34,7 @@ export default function Production() {
   useEffect(() => {
     ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
     ws.current.onmessage = (event) => {
+      console.log("WS message:", event.data);
       const msg = JSON.parse(event.data);
       if (msg.action === 'refresh') {
         fetchOrders();
