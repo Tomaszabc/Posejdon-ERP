@@ -14,21 +14,35 @@ export async function fetchRecipe(productId) {
 }
 
 export async function deleteRecipeItem(id) {
-  return fetch(`/api/parts-builder/${id}/`, { method: 'DELETE' });
+  const token = localStorage.getItem('access');
+  return fetch(`/api/parts-builder/${id}/`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }
 
 export async function patchRecipeItem(id, quantity) {
+  const token = localStorage.getItem('access');
   return fetch(`/api/parts-builder/${id}/`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({ quantity_needed: quantity }),
   });
 }
 
 export async function postRecipeItem(product, material, quantity) {
+  const token = localStorage.getItem('access');
   return fetch('/api/parts-builder/', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({ product, material, quantity_needed: quantity }),
   });
 }

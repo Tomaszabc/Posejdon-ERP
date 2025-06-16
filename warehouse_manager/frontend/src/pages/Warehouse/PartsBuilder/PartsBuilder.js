@@ -152,7 +152,9 @@ export default function PartsBuilder() {
             onChange={(e) => setSelectedProduct(e.target.value)}
           >
             <option value="">-- wybierz produkt --</option>
-            {products.map((prod) => (
+            {products
+            .filter((prod) => prod.r === 'Produkt')
+            .map((prod) => (
               <option key={prod.id} value={prod.id}>
                 {prod.full_name}
               </option>

@@ -136,7 +136,7 @@ class PartsBuilder(models.Model):
         Component, 
         on_delete=models.CASCADE, 
         related_name='parts_recipes',
-        limit_choices_to={'r__in': ['Towar']},  # lub ['Towar', 'Produkt'] jeśli chcesz oba
+        limit_choices_to={'r__in': ['Produkt']},  # lub ['Towar', 'Produkt'] jeśli chcesz oba
         help_text="Produkt główny (SKU)"   
 )
     # Materiał składowy - r="Materiał" 
