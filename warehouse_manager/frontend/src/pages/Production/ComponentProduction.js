@@ -237,8 +237,13 @@ export default function ComponentProduction() {
 
   function handleDelete() {
     if (!orderToDelete) return;
+    const token = localStorage.getItem('access');
     fetch(`http://127.0.0.1:8000/api/product-to-production/${orderToDelete.id}/`, {
       method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
     }).then((res) => {
       if (res.ok) {
         setOrders(orders.filter((o) => o.id !== orderToDelete.id));
