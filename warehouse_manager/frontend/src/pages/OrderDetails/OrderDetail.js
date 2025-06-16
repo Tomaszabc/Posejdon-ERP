@@ -254,6 +254,10 @@ export default function OrderDetail() {
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <span className="text-lg font-semibold text-gray-800">
                           {part.quantity_needed * order.quantity}
+                          <span className="text-gray-400">/</span>
+                          <span className={part.material_stock < part.quantity_needed * order.quantity ? "text-red-600 font-bold" : "text-green-700"}>
+                            {part.material_stock}
+                          </span>
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
