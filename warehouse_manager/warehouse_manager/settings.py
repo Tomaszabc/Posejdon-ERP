@@ -166,29 +166,107 @@ CHANNEL_LAYERS = {
 }
 
 JAZZMIN_SETTINGS = {
-    "site_title": "E-Posejdon ERP – Panel administracyjny",
-    "site_header": "E-Posejdon ERP – Panel administracyjny",
-    "site_brand": "E-Posejdon ERP",
-    "welcome_sign": "Witaj w panelu E-Posejdon ERP",
-    "copyright": "Copyright © 2025. All rights reserved.",
+    "site_title": "E-Posejdon– Panel administracyjny",
+    "site_header": "E-Posejdon– Panel administracyjny",
+    "site_brand": "E-Posejdon",
+    "welcome_sign": "Witaj w panelu E-Posejdon",
+    
     "show_ui_builder": False,
     "show_sidebar": True,
     "navigation_expanded": True,
+
+    # POPRAWKA: Usuń duplikaty i ustaw jeden custom_css
+    "custom_css": "css/custom-admin.css",
+    "custom_js": None,
+    "use_google_fonts_cdn": True,
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {"auth.user": "collapsible", "auth.group": "vertical_tabs"},
+    
+    "show_recent_actions": True,
+    "admin_name": "E-Posejdon",
+    "language_chooser": False,
+    
+    # POPRAWKA: Ukryj auth aplikację całkowicie
     "hide_apps": [
+        "auth",              # Ukryj całą sekcję uwierzytelniania
+        "account",           # Ukryj konta allauth
         "socialaccount",
         "authtoken",
+        "sites",
     ],
+    
+    # POPRAWKA: Ukryj wszystkie modele auth
     "hide_models": [
+        "auth.user",
+        "auth.group",
+        "account.emailaddress",
+        "account.emailconfirmation", 
         "socialaccount.socialaccount",
-        "socialaccount.socialapp",
+        "socialaccount.socialapp", 
         "socialaccount.socialtoken",
         "authtoken.token",
+        "sites.site",
     ],
+    
+    # POPRAWKA: Usuń permissions z topmenu_links
+    "topmenu_links": [
+        {"name": "Dashboard", "url": "admin:index"},
+        {"name": "Frontend", "url": "/", "new_window": True},
+    ],
+    
+    # POPRAWKA: Zostaw tylko inventory
+    "order_with_respect_to": ["inventory"],
+    
+    # POPRAWKA: Ikony tylko dla inventory
+    "icons": {
+        "inventory": "fas fa-boxes",
+        "inventory.component": "fas fa-cube",
+        "inventory.order": "fas fa-shopping-cart",
+        "inventory.producttoproduction": "fas fa-tasks",
+        "inventory.partsbuilder": "fas fa-cogs",
+    },
+    
+    # POPRAWKA: Usuń custom_links z nieistniejącymi modelami
+    "custom_links": {},
+    
     "site_logo": None,
-    "site_logo_classes": "img-circle",
+    "site_logo_classes": "img-circle", 
     "site_icon": None,
     "user_avatar": None,
     "show_footer": False,
     "show_powered_by": False,
-    "show_jazzmin_version": False,  # <-- to ukryje wersję Jazzmin w stopce
+    "show_jazzmin_version": False,
+}
+
+# Dodaj konfigurację UI
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-primary",
+    "accent": "accent-primary",
+    "navbar": "navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": False,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "default",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success"
+    }
 }
