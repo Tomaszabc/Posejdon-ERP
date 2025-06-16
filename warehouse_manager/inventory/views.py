@@ -441,6 +441,7 @@ def product_parts(request, component_id):
             "material_catalog_index": part.material.catalog_index,
             "quantity_needed": float(part.quantity_needed),
             "material_unit": part.material.unit,
+            "material_stock": float(part.material.stock),
         }
         for part in parts
     ]

@@ -231,7 +231,7 @@ export default function OrderDetail() {
                       SKU
                     </th>
                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Ilość potrzebna
+                      Ilość potrzebna/Stan
                     </th>
                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Jednostka
