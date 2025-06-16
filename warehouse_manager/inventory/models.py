@@ -115,6 +115,8 @@ class ProductToProduction(models.Model):
     pilne = models.BooleanField(default=False)
     komentarz = models.CharField(max_length=255, blank=True, default="")
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    missing_parts_send_to_production = models.BooleanField(default=False)  # <-- DODAJ TO POLE!
+    missing_components_ordered = models.BooleanField(default=False)        # <-- Jeśli też wymagane
 
     def __str__(self):
         return f"{self.component.full_name} ({self.component.catalog_index}) x {self.quantity}"
