@@ -270,10 +270,13 @@ export default function ComponentProduction() {
 
   const saveComment = () => {
     if (!editingOrder) return;
-
+    const token = localStorage.getItem('access');
     fetch(`http://127.0.0.1:8000/api/product-to-production/${editingOrder.id}/`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+          headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
       body: JSON.stringify({ komentarz: tempComment }),
     }).then((res) => {
       if (res.ok) {
