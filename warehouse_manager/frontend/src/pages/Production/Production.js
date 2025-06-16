@@ -196,15 +196,27 @@ export default function Production() {
 
   const orderMissingComponents = async (missingList) => {
   const token = localStorage.getItem('access');
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+  const headers = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
+  // Kopia braków do aktualizacji statusu
+  let updatedMissing = [...errorModal.missing];
+
   for (const item of missingList) {
-    // Znajdź komponent po SKU (catalog_index)
     const comp = components.find((c) => c.catalog_index === item.sku);
     if (!comp) continue;
+
+    const alreadyOrdered = orders.some(
+      (o) => o.component === comp.id && !o.is_produced
+    );
+    if (alreadyOrdered) {
+      // Ustaw flagę na true
+      updatedMissing = updatedMissing.map((m) =>
+        m.sku === item.sku ? { ...m, missing_parts_ordered: true } : m
+      );
+      continue;
+    }
+
     await fetch('http://127.0.0.1:8000/api/product-to-production/', {
       method: 'POST',
       headers,
@@ -215,8 +227,19 @@ export default function Production() {
         pilne: false,
       }),
     });
+
+    // Po wysłaniu zamówienia ustaw flagę na true
+    updatedMissing = updatedMissing.map((m) =>
+      m.sku === item.sku ? { ...m, missing_parts_ordered: true } : m
+    );
   }
-  setErrorModal({ show: false, message: '', missing: [] });
+
+  // Zaktualizuj modal z nowym statusem
+  setErrorModal((prev) => ({
+    ...prev,
+    missing: updatedMissing,
+  }));
+
   fetchOrders();
 };
 
