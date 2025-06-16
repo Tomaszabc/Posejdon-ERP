@@ -552,7 +552,8 @@ export default function Warehouse() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
                   >
                     <option value="Towar">Towar</option>
-                    <option value="Usługa">Usługa</option>
+                    <option value="Materiał">Materiał</option>
+                    <option value="Produkt">Produkt</option>
                   </select>
                 </div>
 
