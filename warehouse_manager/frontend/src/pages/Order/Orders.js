@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import OrderDeleteModal from '../../components/modals/OrderDeleteModal';
 import OrderConfirmModal from '../../components/modals/OrderConfirmModal';
 import OrderList from './OrderList';
+import { useRef } from 'react';
 
 export default function Orders() {
   const [form, setForm] = useState({ component: '', quantity: '' });
@@ -21,6 +22,7 @@ export default function Orders() {
     quantity: '',
     sku: '',
   });
+  const ws = useRef(null);
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/api/components-for-order/')
@@ -30,6 +32,14 @@ export default function Orders() {
 
   useEffect(() => {
     fetchOrders();
+    ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
+    ws.current.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.action === 'refresh') {
+        fetchOrders();
+      }
+    };
+    return () => ws.current && ws.current.close();
   }, []);
 
   function fetchOrders() {
