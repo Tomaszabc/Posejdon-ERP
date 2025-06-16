@@ -188,7 +188,7 @@ JAZZMIN_SETTINGS = {
     
     # POPRAWKA: Ukryj auth aplikację całkowicie
     "hide_apps": [
-        "auth",              # Ukryj całą sekcję uwierzytelniania
+        # "auth",              # Ukryj całą sekcję uwierzytelniania
         "account",           # Ukryj konta allauth
         "socialaccount",
         "authtoken",
@@ -197,7 +197,7 @@ JAZZMIN_SETTINGS = {
     
     # POPRAWKA: Ukryj wszystkie modele auth
     "hide_models": [
-        "auth.user",
+        # "auth.user",
         "auth.group",
         "account.emailaddress",
         "account.emailconfirmation", 
