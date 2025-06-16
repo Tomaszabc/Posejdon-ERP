@@ -43,6 +43,7 @@ export default function Orders() {
   }, []);
 
   function fetchOrders() {
+    console.log("fetchOrders wywołane");
     // Pobierz token z localStorage
     const token = localStorage.getItem('access');
 

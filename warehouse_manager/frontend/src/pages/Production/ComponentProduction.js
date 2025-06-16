@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OrderDeleteModal from '../../components/modals/OrderDeleteModal';
 import MissingErrorModal from '../../components/modals/MissingErrorModal';
@@ -28,6 +28,7 @@ export default function ComponentProduction() {
   const [editingOrder, setEditingOrder] = useState(null);
   const [tempComment, setTempComment] = useState('');
   const navigate = useNavigate();
+  const ws = useRef(null);
 
   const openProduceModal = (order) => {
     setOrderToProduce(order);
@@ -53,6 +54,22 @@ export default function ComponentProduction() {
 
   useEffect(() => {
     fetchOrders();
+  }, []);
+
+  useEffect(() => {
+    ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
+    ws.current.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.action === 'refresh') {
+          console.log('Odebrano refresh przez WS w ComponentProduction');
+          fetchOrders();
+        }
+      } catch (e) {
+        // ignoruj błędy
+      }
+    };
+    return () => ws.current && ws.current.close();
   }, []);
 
   function fetchOrders() {
@@ -293,6 +310,38 @@ export default function ComponentProduction() {
   const clearComment = () => {
     setTempComment('');
   };
+
+  function handleOrderMissing(missingList) {
+    console.log("handleOrderMissing wywołane", missingList);
+    const token = localStorage.getItem('access');
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Zleć produkcję dla każdego brakującego materiału
+    Promise.all(
+      missingList.map((item) =>
+        fetch('http://127.0.0.1:8000/api/product-to-production/', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            component: item.material_id || item.id,
+            quantity: item.missing_qty,
+            uwagi: 'Automatyczne zlecenie braków',
+            pilne: true,
+          }),
+        })
+      )
+    )
+      .finally(() => {
+        setShowMissingModal(false);
+        setMissingMaterials([]);
+        fetchOrders(); // zawsze odśwież listę zleceń
+      });
+  }
 
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
@@ -673,6 +722,7 @@ export default function ComponentProduction() {
         message={missingMessage}
         missing={missingMaterials}
         onClose={() => setShowMissingModal(false)}
+        onOrderMissing={handleOrderMissing}
       />
       {/* Modal do potwierdzenia dodania nowego zlecenia */}
       <ConfirmProductionModal
