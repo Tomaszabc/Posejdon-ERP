@@ -1,6 +1,7 @@
 import React from 'react';
 
-export default function ErrorModal({ show, message, missing = [], onClose }) {
+
+export default function ErrorModal({ show, message, missing = [], onClose, onOrderMissing  }) {
   if (!show) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -34,6 +35,14 @@ export default function ErrorModal({ show, message, missing = [], onClose }) {
         >
           OK
         </button>
+                  {onOrderMissing && missing.length > 0 && (
+            <button
+              className="mt-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold"
+              onClick={() => onOrderMissing(missing)}
+            >
+              Zleć produkcję braków
+            </button>
+          )}
       </div>
     </div>
   );

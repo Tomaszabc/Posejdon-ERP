@@ -29,6 +29,7 @@ export default function Production() {
   });
   const [errorModal, setErrorModal] = useState({ show: false, message: '' });
   const ws = useRef(null);
+  const [components, setComponents] = useState([]);
 
   useEffect(() => {
     ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
@@ -83,6 +84,12 @@ export default function Production() {
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  useEffect(() => {
+  fetch('http://127.0.0.1:8000/api/components-for-order/')
+    .then((res) => res.json())
+    .then((data) => setComponents(data));
+}, []);
 
   // API calls
   const fetchOrders = () => {
@@ -187,6 +194,32 @@ export default function Production() {
     setOrderToUndo(null);
   };
 
+  const orderMissingComponents = async (missingList) => {
+  const token = localStorage.getItem('access');
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  for (const item of missingList) {
+    // Znajdź komponent po SKU (catalog_index)
+    const comp = components.find((c) => c.catalog_index === item.sku);
+    if (!comp) continue;
+    await fetch('http://127.0.0.1:8000/api/product-to-production/', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        component: comp.id,
+        quantity: item.missing_qty,
+        uwagi: `Automatyczne zlecenie na braki do produkcji`,
+        pilne: false,
+      }),
+    });
+  }
+  setErrorModal({ show: false, message: '', missing: [] });
+  fetchOrders();
+};
+
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -226,6 +259,7 @@ export default function Production() {
         message={errorModal.message}
         missing={errorModal.missing}
         onClose={() => setErrorModal({ show: false, message: '', missing: [] })}
+        onOrderMissing={orderMissingComponents}
       />
     </div>
   );
