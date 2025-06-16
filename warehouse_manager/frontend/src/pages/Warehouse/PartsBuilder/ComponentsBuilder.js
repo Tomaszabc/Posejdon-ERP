@@ -206,7 +206,7 @@ export default function ComponentsBuilder() {
         {/* Lista materiałów przypisanych do produktu */}
         {selectedComponent && (
           <div>
-            <h2 className="text-xl font-semibold mb-2">Materiały przypisane do produktu:</h2>
+            <h2 className="text-xl font-semibold mb-2">Materiały przypisane do komponentu:</h2>
             {loading ? (
               <div>Ładowanie...</div>
             ) : recipe.length === 0 ? (
