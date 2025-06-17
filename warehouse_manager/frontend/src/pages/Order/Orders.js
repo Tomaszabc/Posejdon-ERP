@@ -25,7 +25,6 @@ export default function Orders() {
   });
   const ws = useRef(null);
 
-
   useEffect(() => {
     fetch(`${API_URL}/api/components-for-order/`)
       .then((res) => res.json())
@@ -45,19 +44,14 @@ export default function Orders() {
   }, []);
 
   function fetchOrders() {
-    
-    // Pobierz token z localStorage
     const token = localStorage.getItem('access');
-
     const headers = {};
-
-    // Dodaj token jeśli istnieje
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
     fetch(`${API_URL}/api/product-to-production/`, {
-      headers: headers, // ZMIANA: używaj zdefiniowanych headers
+      headers: headers,
     })
       .then((res) => res.json())
       .then((data) => {
@@ -74,7 +68,6 @@ export default function Orders() {
       if (filters.startDate && new Date(order.created_at) < new Date(filters.startDate))
         return false;
       if (filters.endDate && new Date(order.created_at) > new Date(filters.endDate)) return false;
-      // Zmienione na "zaczyna się od"
       if (filters.quantity && !String(order.quantity).startsWith(String(filters.quantity)))
         return false;
       if (
@@ -116,14 +109,10 @@ export default function Orders() {
   }
 
   function handleConfirmSubmit() {
-    // Pobierz token z localStorage
     const token = localStorage.getItem('access');
-
     const headers = {
       'Content-Type': 'application/json',
     };
-
-    // Dodaj token jeśli istnieje
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -166,19 +155,15 @@ export default function Orders() {
   function handleDelete() {
     if (!orderToDelete) return;
 
-    // Pobierz token z localStorage
     const token = localStorage.getItem('access');
-
     const headers = {};
-
-    // Dodaj token jeśli istnieje
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
     fetch(`${API_URL}/api/product-to-production/${orderToDelete.id}/`, {
       method: 'DELETE',
-      headers: headers, // ZMIANA: dodaj headers z tokenem
+      headers: headers,
     }).then((res) => {
       if (res.ok) {
         setOrders(orders.filter((o) => o.id !== orderToDelete.id));
@@ -196,7 +181,7 @@ export default function Orders() {
       <div className="grid grid-cols-1 xl:grid-cols-10 gap-8">
         {/* LEWA STRONA - NOWY FORMULARZ (30%) */}
         <section className="xl:col-span-3 bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Zamów gotowy produkt (Ewelina)</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Zamów gotowy produkt (Ewelina)</h1>
           {errors.length > 0 && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
               <ul className="list-disc pl-5">
@@ -249,32 +234,24 @@ export default function Orders() {
             </div>
           </form>
         </section>
+        
         {/* PRAWA STRONA - LISTA ZAMÓWIEŃ I FILTRY (70%) */}
-        <section className="xl:col-span-7 bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <section className="xl:col-span-7 bg-white shadow-2xl rounded-3xl p-4 sm:p-8 border border-gray-100">
+          {/* Header z responsywnymi przyciskami */}
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
               Lista zamówień
               {!filters.startDate && !filters.endDate && !filters.quantity && !filters.sku && (
                 <span className="ml-1 relative group">
-                  <span
-                    className="inline-block align-middle cursor-pointer group"
-                    style={{ borderBottom: '0px dotted #888' }}
-                  >
+                  <span className="inline-block align-middle cursor-pointer group">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="inline w-7 h-7 text-gray-400"
+                      className="inline w-5 h-5 sm:w-7 sm:h-7 text-gray-400"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        fill="white"
-                      />
+                      <circle cx="12" cy="12" r="10" strokeWidth="2" fill="white" />
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -289,21 +266,27 @@ export default function Orders() {
                 </span>
               )}
             </h2>
-            <button
-              type="button"
-              onClick={() => setShowFilters(!showFilters)}
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-sm text-sm"
-            >
-              🔍 {showFilters ? 'Ukryj filtry' : 'Pokaż filtry'}
-            </button>
-            <button
-              type="button"
-              onClick={handleClearFilters}
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors shadow-sm text-sm"
-            >
-              🗑️ Wyczyść filtry
-            </button>
+            
+            {/* Przyciski - na mobile w kolumnie, na desktop w rzędzie */}
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => setShowFilters(!showFilters)}
+                className="px-3 py-2 sm:px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-sm text-xs sm:text-sm"
+              >
+                🔍 {showFilters ? 'Ukryj filtry' : 'Pokaż filtry'}
+              </button>
+              <button
+                type="button"
+                onClick={handleClearFilters}
+                className="px-3 py-2 sm:px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors shadow-sm text-xs sm:text-sm"
+              >
+                🗑️ Wyczyść filtry
+              </button>
+            </div>
           </div>
+          
+          {/* Panel filtrów */}
           {showFilters && (
             <div
               className={`bg-gray-50 rounded-xl mb-6 overflow-hidden transition-all duration-500`}
@@ -315,7 +298,7 @@ export default function Orders() {
               }}
             >
               <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">Filtry</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-4">Filtry</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">Od daty</label>
@@ -364,7 +347,8 @@ export default function Orders() {
               </div>
             </div>
           )}
-          {/* warehouse_manager\frontend\src\pages\Order ZAMÓWIEŃ */}
+          
+          {/* Lista zamówień */}
           <OrderList orders={filteredOrders} openDeleteModal={openDeleteModal} />
         </section>
       </div>
