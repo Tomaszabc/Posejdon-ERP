@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Component, Product
+from .models import (
+    Component, ProductToProduction, PartsBuilder
+)
 
 @admin.register(Component)
 class ComponentAdmin(admin.ModelAdmin):
@@ -100,51 +102,109 @@ class ComponentAdmin(admin.ModelAdmin):
         updated = queryset.update(stock=0, available_quantity=0)
         self.message_user(request, f'Stan magazynowy {updated} komponentów został wyzerowany.')
     reset_stock.short_description = "Wyzeruj stan magazynowy"
-    
-    # Niestandardowe etykiety pól w formularzu edycji
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        
-        # Polskie nazwy pól w formularzu
-        field_labels = {
-            'r': 'Typ',
-            'full_name': 'Nazwa cała',
-            'stock': 'Stan',
-            'available_quantity': 'Ilość dostępna',
-            'unit': 'j.m.',
-            'purchase_price_net': 'Cena zakupu netto',
-            'sale_price_net': 'Cena sprzedaży netto',
-            'barcode': 'Kod kreskowy',
-            'catalog_index': 'Indeks katalogowy',
-            'reserved': 'Zarezerwowano',
-            'short_name': 'Nazwa krótka',
-            'original_name': 'Nazwa oryg.',
-            'suppliers_will_deliver': 'Dostawcy dostarczą',
-            'recipients_will_receive': 'Odbiorcy odbiorą',
-            'purchase_price_net_currency': 'C. zakupu netto wal.',
-            'vat_sale': 'Vat sprz.',
-            'margin_percent': 'Marża [%]',
-            'f': 'F',
-            'producer': 'Producent',
-            'article_number': 'Nr artykułu',
-            's': 'S',
-            'attachment': 'Zał.',
-            'marker': 'Wyróżnik',
-            'a': 'A',
-            'producer_index': 'Indeks producenta',
-            'cn_code': 'Kod CN',
-            'country_of_origin': 'Kraj pochodzenia',
-            'jpk_classification': 'JPK Klasyfikacja',
-            'markup_percent': 'Narzut [%]'
-        }
-        
-        for field_name, label in field_labels.items():
-            if field_name in form.base_fields:
-                form.base_fields[field_name].label = label
-        
-        return form
 
-# Polskie nazwy kolumn w tabeli - ustawiane POZA klasą
+@admin.register(ProductToProduction)
+class ProductToProductionAdmin(admin.ModelAdmin):
+    list_display = [
+        'id', 'component', 'quantity', 'is_produced', 'pilne', 
+        'created_at', 'produced_at', 'created_by', 'missing_parts_send_to_production'
+    ]
+    list_filter = [
+        'is_produced', 'pilne', 'missing_parts_send_to_production', 
+        'created_at', 'component__r'
+    ]
+    search_fields = [
+        'component__full_name', 'component__catalog_index', 
+        'komentarz', 'uwagi'
+    ]
+    readonly_fields = ['created_at', 'id']
+    list_editable = ['is_produced', 'pilne']
+    
+    fieldsets = (
+        ('Podstawowe dane', {
+            'fields': ('component', 'quantity', 'created_by'),
+            'classes': ('wide',)
+        }),
+        ('Status i priorytety', {
+            'fields': (
+                'is_produced', 'produced_at', 'pilne', 
+                'missing_parts_send_to_production'
+            ),
+            'classes': ('wide',)
+        }),
+        ('Komentarze', {
+            'fields': ('komentarz', 'uwagi'),
+            'classes': ('wide',)
+        }),
+        ('Informacje systemowe', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        })
+    )
+    
+    actions = ['mark_as_produced', 'mark_as_urgent', 'send_missing_to_production']
+    
+    def mark_as_produced(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.update(is_produced=True, produced_at=timezone.now())
+        self.message_user(request, f'{updated} pozycji zostało oznaczonych jako wyprodukowane.')
+    mark_as_produced.short_description = "Oznacz jako wyprodukowane"
+    
+    def mark_as_urgent(self, request, queryset):
+        updated = queryset.update(pilne=True)
+        self.message_user(request, f'{updated} pozycji zostało oznaczonych jako pilne.')
+    mark_as_urgent.short_description = "Oznacz jako pilne"
+    
+    def send_missing_to_production(self, request, queryset):
+        updated = queryset.update(missing_parts_send_to_production=True)
+        self.message_user(request, f'{updated} pozycji - brakujące części wysłane do produkcji.')
+    send_missing_to_production.short_description = "Wyślij brakujące części do produkcji"
+
+@admin.register(PartsBuilder)
+class PartsBuilderAdmin(admin.ModelAdmin):
+    list_display = [
+        'id', 'product', 'material', 'quantity_needed', 
+        'total_cost_display', 'created_at', 'updated_at'
+    ]
+    list_filter = [
+        'product__r', 'material__r', 'created_at',
+        'product__producer', 'material__producer'
+    ]
+    search_fields = [
+        'product__full_name', 'product__catalog_index',
+        'material__full_name', 'material__catalog_index',
+        'notes'
+    ]
+    readonly_fields = ['created_at', 'updated_at', 'total_cost_display']
+    
+    fieldsets = (
+        ('Przepis produktu', {
+            'fields': ('product', 'material', 'quantity_needed'),
+            'classes': ('wide',)
+        }),
+        ('Kalkulacja kosztów', {
+            'fields': ('total_cost_display',),
+            'classes': ('wide',)
+        }),
+        ('Dodatkowe informacje', {
+            'fields': ('notes',),
+            'classes': ('wide',)
+        }),
+        ('Informacje systemowe', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        })
+    )
+    
+    def total_cost_display(self, obj):
+        """Wyświetl skalkulowany koszt materiału"""
+        if obj.material and obj.material.purchase_price_net:
+            total = obj.total_cost()
+            return f"{total:.2f} PLN"
+        return "Brak ceny materiału"
+    total_cost_display.short_description = "Koszt materiału na 1 szt."
+
+# Polskie nazwy kolumn w tabeli
 Component._meta.get_field('r').verbose_name = "Typ"
 Component._meta.get_field('full_name').verbose_name = "Nazwa cała"
 Component._meta.get_field('catalog_index').verbose_name = "Indeks katalogowy"
@@ -174,9 +234,6 @@ Component._meta.get_field('cn_code').verbose_name = "Kod CN"
 Component._meta.get_field('country_of_origin').verbose_name = "Kraj pochodzenia"
 Component._meta.get_field('jpk_classification').verbose_name = "JPK Klasyfikacja"
 Component._meta.get_field('markup_percent').verbose_name = "Narzut [%]"
-
-# Rejestracja modelu Product
-admin.site.register(Product)
 
 # Customizacja nagłówków admin
 admin.site.site_header = "E-Posejdon ERP – Panel Administracyjny"

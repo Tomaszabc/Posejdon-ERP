@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "tu_wklej_swoj_super_tajny_klucz")
 DEBUG = os.getenv("DEBUG") == "True"
 DEBUG = True
-ALLOWED_HOSTS = ['localhost', "posejdon.fly.dev", "127.0.0.1"]
+ALLOWED_HOSTS = ['localhost', "posejdon.fly.dev", "127.0.0.1", "192.168.55.75"]
 HEADLESS_ONLY = True
 
 HEADLESS_FRONTEND_URLS = {
@@ -21,10 +21,10 @@ HEADLESS_FRONTEND_URLS = {
     "socialaccount_login_error": "http://localhost:3000",
 }
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]  # lub Twój port
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://192.168.55.75:3000"]  # lub Twój port
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # jeśli React działa lokalnie
+    "http://localhost:3000",  "http://192.168.55.75:3000"  # jeśli React działa lokalnie
     # Dodaj tu inne domeny frontendu, jeśli masz (np. produkcyjne)
 ]
 
@@ -174,6 +174,11 @@ JAZZMIN_SETTINGS = {
     "show_ui_builder": False,
     "show_sidebar": True,
     "navigation_expanded": True,
+
+    # USUŃ LOGO
+    "site_logo": None,
+    "site_logo_classes": None,
+    "site_icon": None,
 
     # POPRAWKA: Usuń duplikaty i ustaw jeden custom_css
     "custom_css": "css/custom-admin.css",

@@ -17,11 +17,11 @@
 .content-wrapper {
     margin-top: 0 !important;
 }
+
 /* Ukryj całą stopkę admina Jazzmin */
 .main-footer {
     display: none !important;
 }
-
 
 /* Szeroka tabela z wszystkimi kolumnami */
 .change-list table {
