@@ -1,34 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { API_URL, WS_URL } from '../../../config';
+import React, { useState } from 'react';
 import ProductsAndGoodsHeader from './ProductsAndGoodsHeader';
 import ProductsAndGoodsTable from './ProductsAndGoodsTable';
 import ProductsAndGoodsEditModal from './ProductsAndGoodsEditModal';
 import ProductsAndGoodsAddModal from './ProductsAndGoodsAddModal';
 import ProductsAndGoodsDeleteConfirmModal from './ProductsAndGoodsDeleteConfirmModal';
+import useComponents from './useComponents';
+import { API_URL } from '../../../config';
 
 export default function ProductsAndGoods() {
-  const [components, setComponents] = useState([]);
-  const [filteredComponents, setFilteredComponents] = useState([]); // Filtrowane komponenty
-  const [loading, setLoading] = useState(true);
+  const { filteredComponents, loading, fetchComponents } = useComponents();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingComponent, setEditingComponent] = useState(null);
   const [selectedComponents, setSelectedComponents] = useState(new Set());
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const ws = useRef(null);
-
-  useEffect(() => {
-    ws.current = new window.WebSocket(`${WS_URL}/ws/warehouse/`);
-    ws.current.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      if (msg.action === 'refresh') {
-        fetchComponents(); // <-- odśwież dane magazynowe
-      }
-    };
-    return () => ws.current && ws.current.close();
-  }, []);
 
   // Funkcja do eksportu CSV
   const exportToCSV = () => {
@@ -160,25 +146,6 @@ export default function ProductsAndGoods() {
     markup_percent: '0.00',
   });
 
-  useEffect(() => {
-    fetchComponents();
-  }, []);
-
-  const fetchComponents = () => {
-    fetch(`${API_URL}/api/components/`)
-      .then((res) => res.json())
-      .then((data) => {
-        setComponents(data);
-        // Filtruj tylko Materiały
-        const materials = data.filter((comp) => comp.r === 'Materiał');
-        setFilteredComponents(materials);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Błąd pobierania danych:', err);
-        setLoading(false);
-      });
-  };
 
   const handleAddComponent = async (e) => {
     e.preventDefault();
@@ -288,27 +255,6 @@ export default function ProductsAndGoods() {
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewComponent((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleEditInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditingComponent((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const openEditModal = (component) => {
-    setEditingComponent({ ...component });
-    setShowEditModal(true);
-  };
-
   const toggleComponentSelection = (componentId) => {
     const newSelected = new Set(selectedComponents);
     if (newSelected.has(componentId)) {
@@ -340,7 +286,6 @@ export default function ProductsAndGoods() {
 
   return (
     <div className="max-w-full mx-auto px-4 py-8">
-       {/* Nagłówek */}
       <ProductsAndGoodsHeader
         filteredComponents={filteredComponents}
         selectedComponents={selectedComponents}
@@ -361,23 +306,21 @@ export default function ProductsAndGoods() {
         />
       )}
 
-
       {showAddModal && (
         <ProductsAndGoodsAddModal
           show={showAddModal}
           newComponent={newComponent}
-          handleInputChange={handleInputChange}
+          handleInputChange={(e) => setNewComponent((prev) => ({ ...prev, [e.target.name]: e.target.value }))}
           onClose={() => setShowAddModal(false)}
           onSubmit={handleAddComponent}
         />
       )}
 
-     
       {showEditModal && editingComponent && (
         <ProductsAndGoodsEditModal
           show={showEditModal}
           editingComponent={editingComponent}
-          onChange={handleEditInputChange}
+          onChange={(e) => setEditingComponent((prev) => ({ ...prev, [e.target.name]: e.target.value }))}
           onClose={() => {
             setShowEditModal(false);
             setEditingComponent(null);
@@ -385,14 +328,16 @@ export default function ProductsAndGoods() {
           onSubmit={handleEditComponent}
         />
       )}
-      
 
       <ProductsAndGoodsTable
         filteredComponents={filteredComponents}
         selectedComponents={selectedComponents}
         selectAllComponents={selectAllComponents}
         toggleComponentSelection={toggleComponentSelection}
-        openEditModal={openEditModal}
+        openEditModal={(comp) => {
+          setEditingComponent({ ...comp });
+          setShowEditModal(true);
+        }}
       />
 
       {/* Footer info */}
