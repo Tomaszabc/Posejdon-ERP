@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { API_URL, WS_URL } from '../../../config';
+import ProductsAndGoodsHeader from './ProductsAndGoodsHeader';
 import ProductsAndGoodsTable from './ProductsAndGoodsTable';
 import ProductsAndGoodsEditModal from './ProductsAndGoodsEditModal';
 import ProductsAndGoodsAddModal from './ProductsAndGoodsAddModal';
@@ -339,203 +340,17 @@ export default function ProductsAndGoods() {
 
   return (
     <div className="max-w-full mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
-          <div>
-            <h1 className="text-4xl font-bold text-ocean-900 mb-2">🧱 Surowce produkcyjne</h1>
-            <p className="text-gray-600">Materiały magazynowe (typ R = "Materiał")</p>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex sm:hidden w-full">
-            <button
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="w-full bg-ocean-600 hover:bg-ocean-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-              Menu akcji
-            </button>
-          </div>
-
-          {/* Desktop Actions */}
-          <div className="hidden sm:flex gap-3 flex-wrap">
-            <input
-              type="file"
-              accept=".csv"
-              id="import-csv"
-              style={{ display: 'none' }}
-              onChange={async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const formData = new FormData();
-                formData.append('file', file);
-
-                const token = localStorage.getItem('access');
-                try {
-                  const response = await fetch(`${API_URL}/api/components/import/`, {
-                    method: 'POST',
-                    headers: {
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
-                  });
-                  if (response.ok) {
-                    alert('Import zakończony sukcesem!');
-                    fetchComponents();
-                  } else {
-                    alert('Błąd importu CSV.');
-                  }
-                } catch (err) {
-                  alert('Błąd importu CSV.');
-                }
-                e.target.value = '';
-              }}
-            />
-            <button
-              className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
-              title="Importuj z CSV"
-              onClick={() => document.getElementById('import-csv').click()}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
-              </svg>
-              Importuj CSV
-            </button>
-            <button
-              onClick={exportToCSV}
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
-              title="Eksportuj do CSV"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-              </svg>
-              Eksportuj CSV
-            </button>
-            {selectedComponents.size > 0 && (
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                Usuń zaznaczone ({selectedComponents.size})
-              </button>
-            )}
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="bg-ocean-600 hover:bg-ocean-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-              </svg>
-              Dodaj materiał
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {showMobileMenu && (
-          <div className="sm:hidden bg-white border border-gray-200 rounded-lg shadow-lg p-4 space-y-3 mt-4">
-            <input
-              type="file"
-              accept=".csv"
-              id="import-csv-mobile"
-              style={{ display: 'none' }}
-              onChange={async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const formData = new FormData();
-                formData.append('file', file);
-
-                const token = localStorage.getItem('access');
-                try {
-                  const response = await fetch(`${API_URL}/api/components/import/`, {
-                    method: 'POST',
-                    headers: {
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
-                  });
-                  if (response.ok) {
-                    alert('Import zakończony sukcesem!');
-                    fetchComponents();
-                  } else {
-                    alert('Błąd importu CSV.');
-                  }
-                } catch (err) {
-                  alert('Błąd importu CSV.');
-                }
-                e.target.value = '';
-                setShowMobileMenu(false);
-              }}
-            />
-            <button
-              className="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-              onClick={() => document.getElementById('import-csv-mobile').click()}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
-              </svg>
-              Importuj CSV
-            </button>
-            <button
-              onClick={() => {
-                exportToCSV();
-                setShowMobileMenu(false);
-              }}
-              className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-              </svg>
-              Eksportuj CSV
-            </button>
-            {selectedComponents.size > 0 && (
-              <button
-                onClick={() => {
-                  setShowDeleteConfirm(true);
-                  setShowMobileMenu(false);
-                }}
-                className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                Usuń zaznaczone ({selectedComponents.size})
-              </button>
-            )}
-            <button
-              onClick={() => {
-                setShowAddModal(true);
-                setShowMobileMenu(false);
-              }}
-              className="w-full bg-ocean-600 hover:bg-ocean-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-              </svg>
-              Dodaj materiał
-            </button>
-          </div>
-        )}
-
-        {filteredComponents.length > 0 && (
-          <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-800">
-              💡 <strong>Liczba materiałów:</strong> {filteredComponents.length} |
-              {selectedComponents.size > 0 && (
-                <span className="ml-4">
-                  <strong>Zaznaczone:</strong> {selectedComponents.size} pozycji
-                </span>
-              )}
-            </p>
-          </div>
-        )}
-      </div>
+       {/* Nagłówek */}
+      <ProductsAndGoodsHeader
+        filteredComponents={filteredComponents}
+        selectedComponents={selectedComponents}
+        onImportCSV={() => {/* implementacja importu CSV */}}
+        onExportCSV={exportToCSV}
+        onShowDeleteConfirm={() => setShowDeleteConfirm(true)}
+        onShowAddModal={() => setShowAddModal(true)}
+        showMobileMenu={showMobileMenu}
+        setShowMobileMenu={setShowMobileMenu}
+      />
 
       {showDeleteConfirm && (
         <ProductsAndGoodsDeleteConfirmModal
