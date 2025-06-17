@@ -216,7 +216,7 @@ JAZZMIN_SETTINGS = {
     # POPRAWKA: Usuń permissions z topmenu_links
     "topmenu_links": [
         {"name": "Dashboard", "url": "admin:index"},
-        {"name": "Frontend", "url": "/", "new_window": True},
+ 
     ],
     
     # POPRAWKA: Zostaw tylko inventory
