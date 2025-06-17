@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../config';
 
 export default function UserProfile({ user }) {
   const [profile, setProfile] = useState(null);
@@ -11,7 +12,7 @@ export default function UserProfile({ user }) {
 
   useEffect(() => {
     const token = localStorage.getItem('access');
-    fetch('http://localhost:8000/api/user/profile/', {
+    fetch(`${API_URL}/api/user/profile/`, {
       // ✅ Nowy endpoint
       headers: {
         Authorization: `Bearer ${token}`,
@@ -42,7 +43,7 @@ export default function UserProfile({ user }) {
 
     try {
       // ✅ ZMIANA: Użyj custom endpointu
-      const res = await fetch('http://localhost:8000/api/custom/password/change/', {
+      const res = await fetch(`${API_URL}/api/custom/password/change/`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,

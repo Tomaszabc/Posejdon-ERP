@@ -1,6 +1,6 @@
 import React from 'react';
+import { API_URL } from '../config';
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://127.0.0.1:8000';
 
 export default function Footer() {
   return (
@@ -9,7 +9,7 @@ export default function Footer() {
         <p className="text-gray-400">
           &copy; 2025 E-Posejdon Produkcja &middot;
           <a
-            href={`${backendUrl}/admin`}
+            href={`${API_URL}/admin`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-ocean-300 hover:text-white underline ml-1"

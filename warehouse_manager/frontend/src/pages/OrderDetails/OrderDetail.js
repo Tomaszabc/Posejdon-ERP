@@ -7,7 +7,7 @@ export default function OrderDetail() {
   const [order, setOrder] = useState(null);
   const [parts, setParts] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const API_URL = process.env.REACT_APP_API_URL || '';
   // Funkcja formatowania daty
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
@@ -36,10 +36,10 @@ export default function OrderDetail() {
 
         // Pobierz szczegóły zamówienia
         const orderResponse = await fetch(
-          `http://127.0.0.1:8000/api/product-to-production/${orderId}/`,
-          {
-            headers: headers, // ZMIANA: dodaj headers z tokenem
-          }
+          `${API_URL}/api/product-to-production/${orderId}/`,
+          
+            { headers }
+          
         );
 
         if (orderResponse.ok) {
@@ -50,10 +50,8 @@ export default function OrderDetail() {
 
           // Pobierz części produktu
           const partsResponse = await fetch(
-            `http://127.0.0.1:8000/api/product-parts/${orderData.component}/`,
-            {
-              headers: headers, // ZMIANA: dodaj headers także tutaj
-            }
+            `${API_URL}/api/product-parts/${orderData.component}/`,
+            { headers }
           );
 
           if (partsResponse.ok) {

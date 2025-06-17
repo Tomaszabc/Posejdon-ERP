@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { API_URL, WS_URL } from '../../config';
+
 
 export default function Warehouse() {
   const [components, setComponents] = useState([]);
@@ -147,7 +149,7 @@ export default function Warehouse() {
   }, []);
 
   const fetchComponents = () => {
-    fetch('http://localhost:8000/api/components/')
+    fetch(`${API_URL}/api/components/`)
       .then((res) => res.json())
       .then((data) => {
         setComponents(data);
@@ -163,7 +165,7 @@ export default function Warehouse() {
   };
 
   useEffect(() => {
-    ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
+    ws.current = new window.WebSocket(`${WS_URL}/ws/warehouse/`);
     ws.current.onmessage = (event) => {
       const msg = JSON.parse(event.data);
       if (msg.action === 'refresh') {
@@ -176,7 +178,7 @@ export default function Warehouse() {
   const handleAddComponent = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8000/api/components/', {
+      const response = await fetch(`${API_URL}:8000/api/components/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +232,7 @@ export default function Warehouse() {
   const handleEditComponent = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8000/api/components/${editingComponent.id}/`, {
+      const response = await fetch(`${API_URL}:8000/api/components/${editingComponent.id}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -259,7 +261,7 @@ export default function Warehouse() {
 
     try {
       const deletePromises = Array.from(selectedComponents).map((id) =>
-        fetch(`http://localhost:8000/api/components/${id}/`, {
+        fetch(`${API_URL}:8000/api/components/${id}/`, {
           method: 'DELETE',
         })
       );
@@ -362,7 +364,7 @@ export default function Warehouse() {
 
                 const token = localStorage.getItem('access');
                 try {
-                  const response = await fetch('http://localhost:8000/api/components/import/', {
+                  const response = await fetch(`${API_URL}/api/components/import/`, {
                     method: 'POST',
                     headers: {
                       Authorization: `Bearer ${token}`,

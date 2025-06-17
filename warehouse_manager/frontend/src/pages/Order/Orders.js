@@ -3,6 +3,7 @@ import OrderDeleteModal from '../../components/modals/OrderDeleteModal';
 import OrderConfirmModal from '../../components/modals/OrderConfirmModal';
 import OrderList from './OrderList';
 import { useRef } from 'react';
+import { API_URL, WS_URL } from '../../config';
 
 export default function Orders() {
   const [form, setForm] = useState({ component: '', quantity: '' });
@@ -24,15 +25,16 @@ export default function Orders() {
   });
   const ws = useRef(null);
 
+
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/components-for-order/')
+    fetch(`${API_URL}/api/components-for-order/`)
       .then((res) => res.json())
       .then(setComponents);
   }, []);
 
   useEffect(() => {
     fetchOrders();
-    ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
+    ws.current = new window.WebSocket(`${WS_URL}/ws/warehouse/`);
     ws.current.onmessage = (event) => {
       const msg = JSON.parse(event.data);
       if (msg.action === 'refresh') {
@@ -43,7 +45,7 @@ export default function Orders() {
   }, []);
 
   function fetchOrders() {
-    console.log("fetchOrders wywołane");
+    
     // Pobierz token z localStorage
     const token = localStorage.getItem('access');
 
@@ -54,7 +56,7 @@ export default function Orders() {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    fetch('http://127.0.0.1:8000/api/product-to-production/', {
+    fetch(`${API_URL}/api/product-to-production/`, {
       headers: headers, // ZMIANA: używaj zdefiniowanych headers
     })
       .then((res) => res.json())
@@ -126,7 +128,7 @@ export default function Orders() {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    fetch('http://127.0.0.1:8000/api/product-to-production/', {
+    fetch(`${API_URL}/api/product-to-production/`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({
@@ -174,7 +176,7 @@ export default function Orders() {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    fetch(`http://127.0.0.1:8000/api/product-to-production/${orderToDelete.id}/`, {
+    fetch(`${API_URL}/api/product-to-production/${orderToDelete.id}/`, {
       method: 'DELETE',
       headers: headers, // ZMIANA: dodaj headers z tokenem
     }).then((res) => {

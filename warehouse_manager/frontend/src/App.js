@@ -20,6 +20,7 @@ import ComponentsBuilder from './pages/Warehouse/PartsBuilder/ComponentsBuilder'
 
 import ProductionIndex from './pages/Production/ProductionIndex';
 import ComponentProduction from './pages/Production/ComponentProduction';
+import { API_URL, WS_URL } from './config';
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -28,7 +29,7 @@ function App() {
     // Użyj tego samego tokena co w logowaniu
     const token = localStorage.getItem('access');
     if (token) {
-      fetch('http://localhost:8000/api/auth/user/', {
+      fetch(`${API_URL}/api/auth/user/`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

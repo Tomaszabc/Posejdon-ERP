@@ -6,6 +6,7 @@ import SuccessModal from './SuccessModal';
 import ConfirmProductionModal from './ConfirmProductionModal';
 import UndoSuccessModal from '../../components/modals/UndoSuccessModal';
 import ErrorModal from '../../components/modals/MissingErrorModal'; // dostosuj ścieżkę
+import { API_URL, WS_URL } from '../../config';
 
 export default function Production() {
   // States
@@ -32,7 +33,7 @@ export default function Production() {
   const [components, setComponents] = useState([]);
 
   useEffect(() => {
-    ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
+    ws.current = new window.WebSocket(`${WS_URL}/ws/warehouse/`);
     ws.current.onmessage = (event) => {
       console.log("WS message:", event.data);
       const msg = JSON.parse(event.data);
@@ -87,7 +88,7 @@ export default function Production() {
   }, []);
 
   useEffect(() => {
-  fetch('http://127.0.0.1:8000/api/components-for-order/')
+  fetch(`${API_URL}/api/components-for-order/`)
     .then((res) => res.json())
     .then((data) => setComponents(data));
 }, []);
@@ -96,7 +97,7 @@ export default function Production() {
   const fetchOrders = () => {
     setLoading(true);
     const token = localStorage.getItem('access'); // pobierz token JWT
-    fetch('http://127.0.0.1:8000/api/product-to-production/', {
+    fetch(`${API_URL}/api/product-to-production/`, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -168,7 +169,7 @@ export default function Production() {
   const confirmUndoProduce = () => {
     if (!orderToUndo) return;
 
-    fetch(`http://127.0.0.1:8000/api/production/undo/${orderToUndo.id}/`, {
+    fetch(`${API_URL}/api/production/undo/${orderToUndo.id}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -218,7 +219,7 @@ export default function Production() {
       continue;
     }
 
-    await fetch('http://127.0.0.1:8000/api/product-to-production/', {
+    await fetch(`${API_URL}/api/product-to-production/`, {
       method: 'POST',
       headers,
       body: JSON.stringify({

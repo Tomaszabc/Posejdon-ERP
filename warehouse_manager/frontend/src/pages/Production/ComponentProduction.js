@@ -5,6 +5,7 @@ import MissingErrorModal from '../../components/modals/MissingErrorModal';
 import UndoModal from '../../components/modals/UndoModal';
 import UndoSuccessModal from '../../components/modals/UndoSuccessModal';
 import ConfirmProductionModal from './ConfirmProductionModal';
+import { API_URL, WS_URL } from '../../config';
 
 export default function ComponentProduction() {
   const [form, setForm] = useState({ component: '', quantity: '', uwagi: '', pilne: false });
@@ -47,7 +48,7 @@ export default function ComponentProduction() {
 
   useEffect(() => {
     // Pobierz tylko komponenty (r === 'Towar')
-    fetch('http://127.0.0.1:8000/api/components-for-order/')
+    fetch(`${API_URL}/api/components-for-order/`)
       .then((res) => res.json())
       .then((data) => setComponents(data.filter((c) => c.r === 'Towar')));
   }, []);
@@ -57,7 +58,7 @@ export default function ComponentProduction() {
   }, []);
 
   useEffect(() => {
-    ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
+    ws.current = new window.WebSocket(`${WS_URL}/ws/warehouse/`);
     ws.current.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data);
@@ -83,7 +84,7 @@ export default function ComponentProduction() {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    fetch('http://127.0.0.1:8000/api/product-to-production/', {
+    fetch(`${API_URL}/api/product-to-production/`, {
       headers: headers, // ✅ Dodaj headers
     })
       .then((res) => res.json())
@@ -110,7 +111,7 @@ export default function ComponentProduction() {
 
   const handleProduceOrder = () => {
     // Najpierw sprawdź dostępność materiałów
-    fetch('http://127.0.0.1:8000/api/check-materials-availability/', {
+    fetch(`${API_URL}/api/check-materials-availability/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -144,7 +145,7 @@ export default function ComponentProduction() {
   };
 
   const proceedWithProduction = () => {
-    fetch(`http://127.0.0.1:8000/api/production/produce/${orderToProduce.id}/`, {
+    fetch(`${API_URL}/api/production/produce/${orderToProduce.id}/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     })
@@ -179,7 +180,7 @@ export default function ComponentProduction() {
   const handleUndoProduction = () => {
     if (!orderToUndo) return;
 
-    fetch(`http://127.0.0.1:8000/api/production/undo/${orderToUndo.id}/`, {
+    fetch(`${API_URL}/api/production/undo/${orderToUndo.id}/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     })
@@ -214,7 +215,7 @@ export default function ComponentProduction() {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    fetch('http://127.0.0.1:8000/api/product-to-production/', {
+    fetch(`${API_URL}/api/product-to-production/`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({
@@ -255,7 +256,7 @@ export default function ComponentProduction() {
   function handleDelete() {
     if (!orderToDelete) return;
     const token = localStorage.getItem('access');
-    fetch(`http://127.0.0.1:8000/api/product-to-production/${orderToDelete.id}/`, {
+    fetch(`${API_URL}/api/product-to-production/${orderToDelete.id}/`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -288,7 +289,7 @@ export default function ComponentProduction() {
   const saveComment = () => {
     if (!editingOrder) return;
     const token = localStorage.getItem('access');
-    fetch(`http://127.0.0.1:8000/api/product-to-production/${editingOrder.id}/`, {
+    fetch(`${API_URL}/api/product-to-production/${editingOrder.id}/`, {
       method: 'PATCH',
           headers: {
       'Content-Type': 'application/json',
@@ -324,7 +325,7 @@ export default function ComponentProduction() {
     // Zleć produkcję dla każdego brakującego materiału
     Promise.all(
       missingList.map((item) =>
-        fetch('http://127.0.0.1:8000/api/product-to-production/', {
+        fetch(`${API_URL}/api/product-to-production/`, {
           method: 'POST',
           headers,
           body: JSON.stringify({
