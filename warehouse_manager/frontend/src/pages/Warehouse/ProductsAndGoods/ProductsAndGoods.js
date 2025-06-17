@@ -11,7 +11,7 @@ export default function ProductsAndGoods() {
   const [editingComponent, setEditingComponent] = useState(null);
   const [selectedComponents, setSelectedComponents] = useState(new Set());
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const ws = useRef(null);
 
   useEffect(() => {
@@ -337,12 +337,27 @@ export default function ProductsAndGoods() {
     <div className="max-w-full mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
           <div>
             <h1 className="text-4xl font-bold text-ocean-900 mb-2">🧱 Surowce produkcyjne</h1>
             <p className="text-gray-600">Materiały magazynowe (typ R = "Materiał")</p>
           </div>
-          <div className="flex gap-3">
+
+          {/* Mobile Menu Button */}
+          <div className="flex sm:hidden w-full">
+            <button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="w-full bg-ocean-600 hover:bg-ocean-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+              Menu akcji
+            </button>
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden sm:flex gap-3 flex-wrap">
             <input
               type="file"
               accept=".csv"
@@ -381,12 +396,7 @@ export default function ProductsAndGoods() {
               onClick={() => document.getElementById('import-csv').click()}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
               </svg>
               Importuj CSV
             </button>
@@ -396,12 +406,7 @@ export default function ProductsAndGoods() {
               title="Eksportuj do CSV"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4v16m8-8H4"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
               Eksportuj CSV
             </button>
@@ -411,12 +416,7 @@ export default function ProductsAndGoods() {
                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 Usuń zaznaczone ({selectedComponents.size})
               </button>
@@ -426,17 +426,98 @@ export default function ProductsAndGoods() {
               className="bg-ocean-600 hover:bg-ocean-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4v16m8-8H4"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
               Dodaj materiał
             </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {showMobileMenu && (
+          <div className="sm:hidden bg-white border border-gray-200 rounded-lg shadow-lg p-4 space-y-3 mt-4">
+            <input
+              type="file"
+              accept=".csv"
+              id="import-csv-mobile"
+              style={{ display: 'none' }}
+              onChange={async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const token = localStorage.getItem('access');
+                try {
+                  const response = await fetch(`${API_URL}/api/components/import/`, {
+                    method: 'POST',
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: formData,
+                  });
+                  if (response.ok) {
+                    alert('Import zakończony sukcesem!');
+                    fetchComponents();
+                  } else {
+                    alert('Błąd importu CSV.');
+                  }
+                } catch (err) {
+                  alert('Błąd importu CSV.');
+                }
+                e.target.value = '';
+                setShowMobileMenu(false);
+              }}
+            />
+            <button
+              className="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+              onClick={() => document.getElementById('import-csv-mobile').click()}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+              </svg>
+              Importuj CSV
+            </button>
+            <button
+              onClick={() => {
+                exportToCSV();
+                setShowMobileMenu(false);
+              }}
+              className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Eksportuj CSV
+            </button>
+            {selectedComponents.size > 0 && (
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(true);
+                  setShowMobileMenu(false);
+                }}
+                className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Usuń zaznaczone ({selectedComponents.size})
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setShowAddModal(true);
+                setShowMobileMenu(false);
+              }}
+              className="w-full bg-ocean-600 hover:bg-ocean-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Dodaj materiał
+            </button>
+          </div>
+        )}
 
         {filteredComponents.length > 0 && (
           <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -802,7 +883,160 @@ export default function ProductsAndGoods() {
                   />
                 </div>
 
-                {/* Reszta pól analogicznie... */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nazwa krótka
+                  </label>
+                  <input
+                    type="text"
+                    name="short_name"
+                    value={editingComponent.short_name}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Jednostka miary
+                  </label>
+                  <input
+                    type="text"
+                    name="unit"
+                    value={editingComponent.unit}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Stan magazynowy
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="stock"
+                    value={editingComponent.stock}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                {/* Ceny */}
+                <div className="col-span-full mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Ceny i marże</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cena zakupu netto (zł)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="purchase_price_net"
+                    value={editingComponent.purchase_price_net}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cena sprzedaży netto (zł)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="sale_price_net"
+                    value={editingComponent.sale_price_net}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    VAT sprzedaży (%)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="vat_sale"
+                    value={editingComponent.vat_sale}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                {/* Dodatkowe informacje */}
+                <div className="col-span-full mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Dodatkowe informacje</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Kod kreskowy
+                  </label>
+                  <input
+                    type="text"
+                    name="barcode"
+                    value={editingComponent.barcode}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Indeks katalogowy
+                  </label>
+                  <input
+                    type="text"
+                    name="catalog_index"
+                    value={editingComponent.catalog_index}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Producent</label>
+                  <input
+                    type="text"
+                    name="producer"
+                    value={editingComponent.producer}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Numer artykułu
+                  </label>
+                  <input
+                    type="text"
+                    name="article_number"
+                    value={editingComponent.article_number}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Kraj pochodzenia
+                  </label>
+                  <input
+                    type="text"
+                    name="country_of_origin"
+                    value={editingComponent.country_of_origin}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
