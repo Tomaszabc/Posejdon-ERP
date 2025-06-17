@@ -1,17 +1,6 @@
-/* Ukryj panel użytkownika z prawego sidebara */
-.user-panel {
-    display: none !important;
-}
 
-/* Opcjonalnie: ukryj cały navbar jeśli chcesz */
-.main-header {
-    display: none !important;
-}
 
-/* Lub ukryj tylko prawą część navbar z użytkownikiem */
-.navbar-nav.ml-auto {
-    display: none !important;
-}
+
 
 /* Dostosuj margines content area jeśli ukryłeś navbar */
 .content-wrapper {
