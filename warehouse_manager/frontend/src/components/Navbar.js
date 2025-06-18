@@ -111,8 +111,8 @@ export default function Navbar({ user, setUser }) {
                   >
                     Produkcja
                   </Link>
-                  <a
-                    href="/user"
+                  <Link
+                    to="/user"
                     className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg flex items-center"
                   >
                     <svg
@@ -129,7 +129,7 @@ export default function Navbar({ user, setUser }) {
                       />
                     </svg>
                     {user?.username || user?.user_id}
-                  </a>
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
@@ -225,8 +225,8 @@ export default function Navbar({ user, setUser }) {
               <a href="/production" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
                 Produkcja
               </a>
-              <a
-                href="/user"
+              <Link
+                to="/user"
                 className="block px-4 py-2 rounded-lg hover:bg-ocean-800 flex items-center"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,7 +238,7 @@ export default function Navbar({ user, setUser }) {
                   />
                 </svg>
                 Moje konto: {user?.username || user?.user_id}
-              </a>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="block w-full text-left px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700"

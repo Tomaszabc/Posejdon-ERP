@@ -27,23 +27,29 @@ function App() {
   const [user, setUser] = useState(undefined);
 
   useEffect(() => {
-    // Użyj tego samego tokena co w logowaniu
-    const token = localStorage.getItem('access');
-    if (token) {
-      fetch(`${API_URL}/api/auth/user/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+  const token = localStorage.getItem('access');
+  console.log('Token:', token);
+  if (token) {
+    fetch(`${API_URL}/api/auth/user/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
+        console.log('User fetch status:', res.status);
+        if (!res.ok) throw new Error();
+        return res.json();
       })
-        .then((res) => {
-          if (!res.ok) throw new Error();
-          return res.json();
-        })
-        .then((data) => setUser({ username: data.username, email: data.email }))
-        .catch(() => setUser(null));
-    }
-  }, []);
+      .then((data) => {
+        console.log('User data:', data);
+        setUser({ username: data.username, email: data.email });
+      })
+      .catch(() => setUser(null));
+  } else {
+    setUser(null);
+  }
+}, []);
 
   return (
     <Router>
