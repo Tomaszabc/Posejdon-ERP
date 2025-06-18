@@ -17,6 +17,8 @@ import WarehouseIndex from './pages/Warehouse/WarehouseIndex';
 import OrderDetail from './pages/OrderDetails/OrderDetail';
 import PartsBuilderIndex from './pages/Warehouse/PartsBuilder/PartsBuilderIndex';
 import ComponentsBuilder from './pages/Warehouse/PartsBuilder/ComponentsBuilder';
+import ProductBuilder from './pages/Warehouse/PartsBuilder/ProductBuilder';
+
 
 import ProductionIndex from './pages/Production/ProductionIndex';
 import ComponentProduction from './pages/Production/ComponentProduction';
@@ -113,6 +115,14 @@ function App() {
               element={
                 <ProtectedRoute user={user}>
                   <Warehouse />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/warehouse/parts-builder/products"
+              element={
+                <ProtectedRoute user={user}>
+                  <ProductBuilder />
                 </ProtectedRoute>
               }
             />

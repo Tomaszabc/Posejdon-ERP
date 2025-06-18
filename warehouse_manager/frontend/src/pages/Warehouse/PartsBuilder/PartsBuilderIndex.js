@@ -3,12 +3,36 @@ import { Link } from 'react-router-dom';
 
 export default function PartsBuilderIndex() {
   return (
-    <div className="max-w-2xl mx-auto py-12 px-4">
+    <div className="max-w-4xl mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold mb-8 text-center text-ocean-900">
-        Wybierz moduł produkcji:
+        Wybierz typ przypisania:
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Kafelek 1: Parts Builder */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Kafelek 1: Zbuduj produkt */}
+        <Link
+          to="/warehouse/parts-builder/products"
+          className="bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center hover:bg-ocean-50 transition group"
+        >
+          <svg
+            className="w-12 h-12 text-ocean-600 mb-4 group-hover:scale-110 transition"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+            />
+          </svg>
+          <span className="text-lg font-semibold text-ocean-900">Zbuduj produkt</span>
+          <span className="text-sm text-gray-500 mt-2 text-center">
+            Przypisz moduły do produktów finalnych
+          </span>
+        </Link>
+
+        {/* Kafelek 2: Zbuduj moduł */}
         <Link
           to="/warehouse/parts-builder/parts"
           className="bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center hover:bg-ocean-50 transition group"
@@ -31,7 +55,8 @@ export default function PartsBuilderIndex() {
             Przypisz półprodukty do modułów produkcyjnych
           </span>
         </Link>
-        {/* Kafelek 2: Components Builder */}
+
+        {/* Kafelik 3: Zbuduj towar */}
         <Link
           to="/warehouse/parts-builder/components"
           className="bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center hover:bg-ocean-50 transition group"
