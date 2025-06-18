@@ -181,7 +181,9 @@ export default function Orders() {
       <div className="grid grid-cols-1 xl:grid-cols-10 gap-8">
         {/* LEWA STRONA - NOWY FORMULARZ (30%) */}
         <section className="xl:col-span-3 bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Zamów gotowy produkt (Ewelina)</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+            Zamów gotowy produkt (Ewelina)
+          </h1>
           {errors.length > 0 && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
               <ul className="list-disc pl-5">
@@ -234,7 +236,7 @@ export default function Orders() {
             </div>
           </form>
         </section>
-        
+
         {/* PRAWA STRONA - LISTA ZAMÓWIEŃ I FILTRY (70%) */}
         <section className="xl:col-span-7 bg-white shadow-2xl rounded-3xl p-4 sm:p-8 border border-gray-100">
           {/* Header z responsywnymi przyciskami */}
@@ -266,7 +268,7 @@ export default function Orders() {
                 </span>
               )}
             </h2>
-            
+
             {/* Przyciski - na mobile w kolumnie, na desktop w rzędzie */}
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <button
@@ -285,7 +287,7 @@ export default function Orders() {
               </button>
             </div>
           </div>
-          
+
           {/* Panel filtrów */}
           {showFilters && (
             <div
@@ -347,7 +349,7 @@ export default function Orders() {
               </div>
             </div>
           )}
-          
+
           {/* Lista zamówień */}
           <OrderList orders={filteredOrders} openDeleteModal={openDeleteModal} />
         </section>

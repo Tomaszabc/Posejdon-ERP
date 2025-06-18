@@ -1,7 +1,6 @@
 import React from 'react';
 import { API_URL } from '../config';
 
-
 export default function Footer() {
   return (
     <footer className="bg-gradient-to-r from-gray-800 to-gray-900 text-white mt-auto py-8">

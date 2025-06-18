@@ -20,12 +20,15 @@ export default function PartsBuilderIndex() {
             strokeWidth={2}
             viewBox="0 0 24 24"
           >
-            <path d="M12 6v6l4 2" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+            />
           </svg>
-          <span className="text-lg font-semibold text-ocean-900">Parts Builder</span>
+          <span className="text-lg font-semibold text-ocean-900">Zbuduj moduł</span>
           <span className="text-sm text-gray-500 mt-2 text-center">
-            Przypisz komponenty do produktu
+            Przypisz półprodukty do modułów produkcyjnych
           </span>
         </Link>
         {/* Kafelek 2: Components Builder */}
@@ -40,20 +43,15 @@ export default function PartsBuilderIndex() {
             strokeWidth={2}
             viewBox="0 0 24 24"
           >
-            <rect
-              x="3"
-              y="7"
-              width="18"
-              height="13"
-              rx="2"
+            <path
               strokeLinecap="round"
               strokeLinejoin="round"
+              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
             />
-            <path d="M16 3v4M8 3v4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span className="text-lg font-semibold text-ocean-900">Components Builder</span>
+          <span className="text-lg font-semibold text-ocean-900">Zbuduj półprodukt</span>
           <span className="text-sm text-gray-500 mt-2 text-center">
-            Zarządzaj komponentami magazynowymi
+            Przypisz materiały do półproduktów
           </span>
         </Link>
       </div>

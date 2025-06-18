@@ -153,12 +153,12 @@ export default function PartsBuilder() {
           >
             <option value="">-- wybierz produkt --</option>
             {products
-            .filter((prod) => prod.r === 'Produkt')
-            .map((prod) => (
-              <option key={prod.id} value={prod.id}>
-                {prod.full_name}
-              </option>
-            ))}
+              .filter((prod) => prod.r === 'Produkt')
+              .map((prod) => (
+                <option key={prod.id} value={prod.id}>
+                  {prod.full_name}
+                </option>
+              ))}
           </select>
         </div>
 

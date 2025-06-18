@@ -6,7 +6,7 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
   const navigate = useNavigate();
   const [missingMap, setMissingMap] = useState({}); // {orderId: true/false}
 
-    useEffect(() => {
+  useEffect(() => {
     // Sprawdź braki dla każdego zamówienia
     async function checkAll() {
       const map = {};
@@ -71,12 +71,22 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
                   }}
                   title="Kliknij, aby zobaczyć szczegóły zamówienia"
                 >
-                   <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900 flex items-center gap-1">
+                  <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900 flex items-center gap-1">
                     {order.id}
                     {missingMap[order.id] && (
                       <span title="Brak materiałów">
-                        <svg className="w-4 h-4 text-red-600 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                        <svg
+                          className="w-4 h-4 text-red-600 inline"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 8v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                          />
                         </svg>
                       </span>
                     )}
@@ -93,7 +103,7 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
                   <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
                     {formatDateTime(order.created_at)}
                   </td>
-                  
+
                   <td className="px-2 py-2 whitespace-nowrap text-right text-xs font-medium">
                     <button
                       type="button"

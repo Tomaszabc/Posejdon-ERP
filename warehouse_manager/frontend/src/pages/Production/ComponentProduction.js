@@ -291,10 +291,10 @@ export default function ComponentProduction() {
     const token = localStorage.getItem('access');
     fetch(`${API_URL}/api/product-to-production/${editingOrder.id}/`, {
       method: 'PATCH',
-          headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ komentarz: tempComment }),
     }).then((res) => {
       if (res.ok) {
@@ -313,7 +313,7 @@ export default function ComponentProduction() {
   };
 
   function handleOrderMissing(missingList) {
-    console.log("handleOrderMissing wywołane", missingList);
+    console.log('handleOrderMissing wywołane', missingList);
     const token = localStorage.getItem('access');
     const headers = {
       'Content-Type': 'application/json',
@@ -336,12 +336,11 @@ export default function ComponentProduction() {
           }),
         })
       )
-    )
-      .finally(() => {
-        setShowMissingModal(false);
-        setMissingMaterials([]);
-        fetchOrders(); // zawsze odśwież listę zleceń
-      });
+    ).finally(() => {
+      setShowMissingModal(false);
+      setMissingMaterials([]);
+      fetchOrders(); // zawsze odśwież listę zleceń
+    });
   }
 
   return (

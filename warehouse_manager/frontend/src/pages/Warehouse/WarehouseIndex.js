@@ -51,10 +51,8 @@ export default function WarehouseIndex() {
             <path d="M12 6v6l4 2" strokeLinecap="round" strokeLinejoin="round" />
             <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span className="text-lg font-semibold text-ocean-900">Parts Builder</span>
-          <span className="text-sm text-gray-500 mt-2 text-center">
-            Przypisz komponenty do produktów
-          </span>
+          <span className="text-lg font-semibold text-ocean-900">Builder</span>
+          <span className="text-sm text-gray-500 mt-2 text-center">Zbuduj powiązania</span>
         </Link>
         {/* Kafelek 3 */}
         <Link

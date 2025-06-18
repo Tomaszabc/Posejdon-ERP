@@ -1,277 +1,282 @@
-{% extends "admin/index.html" %}
-{% load static %}
-
-{% block content %}
-
+{% extends "admin/index.html" %} {% load static %} {% block content %}
 
 <!-- Dodaj wykresy po istniejącej zawartości -->
 <div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">📊 Dashboard Analytics</h3>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">📊 Dashboard Analytics</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Wykres sprzedaży -->
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h5>Sprzedaż miesięczna</h5>
+              </div>
+              <div class="card-body">
+                <canvas id="salesChart" width="400" height="200"></canvas>
+              </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <!-- Wykres sprzedaży -->
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Sprzedaż miesięczna</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="salesChart" width="400" height="200"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Wykres produkcji -->
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Produkcja tygodniowa</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="productionChart" width="400" height="200"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row mt-4">
-                    <!-- Wykres kołowy - stan magazynu -->
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Stan magazynu</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="inventoryChart" width="400" height="200"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Wykres liniowy - trendy -->
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Trendy zamówień</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="trendsChart" width="400" height="200"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Statystyki liczbowe -->
-                <div class="row mt-4">
-                    <div class="col-md-3">
-                        <div class="info-box bg-info">
-                            <span class="info-box-icon"><i class="fas fa-shopping-cart"></i></span>
-                            <div class="info-box-content">
-                                <span class="info-box-text">Zamówienia dziś</span>
-                                <span class="info-box-number" id="todayOrders">23</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="info-box bg-success">
-                            <span class="info-box-icon"><i class="fas fa-industry"></i></span>
-                            <div class="info-box-content">
-                                <span class="info-box-text">Wyprodukowano</span>
-                                <span class="info-box-number" id="produced">156</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="info-box bg-warning">
-                            <span class="info-box-icon"><i class="fas fa-exclamation-triangle"></i></span>
-                            <div class="info-box-content">
-                                <span class="info-box-text">Niski stan</span>
-                                <span class="info-box-number" id="lowStock">7</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="info-box bg-danger">
-                            <span class="info-box-icon"><i class="fas fa-clock"></i></span>
-                            <div class="info-box-content">
-                                <span class="info-box-text">Opóźnienia</span>
-                                <span class="info-box-number" id="delays">3</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          </div>
+
+          <!-- Wykres produkcji -->
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h5>Produkcja tygodniowa</h5>
+              </div>
+              <div class="card-body">
+                <canvas id="productionChart" width="400" height="200"></canvas>
+              </div>
             </div>
+          </div>
         </div>
+
+        <div class="row mt-4">
+          <!-- Wykres kołowy - stan magazynu -->
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h5>Stan magazynu</h5>
+              </div>
+              <div class="card-body">
+                <canvas id="inventoryChart" width="400" height="200"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wykres liniowy - trendy -->
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h5>Trendy zamówień</h5>
+              </div>
+              <div class="card-body">
+                <canvas id="trendsChart" width="400" height="200"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statystyki liczbowe -->
+        <div class="row mt-4">
+          <div class="col-md-3">
+            <div class="info-box bg-info">
+              <span class="info-box-icon"><i class="fas fa-shopping-cart"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Zamówienia dziś</span>
+                <span class="info-box-number" id="todayOrders">23</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="info-box bg-success">
+              <span class="info-box-icon"><i class="fas fa-industry"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Wyprodukowano</span>
+                <span class="info-box-number" id="produced">156</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="info-box bg-warning">
+              <span class="info-box-icon"><i class="fas fa-exclamation-triangle"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Niski stan</span>
+                <span class="info-box-number" id="lowStock">7</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="info-box bg-danger">
+              <span class="info-box-icon"><i class="fas fa-clock"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Opóźnienia</span>
+                <span class="info-box-number" id="delays">3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Dodaj Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     // Wykres sprzedaży (liniowy)
     const salesCtx = document.getElementById('salesChart').getContext('2d');
     new Chart(salesCtx, {
-        type: 'line',
-        data: {
-            labels: ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze'],
-            datasets: [{
-                label: 'Sprzedaż (tys. zł)',
-                data: [65, 59, 80, 81, 56, 89],
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                tension: 0.1
-            }]
+      type: 'line',
+      data: {
+        labels: ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze'],
+        datasets: [
+          {
+            label: 'Sprzedaż (tys. zł)',
+            data: [65, 59, 80, 81, 56, 89],
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
         },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
+      },
     });
 
     // Wykres produkcji (słupkowy)
     const productionCtx = document.getElementById('productionChart').getContext('2d');
     new Chart(productionCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'],
-            datasets: [{
-                label: 'Sztuki wyprodukowane',
-                data: [12, 19, 3, 5, 2, 3, 1],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 205, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(199, 199, 199, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 205, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(199, 199, 199, 1)'
-                ],
-                borderWidth: 1
-            }]
+      type: 'bar',
+      data: {
+        labels: ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'],
+        datasets: [
+          {
+            label: 'Sztuki wyprodukowane',
+            data: [12, 19, 3, 5, 2, 3, 1],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 205, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              'rgba(199, 199, 199, 0.2)',
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 205, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)',
+              'rgba(199, 199, 199, 1)',
+            ],
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
         },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
+      },
     });
 
     // Wykres stanu magazynu (kołowy)
     const inventoryCtx = document.getElementById('inventoryChart').getContext('2d');
     new Chart(inventoryCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Komponenty', 'Surowce', 'Gotowe produkty', 'Opakowania'],
-            datasets: [{
-                data: [300, 50, 100, 20],
-                backgroundColor: [
-                    'rgb(255, 99, 132)',
-                    'rgb(54, 162, 235)',
-                    'rgb(255, 205, 86)',
-                    'rgb(75, 192, 192)'
-                ]
-            }]
+      type: 'doughnut',
+      data: {
+        labels: ['Komponenty', 'Surowce', 'Gotowe produkty', 'Opakowania'],
+        datasets: [
+          {
+            data: [300, 50, 100, 20],
+            backgroundColor: [
+              'rgb(255, 99, 132)',
+              'rgb(54, 162, 235)',
+              'rgb(255, 205, 86)',
+              'rgb(75, 192, 192)',
+            ],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          },
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                }
-            }
-        }
+      },
     });
 
     // Wykres trendów (area)
     const trendsCtx = document.getElementById('trendsChart').getContext('2d');
     new Chart(trendsCtx, {
-        type: 'line',
-        data: {
-            labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-            datasets: [{
-                label: 'Nowe zamówienia',
-                data: [10, 12, 8, 15, 18, 14, 20, 16, 22, 19],
-                borderColor: 'rgb(53, 162, 235)',
-                backgroundColor: 'rgba(53, 162, 235, 0.2)',
-                fill: true,
-                tension: 0.3
-            }, {
-                label: 'Zrealizowane',
-                data: [8, 10, 6, 12, 15, 11, 17, 13, 19, 16],
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                fill: true,
-                tension: 0.3
-            }]
+      type: 'line',
+      data: {
+        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+        datasets: [
+          {
+            label: 'Nowe zamówienia',
+            data: [10, 12, 8, 15, 18, 14, 20, 16, 22, 19],
+            borderColor: 'rgb(53, 162, 235)',
+            backgroundColor: 'rgba(53, 162, 235, 0.2)',
+            fill: true,
+            tension: 0.3,
+          },
+          {
+            label: 'Zrealizowane',
+            data: [8, 10, 6, 12, 15, 11, 17, 13, 19, 16],
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            fill: true,
+            tension: 0.3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
         },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
+      },
     });
 
     // Animacja liczb
     function animateNumber(elementId, targetNumber) {
-        const element = document.getElementById(elementId);
-        let current = 0;
-        const increment = targetNumber / 50;
-        const timer = setInterval(() => {
-            current += increment;
-            if (current >= targetNumber) {
-                current = targetNumber;
-                clearInterval(timer);
-            }
-            element.textContent = Math.floor(current);
-        }, 30);
+      const element = document.getElementById(elementId);
+      let current = 0;
+      const increment = targetNumber / 50;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= targetNumber) {
+          current = targetNumber;
+          clearInterval(timer);
+        }
+        element.textContent = Math.floor(current);
+      }, 30);
     }
 
     // Animuj statystyki
     setTimeout(() => {
-        animateNumber('todayOrders', 23);
-        animateNumber('produced', 156);
-        animateNumber('lowStock', 7);
-        animateNumber('delays', 3);
+      animateNumber('todayOrders', 23);
+      animateNumber('produced', 156);
+      animateNumber('lowStock', 7);
+      animateNumber('delays', 3);
     }, 500);
-});
+  });
 </script>
 
 <style>
-.info-box {
+  .info-box {
     display: block;
     min-height: 90px;
     background: #fff;
     width: 100%;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
     border-radius: 2px;
     margin-bottom: 15px;
-}
+  }
 
-.info-box-icon {
+  .info-box-icon {
     border-top-left-radius: 2px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -283,40 +288,40 @@ document.addEventListener('DOMContentLoaded', function() {
     text-align: center;
     font-size: 45px;
     line-height: 90px;
-    background: rgba(0,0,0,0.2);
-}
+    background: rgba(0, 0, 0, 0.2);
+  }
 
-.info-box-content {
+  .info-box-content {
     padding: 5px 10px;
     margin-left: 90px;
-}
+  }
 
-.info-box-text {
+  .info-box-text {
     text-transform: uppercase;
     font-weight: bold;
     font-size: 13px;
-}
+  }
 
-.info-box-number {
+  .info-box-number {
     display: block;
     font-weight: bold;
     font-size: 18px;
-}
+  }
 
-.bg-info .info-box-icon {
+  .bg-info .info-box-icon {
     color: #fff;
-}
+  }
 
-.bg-success .info-box-icon {
+  .bg-success .info-box-icon {
     color: #fff;
-}
+  }
 
-.bg-warning .info-box-icon {
+  .bg-warning .info-box-icon {
     color: #fff;
-}
+  }
 
-.bg-danger .info-box-icon {
+  .bg-danger .info-box-icon {
     color: #fff;
-}
+  }
 </style>
 {% endblock %}

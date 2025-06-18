@@ -1,50 +1,46 @@
-
-
-
-
 /* Dostosuj margines content area jeśli ukryłeś navbar */
 .content-wrapper {
-    margin-top: 0 !important;
+  margin-top: 0 !important;
 }
 
 /* Ukryj całą stopkę admina Jazzmin */
 .main-footer {
-    display: none !important;
+  display: none !important;
 }
 
 /* Szeroka tabela z wszystkimi kolumnami */
 .change-list table {
-    font-size: 11px;
-    white-space: nowrap;
-    min-width: 100%;
-    table-layout: auto;
+  font-size: 11px;
+  white-space: nowrap;
+  min-width: 100%;
+  table-layout: auto;
 }
 
 .change-list table th,
 .change-list table td {
-    padding: 6px 4px;
-    text-align: left;
-    vertical-align: middle;
+  padding: 6px 4px;
+  text-align: left;
+  vertical-align: middle;
 }
 
 /* Główna kolumna (nazwa) bardziej widoczna */
 .change-list table th:nth-child(2),
 .change-list table td:nth-child(2) {
-    font-weight: bold;
-    background-color: #f0f8ff;
-    min-width: 200px;
+  font-weight: bold;
+  background-color: #f0f8ff;
+  min-width: 200px;
 }
 
 /* Link do edycji wyróżniony */
 .change-list table .field-full_name a {
-    color: #007cba;
-    text-decoration: none;
-    font-weight: 600;
+  color: #007cba;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .change-list table .field-full_name a:hover {
-    color: #005a8b;
-    text-decoration: underline;
+  color: #005a8b;
+  text-decoration: underline;
 }
 
 /* Kolumny numeryczne wyrównane do prawej */
@@ -59,66 +55,79 @@
 .change-list table .field-vat_sale,
 .change-list table .field-margin_percent,
 .change-list table .field-markup_percent {
-    text-align: right;
-    font-family: 'Courier New', monospace;
+  text-align: right;
+  font-family: 'Courier New', monospace;
 }
 
 /* Responsive tabela - przewijanie poziome */
 .change-list .results {
-    overflow-x: auto;
-    overflow-y: visible;
+  overflow-x: auto;
+  overflow-y: visible;
 }
 
 /* Kolumny o stałej szerokości */
-.change-list table .field-r { width: 80px; }
-.change-list table .field-unit { width: 60px; }
-.change-list table .field-catalog_index { width: 120px; }
-.change-list table .field-barcode { width: 120px; }
-.change-list table .field-short_name { width: 150px; }
-.change-list table .field-producer { width: 120px; }
-.change-list table .field-article_number { width: 100px; }
+.change-list table .field-r {
+  width: 80px;
+}
+.change-list table .field-unit {
+  width: 60px;
+}
+.change-list table .field-catalog_index {
+  width: 120px;
+}
+.change-list table .field-barcode {
+  width: 120px;
+}
+.change-list table .field-short_name {
+  width: 150px;
+}
+.change-list table .field-producer {
+  width: 120px;
+}
+.change-list table .field-article_number {
+  width: 100px;
+}
 
 /* Sticky header dla długich tabel */
 .change-list table thead th {
-    position: sticky;
-    top: 0;
-    background-color: #f8f9fa;
-    z-index: 10;
-    border-bottom: 2px solid #007cba;
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 10;
+  border-bottom: 2px solid #007cba;
 }
 
 /* Podświetlenie wiersza przy hover */
 .change-list table tbody tr:hover {
-    background-color: #e3f2fd !important;
-    cursor: pointer;
+  background-color: #e3f2fd !important;
+  cursor: pointer;
 }
 
 /* Kolorowanie według typu */
 .change-list table .field-r {
-    font-weight: bold;
+  font-weight: bold;
 }
 
-.change-list table tbody tr:has(.field-r:contains("Materiał")) {
-    border-left: 4px solid #ff9800;
+.change-list table tbody tr:has(.field-r:contains('Materiał')) {
+  border-left: 4px solid #ff9800;
 }
 
-.change-list table tbody tr:has(.field-r:contains("Towar")) {
-    border-left: 4px solid #4caf50;
+.change-list table tbody tr:has(.field-r:contains('Towar')) {
+  border-left: 4px solid #4caf50;
 }
 
-.change-list table tbody tr:has(.field-r:contains("Produkt")) {
-    border-left: 4px solid #2196f3;
+.change-list table tbody tr:has(.field-r:contains('Produkt')) {
+  border-left: 4px solid #2196f3;
 }
 
 /* Kompaktowy widok dla małych ekranów */
 @media (max-width: 1200px) {
-    .change-list table {
-        font-size: 10px;
-    }
-    
-    .change-list table th,
-    .change-list table td {
-        padding: 4px 2px;
-    }
-}
+  .change-list table {
+    font-size: 10px;
+  }
 
+  .change-list table th,
+  .change-list table td {
+    padding: 4px 2px;
+  }
+}
