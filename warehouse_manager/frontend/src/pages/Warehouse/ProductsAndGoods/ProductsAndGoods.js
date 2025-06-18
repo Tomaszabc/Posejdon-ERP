@@ -10,8 +10,22 @@ export default function ProductsAndGoods() {
   const [editingComponent, setEditingComponent] = useState(null);
   const [selectedComponents, setSelectedComponents] = useState(new Set());
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showAll, setShowAll] = useState(false);
+  const itemsPerPage = 25;
+  const totalPages = Math.ceil(filteredComponents.length / itemsPerPage);
   const ws = useRef(null);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredComponents]);
+
+  const paginatedComponents = showAll
+    ? filteredComponents
+    : filteredComponents.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
   useEffect(() => {
     ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
@@ -1087,7 +1101,7 @@ export default function ProductsAndGoods() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredComponents.length === 0 ? (
+              {paginatedComponents.length === 0 ? (
                 <tr>
                   <td colSpan={31} className="text-center py-12 text-gray-500">
                     <div className="flex flex-col items-center">
@@ -1114,7 +1128,7 @@ export default function ProductsAndGoods() {
                   </td>
                 </tr>
               ) : (
-                filteredComponents.map((comp, index) => (
+                paginatedComponents.map((comp, index) => (
                   <tr
                     key={comp.id}
                     className={`hover:bg-gray-50 transition-colors ${
@@ -1269,6 +1283,45 @@ export default function ProductsAndGoods() {
           </table>
         </div>
       </div>
+
+      {/* PAGINACJA - dodaj POZA <table> i POZA <div className="overflow-x-auto">
+      {(totalPages > 1 || showAll) && (
+        <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
+          {!showAll && totalPages > 1 && (
+            <>
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+              >
+                &laquo;
+              </button>
+              {[...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+              >
+                &raquo;
+              </button>
+            </>
+          )}
+          <button
+            onClick={() => setShowAll((prev) => !prev)}
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 font-medium"
+          >
+            {showAll ? 'Paginacja' : 'Wyświetl wszystkie'}
+          </button>
+        </div>
+      )} */}
 
       {/* Footer info */}
       {filteredComponents.length > 0 && (
