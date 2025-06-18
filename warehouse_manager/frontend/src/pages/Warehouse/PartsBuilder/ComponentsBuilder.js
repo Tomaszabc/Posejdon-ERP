@@ -140,18 +140,18 @@ export default function ComponentsBuilder() {
       />
 
       <div className="max-w-3xl mx-auto py-10">
-        <h1 className="text-3xl font-bold mb-6">Components Builder</h1>
-        <p className="text-gray-700 mb-4">Tutaj możesz przypisywać towary do komponentów.</p>
+        <h1 className="text-3xl font-bold mb-6">Przypisz materiały do towarów</h1>
+        <p className="text-gray-700 mb-4">Tutaj możesz przypisywać materiały do towarów.</p>
 
         {/* Wybór komponentu */}
         <div className="mb-6">
-          <label className="block mb-1 font-medium">Wybierz komponent:</label>
+          <label className="block mb-1 font-medium">Wybierz towar:</label>
           <select
             className="w-full border px-3 py-2 rounded"
             value={selectedComponent}
             onChange={(e) => setSelectedComponent(e.target.value)}
           >
-            <option value="">-- wybierz komponent --</option>
+            <option value="">-- wybierz towar --</option>
             {components
               .filter((comp) => comp.r === 'Towar')
               .map((comp) => (

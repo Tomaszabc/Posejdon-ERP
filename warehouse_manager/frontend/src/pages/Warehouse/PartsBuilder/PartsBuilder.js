@@ -140,27 +140,27 @@ export default function PartsBuilder() {
       />
 
       <div className="max-w-3xl mx-auto py-10">
-        <h1 className="text-3xl font-bold mb-6">Parts Builder</h1>
-        <p className="text-gray-700 mb-4">Tutaj możesz przypisywać materiały do produktów.</p>
+        <h1 className="text-3xl font-bold mb-6">Stwórz moduł:</h1>
+        <p className="text-gray-700 mb-4">Tutaj możesz przypisywać towary do modułów.</p>
 
-        {/* Wybór produktu */}
-        <div className="mb-6">
-          <label className="block mb-1 font-medium">Wybierz Produkt:</label>
-          <select
-            className="w-full border px-3 py-2 rounded"
-            value={selectedProduct}
-            onChange={(e) => setSelectedProduct(e.target.value)}
-          >
-            <option value="">-- wybierz produkt --</option>
-            {products
-              .filter((prod) => prod.r === 'Produkt')
-              .map((prod) => (
-                <option key={prod.id} value={prod.id}>
-                  {prod.full_name}
-                </option>
-              ))}
-          </select>
-        </div>
+{/* Wybór produktu */}
+<div className="mb-6">
+  <label className="block mb-1 font-medium">Wybierz Moduł:</label>
+  <select
+    className="w-full border px-3 py-2 rounded"
+    value={selectedProduct}
+    onChange={(e) => setSelectedProduct(e.target.value)}
+  >
+    <option value="">-- wybierz moduł --</option>
+    {products
+      .filter((prod) => prod.r === 'Towar' && prod.catalog_index && prod.catalog_index.includes('-24-'))
+      .map((prod) => (
+        <option key={prod.id} value={prod.id}>
+          {prod.full_name}
+        </option>
+      ))}
+  </select>
+</div>
 
         {/* Formularz dodawania/edycji materiału */}
         {selectedProduct && (
@@ -174,7 +174,7 @@ export default function PartsBuilder() {
               >
                 <option value="">-- wybierz komponent --</option>
                 {materials
-                  .filter((mat) => mat.r === 'Moduł')
+                  .filter((mat) => mat.r === 'Towar')
                   .map((mat) => (
                     <option key={mat.id} value={mat.id}>
                       📦 {mat.full_name}

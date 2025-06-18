@@ -49,9 +49,9 @@ export default function PartsBuilderIndex() {
               d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
             />
           </svg>
-          <span className="text-lg font-semibold text-ocean-900">Zbuduj półprodukt</span>
+          <span className="text-lg font-semibold text-ocean-900">Zbuduj towar</span>
           <span className="text-sm text-gray-500 mt-2 text-center">
-            Przypisz materiały do półproduktów
+            Przypisz materiały do towarów
           </span>
         </Link>
       </div>
