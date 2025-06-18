@@ -546,7 +546,7 @@ export default function ProductsAndGoods() {
                   >
                     <option value="Materiał">Materiał</option>
                     <option value="Towar">Towar</option>
-                    <option value="Usługa">Usługa</option>
+                    <option value="Produkt">Produkt</option>
                   </select>
                 </div>
 

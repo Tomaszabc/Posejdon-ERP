@@ -145,7 +145,7 @@ export default function PartsBuilder() {
 
         {/* Wybór produktu */}
         <div className="mb-6">
-          <label className="block mb-1 font-medium">Wybierz produkt:</label>
+          <label className="block mb-1 font-medium">Wybierz Produkt:</label>
           <select
             className="w-full border px-3 py-2 rounded"
             value={selectedProduct}
@@ -174,7 +174,7 @@ export default function PartsBuilder() {
               >
                 <option value="">-- wybierz komponent --</option>
                 {materials
-                  .filter((mat) => mat.r === 'Towar')
+                  .filter((mat) => mat.r === 'Moduł')
                   .map((mat) => (
                     <option key={mat.id} value={mat.id}>
                       📦 {mat.full_name}

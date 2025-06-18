@@ -27,67 +27,24 @@ export default function Warehouse() {
     }
 
     const headers = [
-      'R',
-      'Nazwa cała',
-      'Stan',
-      'Ilość dostępna',
-      'j.m.',
-      'Cena zakupu netto',
-      'Cena sprzedaży netto',
-      'Kod kreskowy',
-      'Indeks katalogowy',
-      'Zarezerwowano',
-      'Nazwa krótka',
-      'Nazwa oryg.',
-      'Dostawcy dostarczą',
-      'Odbiorcy odbiorą',
-      'C. zakupu netto wal.',
-      'Vat sprz.',
-      'Marża [%]',
-      'F',
-      'Producent',
-      'Nr artykułu',
-      'S',
-      'Zał.',
-      'Wyróżnik',
-      'A',
-      'Indeks producenta',
-      'Kod CN',
-      'Kraj pochodzenia',
-      'JPK Klasyfikacja',
-      'Narzut [%]',
+      'R', 'Nazwa cała', 'Stan', 'Ilość dostępna', 'j.m.',
+      'Cena zakupu netto', 'Cena sprzedaży netto', 'Kod kreskowy',
+      'Indeks katalogowy', 'Zarezerwowano', 'Nazwa krótka', 'Nazwa oryg.',
+      'Dostawcy dostarczą', 'Odbiorcy odbiorą', 'C. zakupu netto wal.',
+      'Vat sprz.', 'Marża [%]', 'F', 'Producent', 'Nr artykułu',
+      'S', 'Zał.', 'Wyróżnik', 'A', 'Indeks producenta',
+      'Kod CN', 'Kraj pochodzenia', 'JPK Klasyfikacja', 'Narzut [%]',
     ];
 
     const rows = exportData.map((comp) => [
-      comp.r,
-      comp.full_name,
-      comp.stock,
-      comp.available_quantity,
-      comp.unit,
-      comp.purchase_price_net,
-      comp.sale_price_net,
-      comp.barcode,
-      comp.catalog_index,
-      comp.reserved,
-      comp.short_name,
-      comp.original_name,
-      comp.suppliers_will_deliver,
-      comp.recipients_will_receive,
-      comp.purchase_price_net_currency,
-      comp.vat_sale,
-      comp.margin_percent,
-      comp.f,
-      comp.producer,
-      comp.article_number,
-      comp.s,
-      comp.attachment,
-      comp.marker,
-      comp.a,
-      comp.producer_index,
-      comp.cn_code,
-      comp.country_of_origin,
-      comp.jpk_classification,
-      comp.markup_percent,
+      comp.r, comp.full_name, comp.stock, comp.available_quantity, comp.unit,
+      comp.purchase_price_net, comp.sale_price_net, comp.barcode,
+      comp.catalog_index, comp.reserved, comp.short_name, comp.original_name,
+      comp.suppliers_will_deliver, comp.recipients_will_receive,
+      comp.purchase_price_net_currency, comp.vat_sale, comp.margin_percent,
+      comp.f, comp.producer, comp.article_number, comp.s, comp.attachment,
+      comp.marker, comp.a, comp.producer_index, comp.cn_code,
+      comp.country_of_origin, comp.jpk_classification, comp.markup_percent,
     ]);
 
     let csvContent = '';
@@ -356,12 +313,7 @@ export default function Warehouse() {
               className="w-full bg-ocean-600 hover:bg-ocean-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
               Menu akcji
             </button>
@@ -401,92 +353,50 @@ export default function Warehouse() {
                 e.target.value = '';
               }}
             />
-
+            
             <button
               className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 lg:px-6 py-2 lg:py-3 rounded-lg font-medium flex items-center gap-2 transition-colors text-sm lg:text-base"
               title="Importuj z CSV"
               onClick={() => document.getElementById('import-csv').click()}
             >
-              <svg
-                className="w-4 h-4 lg:w-5 lg:h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-                />
+              <svg className="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
               </svg>
               <span className="hidden lg:inline">Importuj CSV</span>
               <span className="lg:hidden">Import</span>
             </button>
-
+            
             <button
               onClick={exportToCSV}
               className="bg-green-600 hover:bg-green-700 text-white px-3 lg:px-6 py-2 lg:py-3 rounded-lg font-medium flex items-center gap-2 transition-colors text-sm lg:text-base"
               title="Eksportuj do CSV"
             >
-              <svg
-                className="w-4 h-4 lg:w-5 lg:h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4v16m8-8H4"
-                />
+              <svg className="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
               <span className="hidden lg:inline">Eksportuj CSV</span>
               <span className="lg:hidden">Export</span>
             </button>
-
+            
             {selectedComponents.size > 0 && (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 className="bg-red-600 hover:bg-red-700 text-white px-3 lg:px-6 py-2 lg:py-3 rounded-lg font-medium flex items-center gap-2 transition-colors text-sm lg:text-base"
               >
-                <svg
-                  className="w-4 h-4 lg:w-5 lg:h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
+                <svg className="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
-                <span className="hidden lg:inline">
-                  Usuń zaznaczone ({selectedComponents.size})
-                </span>
+                <span className="hidden lg:inline">Usuń zaznaczone ({selectedComponents.size})</span>
                 <span className="lg:hidden">Usuń ({selectedComponents.size})</span>
               </button>
             )}
-
+            
             <button
               onClick={() => setShowAddModal(true)}
               className="bg-ocean-600 hover:bg-ocean-700 text-white px-3 lg:px-6 py-2 lg:py-3 rounded-lg font-medium flex items-center gap-2 transition-colors text-sm lg:text-base"
             >
-              <svg
-                className="w-4 h-4 lg:w-5 lg:h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4v16m8-8H4"
-                />
+              <svg className="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
               <span className="hidden lg:inline">Dodaj komponent</span>
               <span className="lg:hidden">Dodaj</span>
@@ -530,22 +440,17 @@ export default function Warehouse() {
                 setShowMobileMenu(false);
               }}
             />
-
+            
             <button
               className="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
               onClick={() => document.getElementById('import-csv-mobile').click()}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
               </svg>
               Importuj CSV
             </button>
-
+            
             <button
               onClick={() => {
                 exportToCSV();
@@ -554,16 +459,11 @@ export default function Warehouse() {
               className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4v16m8-8H4"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
               Eksportuj CSV
             </button>
-
+            
             {selectedComponents.size > 0 && (
               <button
                 onClick={() => {
@@ -573,17 +473,12 @@ export default function Warehouse() {
                 className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 Usuń zaznaczone ({selectedComponents.size})
               </button>
             )}
-
+            
             <button
               onClick={() => {
                 setShowAddModal(true);
@@ -592,12 +487,7 @@ export default function Warehouse() {
               className="w-full bg-ocean-600 hover:bg-ocean-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4v16m8-8H4"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
               Dodaj komponent
             </button>
@@ -640,9 +530,7 @@ export default function Warehouse() {
                   </svg>
                 </div>
                 <div className="ml-3 sm:ml-4">
-                  <h3 className="text-base sm:text-lg font-medium text-gray-900">
-                    Potwierdzenie usunięcia
-                  </h3>
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900">Potwierdzenie usunięcia</h3>
                   <p className="text-xs sm:text-sm text-gray-500 mt-1">
                     Czy na pewno chcesz usunąć {selectedComponents.size} zaznaczonych komponentów?
                   </p>
@@ -673,7 +561,7 @@ export default function Warehouse() {
         </div>
       )}
 
-      {/* Modal dodawania */}
+  {/* Modal dodawania */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -715,7 +603,8 @@ export default function Warehouse() {
                   >
                     <option value="Materiał">Materiał</option>
                     <option value="Towar">Towar</option>
-                    <option value="Usługa">Usługa</option>
+                    <option value="Produkt">Produkt</option>
+                    
                   </select>
                 </div>
 
@@ -910,7 +799,9 @@ export default function Warehouse() {
         </div>
       )}
 
-      {/* Modal edytowania */}
+
+
+        {/* Modal edytowania */}
       {showEditModal && editingComponent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
