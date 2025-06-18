@@ -741,13 +741,13 @@ export default function ProductsAndGoods() {
         </div>
       )}
 
-      {/* Modal edytowania - podobne zmiany jak wyżej */}
+         {/* Modal edytowania */}
       {showEditModal && editingComponent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200">
               <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900">Edytuj materiał</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Edytuj komponent</h2>
                 <button
                   onClick={() => setShowEditModal(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -765,8 +765,8 @@ export default function ProductsAndGoods() {
             </div>
 
             <form onSubmit={handleEditComponent} className="p-6">
-              {/* Skrócona wersja - podobne pola jak w modalu dodawania */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Podstawowe informacje */}
                 <div className="col-span-full">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     Podstawowe informacje
@@ -781,9 +781,9 @@ export default function ProductsAndGoods() {
                     onChange={handleEditInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
                   >
-                    <option value="Materiał">Materiał</option>
                     <option value="Towar">Towar</option>
-                    <option value="Usługa">Usługa</option>
+                    <option value="Produkt">Produkt</option>
+                    <option value="Materiał">Materiał</option>
                   </select>
                 </div>
 
@@ -801,7 +801,160 @@ export default function ProductsAndGoods() {
                   />
                 </div>
 
-                {/* Reszta pól analogicznie... */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nazwa krótka
+                  </label>
+                  <input
+                    type="text"
+                    name="short_name"
+                    value={editingComponent.short_name || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Jednostka miary
+                  </label>
+                  <input
+                    type="text"
+                    name="unit"
+                    value={editingComponent.unit}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Stan magazynowy
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="stock"
+                    value={editingComponent.stock}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                {/* Ceny */}
+                <div className="col-span-full mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Ceny i marże</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cena zakupu netto (zł)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="purchase_price_net"
+                    value={editingComponent.purchase_price_net}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cena sprzedaży netto (zł)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="sale_price_net"
+                    value={editingComponent.sale_price_net}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    VAT sprzedaży (%)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="vat_sale"
+                    value={editingComponent.vat_sale}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                {/* Dodatkowe informacje */}
+                <div className="col-span-full mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Dodatkowe informacje</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Kod kreskowy
+                  </label>
+                  <input
+                    type="text"
+                    name="barcode"
+                    value={editingComponent.barcode || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Indeks katalogowy
+                  </label>
+                  <input
+                    type="text"
+                    name="catalog_index"
+                    value={editingComponent.catalog_index || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Producent</label>
+                  <input
+                    type="text"
+                    name="producer"
+                    value={editingComponent.producer || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Numer artykułu
+                  </label>
+                  <input
+                    type="text"
+                    name="article_number"
+                    value={editingComponent.article_number || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Kraj pochodzenia
+                  </label>
+                  <input
+                    type="text"
+                    name="country_of_origin"
+                    value={editingComponent.country_of_origin || ''}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
