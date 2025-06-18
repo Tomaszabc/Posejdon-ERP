@@ -43,9 +43,11 @@ export default function Navbar({ user, setUser }) {
             </Link>
             {/* Desktop menu */}
             <div className="hidden lg:flex items-center space-x-4">
-              <Link to="/" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
-                Strona główna
-              </Link>
+              {user && (
+                <Link to="/" className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg">
+                  Strona główna
+                </Link>
+              )}
               {user && (
                 <>
                   {/* Dropdown desktop */}
@@ -166,9 +168,11 @@ export default function Navbar({ user, setUser }) {
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-ocean-900 text-white text-base px-4 py-6 space-y-4 fixed top-16 left-0 w-full z-30">
-          <Link to="/" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
-            Strona główna
-          </Link>
+          {user && (
+            <Link to="/" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+              Strona główna
+            </Link>
+          )}
           {user ? (
             <>
               {/* Dropdown mobile */}

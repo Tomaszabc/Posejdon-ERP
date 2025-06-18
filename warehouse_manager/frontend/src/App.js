@@ -19,7 +19,6 @@ import PartsBuilderIndex from './pages/Warehouse/PartsBuilder/PartsBuilderIndex'
 import ComponentsBuilder from './pages/Warehouse/PartsBuilder/ComponentsBuilder';
 import ProductBuilder from './pages/Warehouse/PartsBuilder/ProductBuilder';
 
-
 import ProductionIndex from './pages/Production/ProductionIndex';
 import ComponentProduction from './pages/Production/ComponentProduction';
 import { API_URL, WS_URL } from './config';

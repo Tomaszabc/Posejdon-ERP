@@ -22,10 +22,7 @@ export default function ProductsAndGoods() {
 
   const paginatedComponents = showAll
     ? filteredComponents
-    : filteredComponents.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
+    : filteredComponents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   useEffect(() => {
     ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
