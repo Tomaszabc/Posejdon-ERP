@@ -226,15 +226,13 @@ def parse_csv_with_autofix(file):
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser])
 def import_components_csv(request):
-    """
-    Importuje komponenty z pliku CSV przesłanego przez frontend.
-    """
     file = request.FILES.get('file')
     if not file:
         return Response({"error": "Nie przesłano pliku."}, status=400)
 
     rows = parse_csv_with_autofix(file)
     count = 0
+    errors = []
 
     for idx, row in enumerate(rows):
         try:
@@ -244,8 +242,12 @@ def import_components_csv(request):
             def valf(val):
                 return val.strip() if val else ''
 
+            catalog_index = valf(row.get('Indeks katalogowy'))
+            if not catalog_index:
+                raise ValueError("Brak indeksu katalogowego")
+
             Component.objects.update_or_create(
-                catalog_index=valf(row.get('Indeks katalogowy')),
+                catalog_index=catalog_index,
                 defaults={
                     'r': valf(row.get('R')),
                     'full_name': valf(row.get('Nazwa cała')),
@@ -279,11 +281,14 @@ def import_components_csv(request):
             )
             count += 1
         except Exception as e:
-            logging.exception(f"Błąd w wierszu {idx+2}: {row}")
-            # Możesz też dodać return lub continue, by nie przerywać całego importu
+            errors.append({
+                "row": idx + 2,  # +2 bo 1 to nagłówek, 2 to pierwszy wiersz danych
+                "error": str(e),
+                "data": row
+            })
             continue
 
-    return Response({"success": True, "imported": count})
+    return Response({"success": True, "imported": count, "errors": errors})
 
 @api_view(['GET'])
 def diffusor_types_list(request):
