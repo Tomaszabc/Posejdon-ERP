@@ -226,6 +226,9 @@ def parse_csv_with_autofix(file):
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser])
 def import_components_csv(request):
+    """
+    Importuje komponenty z pliku CSV przesłanego przez frontend.
+    """
     file = request.FILES.get('file')
     if not file:
         return Response({"error": "Nie przesłano pliku."}, status=400)
@@ -241,13 +244,13 @@ def import_components_csv(request):
                 return Decimal(val) if val else Decimal('0')
             def valf(val):
                 return val.strip() if val else ''
-
+            
             catalog_index = valf(row.get('Indeks katalogowy'))
             if not catalog_index:
                 raise ValueError("Brak indeksu katalogowego")
 
             Component.objects.update_or_create(
-                catalog_index=catalog_index,
+                catalog_index=valf(row.get('Indeks katalogowy')),
                 defaults={
                     'r': valf(row.get('R')),
                     'full_name': valf(row.get('Nazwa cała')),
@@ -288,7 +291,7 @@ def import_components_csv(request):
             })
             continue
 
-    return Response({"success": True, "imported": count, "errors": errors})
+    return Response({"success": True, "imported": count})
 
 @api_view(['GET'])
 def diffusor_types_list(request):
@@ -318,14 +321,14 @@ class ProductToProductionListCreateView(generics.ListCreateAPIView):
         print(f"Order created with created_by: {order.created_by}")
         
         # Odejmij materiały ze stanu magazynowego
-        parts = PartsBuilder.objects.filter(product=order.component)
-        for part in parts:
-            material = part.material
-            qty_to_subtract = float(part.quantity_needed) * order.quantity
-            material.stock = float(material.stock) - qty_to_subtract
-            if material.stock < 0:
-                material.stock = 0
-            material.save()
+        # parts = PartsBuilder.objects.filter(product=order.component)
+        # for part in parts:
+        #     material = part.material
+        #     qty_to_subtract = float(part.quantity_needed) * order.quantity
+        #     material.stock = float(material.stock) - qty_to_subtract
+        #     if material.stock < 0:
+        #         material.stock = 0
+        #     material.save()
         
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(

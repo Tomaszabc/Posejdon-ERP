@@ -722,7 +722,7 @@ export default function ComponentProduction() {
         message={missingMessage}
         missing={missingMaterials}
         onClose={() => setShowMissingModal(false)}
-        onOrderMissing={handleOrderMissing}
+        // onOrderMissing={handleOrderMissing}
       />
       {/* Modal do potwierdzenia dodania nowego zlecenia */}
       <ConfirmProductionModal
