@@ -183,7 +183,7 @@ export default function ComponentsBuilder() {
               </select>
             </div>
             <div>
-              <label className="block mb-1 font-medium">Ilość:</label>
+              <label className="block mb-1 font-medium">Ilość materiału:</label>
               <input
                 type="number"
                 min={0.001}

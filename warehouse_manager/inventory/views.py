@@ -1,5 +1,9 @@
 import csv
 from decimal import Decimal
+from rest_framework.decorators import api_view, permission_classes, parser_classes
+from rest_framework.parsers import MultiPartParser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -9,12 +13,6 @@ from django.contrib import messages
 from django.http import JsonResponse
 
 from rest_framework import viewsets, generics
-from rest_framework.decorators import (
-    api_view, permission_classes, parser_classes
-)
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import MultiPartParser
-from rest_framework.response import Response
 
 from .models import (
     Product, Order, Component, DiffusorType, ProductToProduction, PartsBuilder
@@ -27,6 +25,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib.auth.hashers import check_password
 
+import logging
 
 
 
@@ -185,6 +184,44 @@ class ComponentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Component.objects.all()
     serializer_class = ComponentSerializer
 
+def parse_csv_with_autofix(file):
+    # Odczytaj plik jako tekst
+    content = file.read().decode('utf-8-sig').replace('\r\n', '\n').replace('\r', '\n')
+    lines = content.split('\n')
+    if not lines or not lines[0].strip():
+        return []
+
+    # Wykryj separator
+    first_line = lines[0]
+    delimiter = ';' if first_line.count(';') > first_line.count(',') else ','
+
+    # Przygotuj readera
+    reader = csv.reader(lines, delimiter=delimiter)
+    headers = next(reader)
+    headers = [h.strip() for h in headers]
+
+    data = []
+    for row in reader:
+        # Pomijaj puste wiersze
+        if not any(cell.strip() for cell in row):
+            continue
+        # Uzupełnij brakujące wartości pustym stringiem
+        if len(row) < len(headers):
+            row += [''] * (len(headers) - len(row))
+        # Usuń nadmiarowe wartości
+        if len(row) > len(headers):
+            row = row[:len(headers)]
+        # Usuń cudzysłowy i zamień przecinek na kropkę w liczbach
+        clean_row = []
+        for val in row:
+            val = val.strip().strip('"')
+            # Zamień przecinek na kropkę tylko jeśli to liczba
+            if val.replace(',', '', 1).replace('.', '', 1).isdigit() and ',' in val:
+                val = val.replace(',', '.')
+            clean_row.append(val)
+        data.append(dict(zip(headers, clean_row)))
+    return data
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser])
@@ -196,53 +233,55 @@ def import_components_csv(request):
     if not file:
         return Response({"error": "Nie przesłano pliku."}, status=400)
 
-    decoded_file = file.read().decode('utf-8').splitlines()
-    first_line = decoded_file[0]
-    delimiter = ';' if first_line.count(';') > first_line.count(',') else ','
-    reader = csv.DictReader(decoded_file, delimiter=delimiter)
+    rows = parse_csv_with_autofix(file)
     count = 0
 
-    for row in reader:
-        def dec(val):
-            val = (val or '').replace(',', '.').replace(' ', '')
-            return Decimal(val) if val else Decimal('0')
-        def val(val):
-            return val.strip() if val else ''
+    for idx, row in enumerate(rows):
+        try:
+            def dec(val):
+                val = (val or '').replace(',', '.').replace(' ', '')
+                return Decimal(val) if val else Decimal('0')
+            def valf(val):
+                return val.strip() if val else ''
 
-        Component.objects.update_or_create(
-            catalog_index=val(row.get('Indeks katalogowy')),
-            defaults={
-                'r': val(row.get('R')),
-                'full_name': val(row.get('Nazwa cała')),
-                'stock': dec(row.get('Stan')),
-                'available_quantity': dec(row.get('Ilość dostępna')),
-                'unit': val(row.get('j.m.')),
-                'purchase_price_net': dec(row.get('Cena zakupu netto')),
-                'sale_price_net': dec(row.get('Cena sprzedaży netto')),
-                'barcode': val(row.get('Kod kreskowy')),
-                'reserved': dec(row.get('Zarezerwowano')),
-                'short_name': val(row.get('Nazwa krótka')),
-                'original_name': val(row.get('Nazwa oryg.')),
-                'suppliers_will_deliver': dec(row.get('Dostawcy dostarczą')),
-                'recipients_will_receive': dec(row.get('Odbiorcy odbiorą')),
-                'purchase_price_net_currency': dec(row.get('C. zakupu netto wal.')),
-                'vat_sale': dec(row.get('Vat sprz.')),
-                'margin_percent': dec(row.get('Marża [%]')),
-                'f': val(row.get('F')),
-                'producer': val(row.get('Producent')),
-                'article_number': val(row.get('Nr artykułu')),
-                's': val(row.get('S')),
-                'attachment': val(row.get('Zał.')),
-                'marker': val(row.get('Wyróżnik')),
-                'a': val(row.get('A')),
-                'producer_index': val(row.get('Indeks producenta')),
-                'cn_code': val(row.get('Kod CN')),
-                'country_of_origin': val(row.get('Kraj pochodzenia')),
-                'jpk_classification': val(row.get('JPK Klasyfikacja')),
-                'markup_percent': dec(row.get('Narzut [%]')),
-            }
-        )
-        count += 1
+            Component.objects.update_or_create(
+                catalog_index=valf(row.get('Indeks katalogowy')),
+                defaults={
+                    'r': valf(row.get('R')),
+                    'full_name': valf(row.get('Nazwa cała')),
+                    'stock': dec(row.get('Stan')),
+                    'available_quantity': dec(row.get('Ilość dostępna')),
+                    'unit': valf(row.get('j.m.')),
+                    'purchase_price_net': dec(row.get('Cena zakupu netto')),
+                    'sale_price_net': dec(row.get('Cena sprzedaży netto')),
+                    'barcode': valf(row.get('Kod kreskowy')),
+                    'reserved': dec(row.get('Zarezerwowano')),
+                    'short_name': valf(row.get('Nazwa krótka')),
+                    'original_name': valf(row.get('Nazwa oryg.')),
+                    'suppliers_will_deliver': dec(row.get('Dostawcy dostarczą')),
+                    'recipients_will_receive': dec(row.get('Odbiorcy odbiorą')),
+                    'purchase_price_net_currency': dec(row.get('C. zakupu netto wal.')),
+                    'vat_sale': dec(row.get('Vat sprz.')),
+                    'margin_percent': dec(row.get('Marża [%]')),
+                    'f': valf(row.get('F')),
+                    'producer': valf(row.get('Producent')),
+                    'article_number': valf(row.get('Nr artykułu')),
+                    's': valf(row.get('S')),
+                    'attachment': valf(row.get('Zał.')),
+                    'marker': valf(row.get('Wyróżnik')),
+                    'a': valf(row.get('A')),
+                    'producer_index': valf(row.get('Indeks producenta')),
+                    'cn_code': valf(row.get('Kod CN')),
+                    'country_of_origin': valf(row.get('Kraj pochodzenia')),
+                    'jpk_classification': valf(row.get('JPK Klasyfikacja')),
+                    'markup_percent': dec(row.get('Narzut [%]')),
+                }
+            )
+            count += 1
+        except Exception as e:
+            logging.exception(f"Błąd w wierszu {idx+2}: {row}")
+            # Możesz też dodać return lub continue, by nie przerywać całego importu
+            continue
 
     return Response({"success": True, "imported": count})
 
