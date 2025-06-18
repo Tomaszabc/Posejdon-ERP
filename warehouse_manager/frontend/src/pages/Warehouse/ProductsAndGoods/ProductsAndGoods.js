@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { API_URL, WS_URL } from '../../../config';
 
 export default function ProductsAndGoods() {
   const [components, setComponents] = useState([]);
@@ -25,7 +26,7 @@ export default function ProductsAndGoods() {
     : filteredComponents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   useEffect(() => {
-    ws.current = new window.WebSocket('ws://localhost:8000/ws/warehouse/');
+    ws.current = new window.WebSocket(`${WS_URL}/ws/warehouse/`);
     ws.current.onmessage = (event) => {
       const msg = JSON.parse(event.data);
       if (msg.action === 'refresh') {
@@ -170,7 +171,7 @@ export default function ProductsAndGoods() {
   }, []);
 
   const fetchComponents = () => {
-    fetch('http://localhost:8000/api/components/')
+    fetch(`${API_URL}/api/components/`)
       .then((res) => res.json())
       .then((data) => {
         setComponents(data);
@@ -188,7 +189,7 @@ export default function ProductsAndGoods() {
   const handleAddComponent = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8000/api/components/', {
+      const response = await fetch(`${API_URL}/api/components/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -242,7 +243,7 @@ export default function ProductsAndGoods() {
   const handleEditComponent = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8000/api/components/${editingComponent.id}/`, {
+      const response = await fetch(`${API_URL}/api/components/${editingComponent.id}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -271,7 +272,7 @@ export default function ProductsAndGoods() {
 
     try {
       const deletePromises = Array.from(selectedComponents).map((id) =>
-        fetch(`http://localhost:8000/api/components/${id}/`, {
+        fetch(`${API_URL}/api/components/${id}/`, {
           method: 'DELETE',
         })
       );
@@ -366,7 +367,7 @@ export default function ProductsAndGoods() {
 
                 const token = localStorage.getItem('access');
                 try {
-                  const response = await fetch('http://localhost:8000/api/components/import/', {
+                  const response = await fetch(`${API_URL}/api/components/import/`, {
                     method: 'POST',
                     headers: {
                       Authorization: `Bearer ${token}`,
