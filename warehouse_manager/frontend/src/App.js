@@ -136,7 +136,6 @@ function App() {
 
             <Route path="/warehouse/parts-builder/parts" element={<PartsBuilder />} />
             <Route path="/warehouse/parts-builder/components" element={<ComponentsBuilder />} />
-            {/* ...inne chronione trasy w ten sam sposób... */}
           </Routes>
         </main>
         <Footer />

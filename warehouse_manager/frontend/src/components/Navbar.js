@@ -15,6 +15,11 @@ export default function Navbar({ user, setUser }) {
     navigate('/login');
   }
 
+  function capitalize(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   return (
     <>
       <nav className="bg-gradient-to-r from-ocean-800 to-ocean-900 shadow-xl fixed w-full z-20 backdrop-blur-sm">
@@ -128,7 +133,7 @@ export default function Navbar({ user, setUser }) {
                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                       />
                     </svg>
-                    {user?.username || user?.user_id}
+                    {capitalize(user?.username || user?.user_id)}
                   </Link>
                   <button
                     onClick={handleLogout}
@@ -237,7 +242,7 @@ export default function Navbar({ user, setUser }) {
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   />
                 </svg>
-                Moje konto: {user?.username || user?.user_id}
+                Moje konto: {capitalize(user?.username || user?.user_id)}
               </Link>
               <button
                 onClick={handleLogout}
