@@ -216,15 +216,15 @@ export default function Navbar({ user, setUser }) {
                 )}
               </div>
 
-              <a href="/warehouse" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+              <Link to="/warehouse" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
                 Magazyn
-              </a>
-              <a href="/orders" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+              </Link>
+              <Link to="/orders" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
                 Zamówienia
-              </a>
-              <a href="/production" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
+              </Link>
+              <Link to="/production" className="block px-4 py-2 rounded-lg hover:bg-ocean-800">
                 Produkcja
-              </a>
+              </Link>
               <Link
                 to="/user"
                 className="block px-4 py-2 rounded-lg hover:bg-ocean-800 flex items-center"
