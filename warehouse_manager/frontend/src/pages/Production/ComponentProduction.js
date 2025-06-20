@@ -63,7 +63,7 @@ export default function ComponentProduction() {
       try {
         const msg = JSON.parse(event.data);
         if (msg.action === 'refresh') {
-          console.log('Odebrano refresh przez WS w ComponentProduction');
+
           fetchOrders();
         }
       } catch (e) {
@@ -303,7 +303,7 @@ export default function ComponentProduction() {
           prev.map((o) => (o.id === editingOrder.id ? { ...o, komentarz: tempComment } : o))
         );
         closeCommentModal();
-        console.log('Komentarz zapisany');
+
       }
     });
   };
@@ -313,7 +313,7 @@ export default function ComponentProduction() {
   };
 
   function handleOrderMissing(missingList) {
-    console.log('handleOrderMissing wywołane', missingList);
+
     const token = localStorage.getItem('access');
     const headers = {
       'Content-Type': 'application/json',

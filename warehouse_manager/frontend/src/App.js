@@ -28,7 +28,6 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem('access');
-    console.log('Token:', token);
     if (token) {
       fetch(`${API_URL}/api/auth/user/`, {
         headers: {
@@ -37,12 +36,12 @@ function App() {
         },
       })
         .then((res) => {
-          console.log('User fetch status:', res.status);
+
           if (!res.ok) throw new Error();
           return res.json();
         })
         .then((data) => {
-          console.log('User data:', data);
+
           setUser({ username: data.username, email: data.email });
         })
         .catch(() => setUser(null));

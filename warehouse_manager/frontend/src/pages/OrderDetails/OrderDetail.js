@@ -43,8 +43,7 @@ export default function OrderDetail() {
 
         if (orderResponse.ok) {
           const orderData = await orderResponse.json();
-          console.log('Order data:', orderData); // DEBUG - sprawdź co otrzymujesz
-          console.log('created_by_username:', orderData.created_by_username); // DEBUG
+
           setOrder(orderData);
 
           // Pobierz części produktu
