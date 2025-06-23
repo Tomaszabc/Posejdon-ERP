@@ -21,6 +21,8 @@ export default function PartsBuilder() {
   const [recipe, setRecipe] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({ open: false, action: null, payload: null });
+  const [productSearch, setProductSearch] = useState(''); // Dodaj ten stan
+  const [materialSearch, setMaterialSearch] = useState(''); // Dodaj ten stan
 
   useEffect(() => {
     fetchProducts().then(setProducts);
@@ -106,6 +108,16 @@ export default function PartsBuilder() {
     setModal({ open: false, action: null, payload: null });
   };
 
+  // Filtrowanie produktów po nazwie
+  const filteredProducts = products
+    .filter(
+      (prod) =>
+        prod.r === 'Towar' &&
+        prod.catalog_index &&
+        prod.catalog_index.includes('-24-') &&
+        prod.full_name.toLowerCase().includes(productSearch.toLowerCase())
+    );
+
   return (
     <>
       <ConfirmAddModal
@@ -146,22 +158,25 @@ export default function PartsBuilder() {
         {/* Wybór produktu */}
         <div className="mb-6">
           <label className="block mb-1 font-medium">Wybierz Moduł:</label>
+          {/* Pole wyszukiwania */}
+          <input
+            type="text"
+            className="w-full border px-3 py-2 rounded mb-2"
+            placeholder="Wpisz nazwę produktu..."
+            value={productSearch}
+            onChange={(e) => setProductSearch(e.target.value)}
+          />
           <select
             className="w-full border px-3 py-2 rounded"
             value={selectedProduct}
             onChange={(e) => setSelectedProduct(e.target.value)}
           >
             <option value="">-- wybierz moduł --</option>
-            {products
-              .filter(
-                (prod) =>
-                  prod.r === 'Towar' && prod.catalog_index && prod.catalog_index.includes('-24-')
-              )
-              .map((prod) => (
-                <option key={prod.id} value={prod.id}>
-                  {prod.full_name}
-                </option>
-              ))}
+            {filteredProducts.map((prod) => (
+              <option key={prod.id} value={prod.id}>
+                {prod.full_name}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -169,6 +184,14 @@ export default function PartsBuilder() {
         {selectedProduct && (
           <form onSubmit={handleAdd} className="mb-8 flex gap-4 items-end">
             <div className="flex-1">
+              {/* Pole wyszukiwania komponentów */}
+              <input
+                type="text"
+                className="w-full border px-3 py-2 rounded mb-2"
+                placeholder="Wpisz nazwę komponentu..."
+                value={materialSearch}
+                onChange={(e) => setMaterialSearch(e.target.value)}
+              />
               <select
                 className="w-full border px-3 py-2 rounded"
                 value={selectedMaterial}
@@ -178,6 +201,9 @@ export default function PartsBuilder() {
                 <option value="">-- wybierz komponent --</option>
                 {materials
                   .filter((mat) => mat.r === 'Towar')
+                  .filter((mat) =>
+                    mat.full_name.toLowerCase().includes(materialSearch.toLowerCase())
+                  )
                   .map((mat) => (
                     <option key={mat.id} value={mat.id}>
                       📦 {mat.full_name}
