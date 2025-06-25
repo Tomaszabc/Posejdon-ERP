@@ -27,7 +27,7 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
     if (orders.length > 0) checkAll();
   }, [orders]);
   // Sortowanie zamówień po ID malejąco (najnowsze na górze)
-  const filteredOrders = orders.filter(order => !order.is_produced);
+  const filteredOrders = orders.filter((order) => !order.is_produced);
   const sortedOrders = [...filteredOrders].sort((a, b) => b.id - a.id);
 
   return (

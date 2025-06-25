@@ -25,6 +25,7 @@ import { API_URL, WS_URL } from './config';
 
 function App() {
   const [user, setUser] = useState(undefined);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('access');
@@ -36,15 +37,51 @@ function App() {
         },
       })
         .then((res) => {
+          if (res.status === 401) {
+            // Spróbuj odświeżyć token
+            const refresh = localStorage.getItem('refresh');
+            if (refresh) {
+              return fetch(`${API_URL}/api/token/refresh/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refresh }),
+              })
+                .then((r) => r.json())
+                .then((data) => {
+                  if (data.access) {
+                    localStorage.setItem('access', data.access);
+                    // ponów żądanie z nowym tokenem
+                    return fetch(`${API_URL}/api/auth/user/`, {
+                      headers: {
+                        Authorization: `Bearer ${data.access}`,
+                        'Content-Type': 'application/json',
+                      },
+                    });
+                  } else {
+                    throw new Error();
+                  }
+                });
+            } else {
+              throw new Error();
+            }
+          }
+          return res;
+        })
+        .then((res) => {
           if (!res.ok) throw new Error();
           return res.json();
         })
         .then((data) => {
           setUser({ username: data.username, email: data.email });
+          setLoading(false);
         })
-        .catch(() => setUser(null));
+        .catch(() => {
+          setUser(null);
+          setLoading(false);
+        });
     } else {
       setUser(null);
+      setLoading(false);
     }
   }, []);
 
@@ -59,7 +96,7 @@ function App() {
             <Route
               path="/"
               element={
-                <ProtectedRoute user={user}>
+                <ProtectedRoute user={user} loading={loading}>
                   <Home />
                 </ProtectedRoute>
               }
@@ -67,7 +104,7 @@ function App() {
             <Route
               path="/orders"
               element={
-                <ProtectedRoute user={user}>
+                <ProtectedRoute user={user} loading={loading}>
                   <Orders />
                 </ProtectedRoute>
               }
@@ -75,15 +112,15 @@ function App() {
             <Route
               path="/user"
               element={
-                <ProtectedRoute user={user}>
-                  <UserProfile user={user} />
+                <ProtectedRoute user={user} loading={loading}>
+                  <UserProfile user={user} loading={loading} />
                 </ProtectedRoute>
               }
             />
             <Route
               path="/production"
               element={
-                <ProtectedRoute user={user}>
+                <ProtectedRoute user={user} loading={loading}>
                   <ProductionIndex />
                 </ProtectedRoute>
               }
@@ -91,7 +128,7 @@ function App() {
             <Route
               path="/production/production"
               element={
-                <ProtectedRoute user={user}>
+                <ProtectedRoute user={user} loading={loading}>
                   <Production />
                 </ProtectedRoute>
               }
@@ -99,7 +136,7 @@ function App() {
             <Route
               path="/production/component-production"
               element={
-                <ProtectedRoute user={user}>
+                <ProtectedRoute user={user} loading={loading}>
                   <ComponentProduction />
                 </ProtectedRoute>
               }
@@ -107,7 +144,7 @@ function App() {
             <Route
               path="/warehouse"
               element={
-                <ProtectedRoute user={user}>
+                <ProtectedRoute user={user} loading={loading}>
                   <WarehouseIndex />
                 </ProtectedRoute>
               }
@@ -115,7 +152,7 @@ function App() {
             <Route
               path="/warehouse/components"
               element={
-                <ProtectedRoute user={user}>
+                <ProtectedRoute user={user} loading={loading}>
                   <Warehouse />
                 </ProtectedRoute>
               }
@@ -123,7 +160,7 @@ function App() {
             <Route
               path="/warehouse/parts-builder/products"
               element={
-                <ProtectedRoute user={user}>
+                <ProtectedRoute user={user} loading={loading}>
                   <ProductBuilder />
                 </ProtectedRoute>
               }

@@ -19,12 +19,22 @@ export default function Login({ setUser }) {
       });
       const data = await res.json();
       if (res.ok) {
-        // Zapisz token w localStorage
+        // Zapisz tokeny
         localStorage.setItem('access', data.access);
         localStorage.setItem('refresh', data.refresh);
-        // (Opcjonalnie) pobierz dane użytkownika i ustaw w stanie
-        setUser && setUser({ username });
-        navigate('/'); // przekieruj po zalogowaniu
+
+        // Pobierz dane użytkownika
+        fetch(`${API_URL}/api/auth/user/`, {
+          headers: {
+            Authorization: `Bearer ${data.access}`,
+            'Content-Type': 'application/json',
+          },
+        })
+          .then((res) => res.json())
+          .then((userData) => {
+            setUser && setUser({ username: userData.username, email: userData.email });
+            navigate('/');
+          });
       } else {
         setError('Nieprawidłowy login lub hasło.');
       }

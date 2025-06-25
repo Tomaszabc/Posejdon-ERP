@@ -1,9 +1,11 @@
 import { Navigate } from 'react-router-dom';
 
-export default function ProtectedRoute({ user, children }) {
+export default function ProtectedRoute({ user, loading, children }) {
+  if (loading) {
+    return <div>Ładowanie...</div>; // lub spinner
+  }
   if (!user) {
-    // powinno być:
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" />;
   }
   return children;
 }

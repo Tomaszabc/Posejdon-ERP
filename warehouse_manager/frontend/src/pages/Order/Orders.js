@@ -207,8 +207,8 @@ export default function Orders() {
                   placeholder="Wpisz nazwę lub SKU produktu..."
                   value={
                     form.component
-                      ? components.find((c) => String(c.id) === String(form.component))?.full_name ||
-                        productSearch
+                      ? components.find((c) => String(c.id) === String(form.component))
+                          ?.full_name || productSearch
                       : productSearch
                   }
                   onChange={(e) => {
