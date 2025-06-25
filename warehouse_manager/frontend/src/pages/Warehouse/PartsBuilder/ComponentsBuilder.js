@@ -21,6 +21,10 @@ export default function ComponentsBuilder() {
   const [recipe, setRecipe] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({ open: false, action: null, payload: null });
+  const [componentSearch, setComponentSearch] = useState('');
+  const [componentInputFocused, setComponentInputFocused] = useState(false);
+  const [materialSearch, setMaterialSearch] = useState('');
+  const [materialInputFocused, setMaterialInputFocused] = useState(false);
 
   useEffect(() => {
     fetchComponents().then(setComponents); // pobierz tylko komponenty (r === 'Komponent')
@@ -146,41 +150,102 @@ export default function ComponentsBuilder() {
         {/* Wybór komponentu */}
         <div className="mb-6">
           <label className="block mb-1 font-medium">Wybierz towar:</label>
-          <select
-            className="w-full border px-3 py-2 rounded"
-            value={selectedComponent}
-            onChange={(e) => setSelectedComponent(e.target.value)}
-          >
-            <option value="">-- wybierz towar --</option>
-            {components
-              .filter((comp) => comp.r === 'Towar')
-              .map((comp) => (
-                <option key={comp.id} value={comp.id}>
-                  📦 {comp.full_name}
-                </option>
-              ))}
-          </select>
+          <div className="relative">
+            <input
+              type="text"
+              className="w-full border px-3 py-2 rounded mb-2"
+              placeholder="Wpisz nazwę towaru..."
+              value={
+                selectedComponent
+                  ? components.find((c) => String(c.id) === String(selectedComponent))?.full_name || componentSearch
+                  : componentSearch
+              }
+              onChange={(e) => {
+                setComponentSearch(e.target.value);
+                setSelectedComponent('');
+              }}
+              onFocus={() => setComponentInputFocused(true)}
+              onBlur={() => setTimeout(() => setComponentInputFocused(false), 150)}
+              autoComplete="off"
+            />
+            {componentInputFocused && !selectedComponent && (
+              <ul className="absolute z-10 bg-white border w-full rounded shadow max-h-48 overflow-y-auto">
+                {(componentSearch
+                  ? components
+                      .filter((comp) => comp.r === 'Towar')
+                      .filter((comp) =>
+                        comp.full_name.toLowerCase().includes(componentSearch.toLowerCase())
+                      )
+                  : components.filter((comp) => comp.r === 'Towar')
+                )
+                  .slice(0, 20)
+                  .map((comp) => (
+                    <li
+                      key={comp.id}
+                      className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
+                      onClick={() => {
+                        setSelectedComponent(comp.id);
+                        setComponentSearch(comp.full_name);
+                        setComponentInputFocused(false);
+                      }}
+                    >
+                      📦 {comp.full_name}
+                    </li>
+                  ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         {/* Formularz dodawania materiału */}
         {selectedComponent && (
           <form onSubmit={handleAdd} className="mb-8 flex gap-4 items-end">
-            <div className="flex-1">
-              <select
-                className="w-full border px-3 py-2 rounded"
-                value={selectedMaterial}
-                onChange={(e) => setSelectedMaterial(e.target.value)}
-                required
-              >
-                <option value="">-- wybierz materiał --</option>
-                {materials
-                  .filter((mat) => mat.r === 'Materiał')
-                  .map((mat) => (
-                    <option key={mat.id} value={mat.id}>
-                      🧱 {mat.full_name}
-                    </option>
-                  ))}
-              </select>
+            <div className="flex-1 relative">
+              {/* Pole wyszukiwania materiałów */}
+              <input
+                type="text"
+                className="w-full border px-3 py-2 rounded mb-2"
+                placeholder="Wpisz nazwę materiału..."
+                value={
+                  selectedMaterial
+                    ? materials.find((m) => String(m.id) === String(selectedMaterial))?.full_name || materialSearch
+                    : materialSearch
+                }
+                onChange={(e) => {
+                  setMaterialSearch(e.target.value);
+                  setSelectedMaterial('');
+                }}
+                onFocus={() => setMaterialInputFocused(true)}
+                onBlur={() => setTimeout(() => setMaterialInputFocused(false), 150)}
+                autoComplete="off"
+              />
+              {/* Lista podpowiedzi */}
+              {materialInputFocused && !selectedMaterial && (
+                <ul className="absolute z-10 bg-white border w-full rounded shadow max-h-48 overflow-y-auto">
+                  {(materialSearch
+                    ? materials
+                        .filter((mat) => mat.r === 'Materiał')
+                        .filter((mat) =>
+                          mat.full_name.toLowerCase().includes(materialSearch.toLowerCase())
+                        )
+                    : materials.filter((mat) => mat.r === 'Materiał')
+                  )
+                    .slice(0, 20)
+                    .map((mat) => (
+                      <li
+                        key={mat.id}
+                        className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
+                        onClick={() => {
+                          setSelectedMaterial(mat.id);
+                          setMaterialSearch(mat.full_name);
+                          setMaterialInputFocused(false);
+                        }}
+                      >
+                        🧱 {mat.full_name}
+                      </li>
+                    ))}
+                </ul>
+              )}
             </div>
             <div>
               <label className="block mb-1 font-medium">Ilość materiału: [kg/m2]</label>
@@ -197,6 +262,7 @@ export default function ComponentsBuilder() {
             <button
               type="submit"
               className="px-6 py-2 rounded text-white bg-ocean-600 hover:bg-ocean-700"
+              disabled={!selectedMaterial}
             >
               Dodaj towar
             </button>

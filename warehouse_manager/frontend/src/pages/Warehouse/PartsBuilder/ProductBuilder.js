@@ -22,7 +22,12 @@ export default function ProductBuilder() {
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({ open: false, action: null, payload: null });
 
-  // Pobierz produkty (r === 'Produkt') i moduły (r === 'Moduł' lub np. r === 'Towar' z '-24-')
+  // Nowe stany do wyszukiwania i focusa
+  const [productSearch, setProductSearch] = useState('');
+  const [productInputFocused, setProductInputFocused] = useState(false);
+  const [moduleSearch, setModuleSearch] = useState('');
+  const [moduleInputFocused, setModuleInputFocused] = useState(false);
+
   useEffect(() => {
     fetchProducts().then((data) => setProducts(data.filter((p) => p.r === 'Produkt')));
     fetchComponents().then((data) =>
@@ -116,6 +121,11 @@ export default function ProductBuilder() {
     setModal({ open: false, action: null, payload: null });
   };
 
+  // Filtrowanie produktów po nazwie
+  const filteredProducts = products.filter((prod) =>
+    prod.full_name.toLowerCase().includes(productSearch.toLowerCase())
+  );
+
   return (
     <>
       <ConfirmAddModal
@@ -158,37 +168,91 @@ export default function ProductBuilder() {
         {/* Wybór produktu */}
         <div className="mb-6">
           <label className="block mb-1 font-medium">Wybierz produkt:</label>
-          <select
-            className="w-full border px-3 py-2 rounded"
-            value={selectedProduct}
-            onChange={(e) => setSelectedProduct(e.target.value)}
-          >
-            <option value="">-- wybierz produkt --</option>
-            {products.map((prod) => (
-              <option key={prod.id} value={prod.id}>
-                🏗️ {prod.full_name}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <input
+              type="text"
+              className="w-full border px-3 py-2 rounded mb-2"
+              placeholder="Wpisz nazwę produktu..."
+              value={
+                selectedProduct
+                  ? products.find((p) => String(p.id) === String(selectedProduct))?.full_name || productSearch
+                  : productSearch
+              }
+              onChange={(e) => {
+                setProductSearch(e.target.value);
+                setSelectedProduct('');
+              }}
+              onFocus={() => setProductInputFocused(true)}
+              onBlur={() => setTimeout(() => setProductInputFocused(false), 150)}
+              autoComplete="off"
+            />
+            {productInputFocused && !selectedProduct && (
+              <ul className="absolute z-10 bg-white border w-full rounded shadow max-h-48 overflow-y-auto">
+                {filteredProducts.slice(0, 20).map((prod) => (
+                  <li
+                    key={prod.id}
+                    className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
+                    onClick={() => {
+                      setSelectedProduct(prod.id);
+                      setProductSearch(prod.full_name);
+                      setProductInputFocused(false);
+                    }}
+                  >
+                    🏗️ {prod.full_name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         {/* Formularz dodawania modułu */}
         {selectedProduct && (
           <form onSubmit={handleAdd} className="mb-8 flex gap-4 items-end">
-            <div className="flex-1">
-              <select
-                className="w-full border px-3 py-2 rounded"
-                value={selectedModule}
-                onChange={(e) => setSelectedModule(e.target.value)}
-                required
-              >
-                <option value="">-- wybierz moduł --</option>
-                {modules.map((mod) => (
-                  <option key={mod.id} value={mod.id}>
-                    🧩 {mod.full_name}
-                  </option>
-                ))}
-              </select>
+            <div className="flex-1 relative">
+              {/* Pole wyszukiwania modułów */}
+              <input
+                type="text"
+                className="w-full border px-3 py-2 rounded mb-2"
+                placeholder="Wpisz nazwę modułu..."
+                value={
+                  selectedModule
+                    ? modules.find((m) => String(m.id) === String(selectedModule))?.full_name || moduleSearch
+                    : moduleSearch
+                }
+                onChange={(e) => {
+                  setModuleSearch(e.target.value);
+                  setSelectedModule('');
+                }}
+                onFocus={() => setModuleInputFocused(true)}
+                onBlur={() => setTimeout(() => setModuleInputFocused(false), 150)}
+                autoComplete="off"
+              />
+              {/* Lista podpowiedzi */}
+              {moduleInputFocused && !selectedModule && (
+                <ul className="absolute z-10 bg-white border w-full rounded shadow max-h-48 overflow-y-auto">
+                  {(moduleSearch
+                    ? modules.filter((mod) =>
+                        mod.full_name.toLowerCase().includes(moduleSearch.toLowerCase())
+                      )
+                    : modules
+                  )
+                    .slice(0, 20)
+                    .map((mod) => (
+                      <li
+                        key={mod.id}
+                        className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
+                        onClick={() => {
+                          setSelectedModule(mod.id);
+                          setModuleSearch(mod.full_name);
+                          setModuleInputFocused(false);
+                        }}
+                      >
+                        🧩 {mod.full_name}
+                      </li>
+                    ))}
+                </ul>
+              )}
             </div>
             <div>
               <label className="block mb-1 font-medium">Ilość:</label>
@@ -205,6 +269,7 @@ export default function ProductBuilder() {
             <button
               type="submit"
               className="px-6 py-2 rounded text-white bg-ocean-600 hover:bg-ocean-700"
+              disabled={!selectedModule}
             >
               {isEdit ? 'Edytuj ilość' : 'Dodaj moduł'}
             </button>

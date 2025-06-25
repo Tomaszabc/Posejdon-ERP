@@ -23,6 +23,8 @@ export default function PartsBuilder() {
   const [modal, setModal] = useState({ open: false, action: null, payload: null });
   const [productSearch, setProductSearch] = useState(''); // Dodaj ten stan
   const [materialSearch, setMaterialSearch] = useState(''); // Dodaj ten stan
+  const [materialInputFocused, setMaterialInputFocused] = useState(false);
+  const [productInputFocused, setProductInputFocused] = useState(false);
 
   useEffect(() => {
     fetchProducts().then(setProducts);
@@ -158,58 +160,110 @@ export default function PartsBuilder() {
         {/* Wybór produktu */}
         <div className="mb-6">
           <label className="block mb-1 font-medium">Wybierz Moduł:</label>
-          {/* Pole wyszukiwania */}
-          <input
-            type="text"
-            className="w-full border px-3 py-2 rounded mb-2"
-            placeholder="Wpisz nazwę produktu..."
-            value={productSearch}
-            onChange={(e) => setProductSearch(e.target.value)}
-          />
-          <select
-            className="w-full border px-3 py-2 rounded"
-            value={selectedProduct}
-            onChange={(e) => setSelectedProduct(e.target.value)}
-          >
-            <option value="">-- wybierz moduł --</option>
-            {filteredProducts.map((prod) => (
-              <option key={prod.id} value={prod.id}>
-                {prod.full_name}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <input
+              type="text"
+              className="w-full border px-3 py-2 rounded mb-2"
+              placeholder="Wpisz nazwę produktu..."
+              value={
+                selectedProduct
+                  ? products.find((p) => String(p.id) === String(selectedProduct))?.full_name || productSearch
+                  : productSearch
+              }
+              onChange={(e) => {
+                setProductSearch(e.target.value);
+                setSelectedProduct('');
+              }}
+              onFocus={() => setProductInputFocused(true)}
+              onBlur={() => setTimeout(() => setProductInputFocused(false), 150)}
+              autoComplete="off"
+            />
+            {productInputFocused && !selectedProduct && (
+              <ul className="absolute z-10 bg-white border w-full rounded shadow max-h-48 overflow-y-auto">
+                {productSearch
+                  ? filteredProducts
+                      .filter((prod) => prod.full_name.toLowerCase().includes(productSearch.toLowerCase()))
+                      .slice(0, 20) // Limit podpowiedzi do 20
+                      .map((prod) => (
+                        <li
+                          key={prod.id}
+                          className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
+                          onClick={() => {
+                            setSelectedProduct(prod.id);
+                            setProductSearch(prod.full_name);
+                            setProductInputFocused(false);
+                          }}
+                        >
+                          {prod.full_name}
+                        </li>
+                      ))
+                  : filteredProducts.slice(0, 20).map((prod) => (
+                      <li
+                        key={prod.id}
+                        className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
+                        onClick={() => {
+                          setSelectedProduct(prod.id);
+                          setProductSearch(prod.full_name);
+                          setProductInputFocused(false);
+                        }}
+                      >
+                        {prod.full_name}
+                      </li>
+                    ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         {/* Formularz dodawania/edycji materiału */}
         {selectedProduct && (
           <form onSubmit={handleAdd} className="mb-8 flex gap-4 items-end">
-            <div className="flex-1">
+            <div className="flex-1 relative">
               {/* Pole wyszukiwania komponentów */}
               <input
                 type="text"
                 className="w-full border px-3 py-2 rounded mb-2"
                 placeholder="Wpisz nazwę komponentu..."
-                value={materialSearch}
-                onChange={(e) => setMaterialSearch(e.target.value)}
+                value={
+                  selectedMaterial
+                    ? materials.find((m) => String(m.id) === String(selectedMaterial))?.full_name || materialSearch
+                    : materialSearch
+                }
+                onChange={(e) => {
+                  setMaterialSearch(e.target.value);
+                  setSelectedMaterial('');
+                }}
+                onFocus={() => setMaterialInputFocused(true)}
+                onBlur={() => setTimeout(() => setMaterialInputFocused(false), 150)} // opóźnienie na kliknięcie
+                autoComplete="off"
               />
-              <select
-                className="w-full border px-3 py-2 rounded"
-                value={selectedMaterial}
-                onChange={(e) => setSelectedMaterial(e.target.value)}
-                required
-              >
-                <option value="">-- wybierz komponent --</option>
-                {materials
-                  .filter((mat) => mat.r === 'Towar')
-                  .filter((mat) =>
-                    mat.full_name.toLowerCase().includes(materialSearch.toLowerCase())
+              {/* Lista podpowiedzi */}
+              {(materialInputFocused && !selectedMaterial) && (
+                <ul className="absolute z-10 bg-white border w-full rounded shadow max-h-48 overflow-y-auto">
+                  {(materialSearch
+                    ? materials
+                        .filter((mat) => mat.r === 'Towar')
+                        .filter((mat) =>
+                          mat.full_name.toLowerCase().includes(materialSearch.toLowerCase())
+                        )
+                    : materials.filter((mat) => mat.r === 'Towar')
                   )
-                  .map((mat) => (
-                    <option key={mat.id} value={mat.id}>
-                      📦 {mat.full_name}
-                    </option>
-                  ))}
-              </select>
+                    .slice(0, 20) // możesz zwiększyć limit
+                    .map((mat) => (
+                      <li
+                        key={mat.id}
+                        className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
+                        onClick={() => {
+                          setSelectedMaterial(mat.id);
+                          setMaterialSearch(mat.full_name);
+                          setMaterialInputFocused(false);
+                        }}
+                      >
+                        📦 {mat.full_name}
+                      </li>
+                    ))}
+                </ul>
+              )}
             </div>
             <div>
               <label className="block mb-1 font-medium">Ilość:</label>
@@ -226,6 +280,7 @@ export default function PartsBuilder() {
             <button
               type="submit"
               className={`px-6 py-2 rounded text-white ${isEdit ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-ocean-600 hover:bg-ocean-700'}`}
+              disabled={!selectedMaterial}
             >
               {isEdit ? 'Edytuj ilość' : 'Dodaj materiał'}
             </button>
