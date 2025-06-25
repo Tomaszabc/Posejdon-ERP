@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "tu_wklej_swoj_super_tajny_klucz")
 DEBUG = os.getenv("DEBUG") == "True"
 DEBUG = True
-ALLOWED_HOSTS = ['localhost', "posejdon.fly.dev", "127.0.0.1", "192.168.55.75", "192.168.55.128", "192.168.55.91"]
+ALLOWED_HOSTS = ["*"]
 HEADLESS_ONLY = True
 
 HEADLESS_FRONTEND_URLS = {
