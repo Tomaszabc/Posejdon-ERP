@@ -27,7 +27,8 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
     if (orders.length > 0) checkAll();
   }, [orders]);
   // Sortowanie zamówień po ID malejąco (najnowsze na górze)
-  const sortedOrders = [...orders].sort((a, b) => b.id - a.id);
+  const filteredOrders = orders.filter(order => !order.is_produced);
+  const sortedOrders = [...filteredOrders].sort((a, b) => b.id - a.id);
 
   return (
     <section className="bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">

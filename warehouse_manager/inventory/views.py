@@ -512,7 +512,13 @@ def components_towar(request):
 @api_view(['POST'])
 def check_materials_availability(request):
     component_id = request.data.get('component')
-    quantity = float(request.data.get('quantity', 1))
+    quantity = request.data.get('quantity', 1)
+    if not component_id:
+        return Response({"error": "Brak component"}, status=400)
+    try:
+        quantity = float(quantity)
+    except Exception:
+        return Response({"error": "Nieprawidłowa ilość"}, status=400)
     try:
         component = Component.objects.get(id=component_id)
         parts = PartsBuilder.objects.filter(product=component)

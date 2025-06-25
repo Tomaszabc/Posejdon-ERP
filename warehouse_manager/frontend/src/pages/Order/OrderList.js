@@ -4,8 +4,12 @@ import { useNavigate } from 'react-router-dom';
 export default function OrderList({ orders, openDeleteModal }) {
   const navigate = useNavigate();
 
+    const onlyProducts = orders.filter(
+    (order) => order.component_r === 'Produkt'
+  );
+
   // Sortuj zamówienia - najnowsze na górze (malejąco po ID)
-  const sortedOrders = [...orders].sort((a, b) => b.id - a.id);
+  const sortedOrders = [...onlyProducts].sort((a, b) => b.id - a.id);
 
   return (
     <div className="w-full overflow-x-auto">
