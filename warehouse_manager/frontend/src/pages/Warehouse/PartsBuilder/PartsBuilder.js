@@ -111,14 +111,13 @@ export default function PartsBuilder() {
   };
 
   // Filtrowanie produktów po nazwie
-  const filteredProducts = products
-    .filter(
-      (prod) =>
-        prod.r === 'Towar' &&
-        prod.catalog_index &&
-        prod.catalog_index.includes('-24-') &&
-        prod.full_name.toLowerCase().includes(productSearch.toLowerCase())
-    );
+  const filteredProducts = products.filter(
+    (prod) =>
+      prod.r === 'Towar' &&
+      prod.catalog_index &&
+      prod.catalog_index.includes('-24-') &&
+      prod.full_name.toLowerCase().includes(productSearch.toLowerCase())
+  );
 
   return (
     <>
@@ -167,7 +166,8 @@ export default function PartsBuilder() {
               placeholder="Wpisz nazwę produktu..."
               value={
                 selectedProduct
-                  ? products.find((p) => String(p.id) === String(selectedProduct))?.full_name || productSearch
+                  ? products.find((p) => String(p.id) === String(selectedProduct))?.full_name ||
+                    productSearch
                   : productSearch
               }
               onChange={(e) => {
@@ -182,7 +182,9 @@ export default function PartsBuilder() {
               <ul className="absolute z-10 bg-white border w-full rounded shadow max-h-48 overflow-y-auto">
                 {productSearch
                   ? filteredProducts
-                      .filter((prod) => prod.full_name.toLowerCase().includes(productSearch.toLowerCase()))
+                      .filter((prod) =>
+                        prod.full_name.toLowerCase().includes(productSearch.toLowerCase())
+                      )
                       .slice(0, 20) // Limit podpowiedzi do 20
                       .map((prod) => (
                         <li
@@ -226,7 +228,8 @@ export default function PartsBuilder() {
                 placeholder="Wpisz nazwę komponentu..."
                 value={
                   selectedMaterial
-                    ? materials.find((m) => String(m.id) === String(selectedMaterial))?.full_name || materialSearch
+                    ? materials.find((m) => String(m.id) === String(selectedMaterial))?.full_name ||
+                      materialSearch
                     : materialSearch
                 }
                 onChange={(e) => {
@@ -238,7 +241,7 @@ export default function PartsBuilder() {
                 autoComplete="off"
               />
               {/* Lista podpowiedzi */}
-              {(materialInputFocused && !selectedMaterial) && (
+              {materialInputFocused && !selectedMaterial && (
                 <ul className="absolute z-10 bg-white border w-full rounded shadow max-h-48 overflow-y-auto">
                   {(materialSearch
                     ? materials

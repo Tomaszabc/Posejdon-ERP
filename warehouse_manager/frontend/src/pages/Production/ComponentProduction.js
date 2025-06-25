@@ -63,7 +63,6 @@ export default function ComponentProduction() {
       try {
         const msg = JSON.parse(event.data);
         if (msg.action === 'refresh') {
-
           fetchOrders();
         }
       } catch (e) {
@@ -91,9 +90,12 @@ export default function ComponentProduction() {
       .then((data) => {
         // Pokaż tylko zamówienia na komponenty typu 'Towar' i posortuj po ID
         const filteredOrders = data
-          .filter((o) => o.component_r === 'Towar')
-          .sort((a, b) => b.id - a.id); // Sortowanie malejące (najnowsze na górze)
-
+          .filter(
+            (o) =>
+              o.component_r === 'Towar' &&
+              !(o.component_catalog_index && o.component_catalog_index.includes('-24-'))
+          )
+          .sort((a, b) => b.id - a.id);
         setOrders(filteredOrders);
       })
       .catch(() => {
@@ -303,7 +305,6 @@ export default function ComponentProduction() {
           prev.map((o) => (o.id === editingOrder.id ? { ...o, komentarz: tempComment } : o))
         );
         closeCommentModal();
-
       }
     });
   };
@@ -313,7 +314,6 @@ export default function ComponentProduction() {
   };
 
   function handleOrderMissing(missingList) {
-
     const token = localStorage.getItem('access');
     const headers = {
       'Content-Type': 'application/json',

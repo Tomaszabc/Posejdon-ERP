@@ -175,7 +175,8 @@ export default function ProductBuilder() {
               placeholder="Wpisz nazwę produktu..."
               value={
                 selectedProduct
-                  ? products.find((p) => String(p.id) === String(selectedProduct))?.full_name || productSearch
+                  ? products.find((p) => String(p.id) === String(selectedProduct))?.full_name ||
+                    productSearch
                   : productSearch
               }
               onChange={(e) => {
@@ -217,7 +218,8 @@ export default function ProductBuilder() {
                 placeholder="Wpisz nazwę modułu..."
                 value={
                   selectedModule
-                    ? modules.find((m) => String(m.id) === String(selectedModule))?.full_name || moduleSearch
+                    ? modules.find((m) => String(m.id) === String(selectedModule))?.full_name ||
+                      moduleSearch
                     : moduleSearch
                 }
                 onChange={(e) => {

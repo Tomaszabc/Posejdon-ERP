@@ -36,12 +36,10 @@ function App() {
         },
       })
         .then((res) => {
-
           if (!res.ok) throw new Error();
           return res.json();
         })
         .then((data) => {
-
           setUser({ username: data.username, email: data.email });
         })
         .catch(() => setUser(null));

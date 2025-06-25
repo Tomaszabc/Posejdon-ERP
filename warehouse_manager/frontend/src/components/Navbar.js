@@ -182,7 +182,11 @@ export default function Navbar({ user, setUser }) {
           {/* Menu mobilne */}
           <div className="lg:hidden bg-ocean-900 text-white text-base px-4 py-6 space-y-4 fixed top-16 left-0 w-full z-30">
             {user && (
-              <Link to="/" className="block px-4 py-2 rounded-lg hover:bg-ocean-800" onClick={() => setMobileMenuOpen(false)}>
+              <Link
+                to="/"
+                className="block px-4 py-2 rounded-lg hover:bg-ocean-800"
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 Strona główna
               </Link>
             )}
@@ -229,20 +233,38 @@ export default function Navbar({ user, setUser }) {
                   )}
                 </div>
 
-                <Link to="/warehouse" className="block px-4 py-2 rounded-lg hover:bg-ocean-800" onClick={() => setMobileMenuOpen(false)}>
+                <Link
+                  to="/warehouse"
+                  className="block px-4 py-2 rounded-lg hover:bg-ocean-800"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
                   Magazyn
                 </Link>
-                <Link to="/orders" className="block px-4 py-2 rounded-lg hover:bg-ocean-800" onClick={() => setMobileMenuOpen(false)}>
+                <Link
+                  to="/orders"
+                  className="block px-4 py-2 rounded-lg hover:bg-ocean-800"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
                   Zamówienia
                 </Link>
-                <Link to="/production" className="block px-4 py-2 rounded-lg hover:bg-ocean-800" onClick={() => setMobileMenuOpen(false)}>
+                <Link
+                  to="/production"
+                  className="block px-4 py-2 rounded-lg hover:bg-ocean-800"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
                   Produkcja
                 </Link>
                 <Link
                   to="/user"
-                  className="block px-4 py-2 rounded-lg hover:bg-ocean-800 flex items-center" onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-2 rounded-lg hover:bg-ocean-800 flex items-center"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -260,7 +282,10 @@ export default function Navbar({ user, setUser }) {
                 </button>
               </>
             ) : (
-              <a href="/login" className="block px-4 py-2 rounded-lg bg-ocean-500 hover:bg-ocean-600">
+              <a
+                href="/login"
+                className="block px-4 py-2 rounded-lg bg-ocean-500 hover:bg-ocean-600"
+              >
                 Zaloguj się
               </a>
             )}

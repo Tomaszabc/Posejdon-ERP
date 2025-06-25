@@ -21,7 +21,6 @@ export default function UserProfile({ user }) {
     })
       .then((res) => res.json())
       .then((data) => {
-
         setProfile(data);
       });
   }, []);
@@ -57,7 +56,6 @@ export default function UserProfile({ user }) {
       });
 
       const data = await res.json();
-
 
       if (res.ok) {
         setMsg('Hasło zostało zmienione pomyślnie.');

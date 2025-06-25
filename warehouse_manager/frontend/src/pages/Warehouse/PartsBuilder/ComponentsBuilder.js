@@ -157,7 +157,8 @@ export default function ComponentsBuilder() {
               placeholder="Wpisz nazwę towaru..."
               value={
                 selectedComponent
-                  ? components.find((c) => String(c.id) === String(selectedComponent))?.full_name || componentSearch
+                  ? components.find((c) => String(c.id) === String(selectedComponent))?.full_name ||
+                    componentSearch
                   : componentSearch
               }
               onChange={(e) => {
@@ -208,7 +209,8 @@ export default function ComponentsBuilder() {
                 placeholder="Wpisz nazwę materiału..."
                 value={
                   selectedMaterial
-                    ? materials.find((m) => String(m.id) === String(selectedMaterial))?.full_name || materialSearch
+                    ? materials.find((m) => String(m.id) === String(selectedMaterial))?.full_name ||
+                      materialSearch
                     : materialSearch
                 }
                 onChange={(e) => {

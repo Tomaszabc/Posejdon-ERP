@@ -35,7 +35,6 @@ export default function Production() {
   useEffect(() => {
     ws.current = new window.WebSocket(`${WS_URL}/ws/warehouse/`);
     ws.current.onmessage = (event) => {
-
       const msg = JSON.parse(event.data);
       if (msg.action === 'refresh') {
         fetchOrders();
@@ -114,7 +113,15 @@ export default function Production() {
       })
       .then((data) => {
         if (Array.isArray(data)) {
-          setOrders(data.filter((order) => order.component_r === 'Produkt'));
+          setOrders(
+            data.filter(
+              (order) =>
+                order.component_r === 'Produkt' ||
+                (order.component_r === 'Towar' &&
+                  order.component_catalog_index &&
+                  order.component_catalog_index.includes('-24-'))
+            )
+          );
         }
         setLoading(false);
       })
@@ -247,7 +254,7 @@ export default function Production() {
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         <OrdersToProduceSection
-          orders={ordersToProduce}
+          orders={orders}
           loading={loading}
           onProduce={handleAskConfirmProduce}
         />
