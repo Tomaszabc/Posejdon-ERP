@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { API_URL, WS_URL } from '../../config';
+import WarehouseItemsSearch from './components/WarehouseItemsSearch';
 
 export default function Warehouse() {
   const [components, setComponents] = useState([]);
@@ -628,6 +629,12 @@ export default function Warehouse() {
           </div>
         )}
       </div>
+
+      <WarehouseItemsSearch
+        components={components}
+        setFilteredComponents={setFilteredComponents}
+        searchFields={['full_name', 'catalog_index', 'producer', 'short_name']}
+      />
 
       {/* Modal potwierdzenia usunięcia */}
       {showDeleteConfirm && (
