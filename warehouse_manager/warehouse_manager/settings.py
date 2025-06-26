@@ -132,8 +132,9 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 LANGUAGE_CODE = "pl"
-TIME_ZONE = "UTC"
+TIME_ZONE = 'Europe/Warsaw'
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
