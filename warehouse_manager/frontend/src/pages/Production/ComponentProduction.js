@@ -30,6 +30,8 @@ export default function ComponentProduction() {
   const [tempComment, setTempComment] = useState('');
   const navigate = useNavigate();
   const ws = useRef(null);
+  const [componentSearch, setComponentSearch] = useState('');
+  const [componentInputFocused, setComponentInputFocused] = useState(false);
 
   const openProduceModal = (order) => {
     setOrderToProduce(order);
@@ -365,19 +367,63 @@ export default function ComponentProduction() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Wybierz komponent
               </label>
-              <select
-                name="component"
-                value={form.component}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"
-              >
-                <option value="">- Wybierz komponent -</option>
-                {components.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.catalog_index} – {c.full_name}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500 mb-2"
+                  placeholder="Wpisz nazwę lub SKU komponentu..."
+                  value={
+                    form.component
+                      ? components.find((c) => String(c.id) === String(form.component))?.full_name || componentSearch
+                      : componentSearch
+                  }
+                  onChange={(e) => {
+                    setComponentSearch(e.target.value);
+                    setForm((prev) => ({ ...prev, component: '' }));
+                  }}
+                  onFocus={() => setComponentInputFocused(true)}
+                  onBlur={() => setTimeout(() => setComponentInputFocused(false), 150)}
+                  autoComplete="off"
+                />
+                {componentInputFocused && !form.component && (
+                  <ul
+                    className="absolute z-20 bg-white border shadow-lg max-h-60 overflow-y-auto"
+                    style={{
+                      minWidth: '420px', // szersza lista
+                      borderRadius: '1.5rem', // bardziej okrągła ramka
+                      right: 'unset', // przesunięcie w prawo względem inputa
+                      left: '60',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+                      padding: '6px 0',
+                      marginTop: '4px',
+                    }}
+                  >
+                    {components
+                      .filter((c) => c.r === 'Towar')
+                      .filter(
+                        (c) =>
+                          c.full_name.toLowerCase().includes(componentSearch.toLowerCase()) ||
+                          c.catalog_index.toLowerCase().includes(componentSearch.toLowerCase())
+                      )
+                      .slice(0, 20)
+                      .map((c) => (
+                        <li
+                          key={c.id}
+                          className="px-4 py-2 cursor-pointer hover:bg-ocean-100 text-black transition rounded-xl"
+                          onClick={() => {
+                            setForm((prev) => ({ ...prev, component: c.id }));
+                            setComponentSearch(c.full_name);
+                            setComponentInputFocused(false);
+                          }}
+                        >
+                          <span className="font-semibold text-ocean-700">{c.catalog_index}</span>
+                          <span className="mx-2 text-gray-400">–</span>
+                          <span>{c.full_name}</span>
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Ilość</label>
