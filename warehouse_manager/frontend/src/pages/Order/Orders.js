@@ -6,7 +6,7 @@ import { useRef } from 'react';
 import { API_URL, WS_URL } from '../../config';
 
 export default function Orders() {
-  const [form, setForm] = useState({ component: '', quantity: '' });
+  const [form, setForm] = useState({ component: '', quantity: '', uwagi: ''  });
   const [orders, setOrders] = useState([]);
   const [errors, setErrors] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -125,6 +125,7 @@ export default function Orders() {
       body: JSON.stringify({
         component: form.component,
         quantity: form.quantity,
+        uwagi: form.uwagi,
       }),
     })
       .then((res) => {
@@ -256,6 +257,17 @@ export default function Orders() {
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"
                 placeholder="0"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Uwagi</label>
+              <input
+                type="text"
+                name="uwagi"
+                value={form.uwagi}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"
+                placeholder="Wpisz uwagi (opcjonalnie)"
               />
             </div>
             <div className="pt-4">
