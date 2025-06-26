@@ -147,7 +147,11 @@ export default function Production() {
           setErrorModal({
             show: true,
             message: data.error || 'Błąd produkcji',
-            missing: data.missing || [],
+            missing: (data.missing || []).map(m => ({
+              ...m,
+              missing_parts_ordered: orderToConfirm?.missing_parts_send_to_production,
+              missing_parts_ordered_at: orderToConfirm?.missing_parts_ordered_at,
+            })),
             orderId: orderToConfirm?.id,
             missingPartsAlreadyOrdered: orderToConfirm?.missing_parts_send_to_production,
           });

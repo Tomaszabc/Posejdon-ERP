@@ -33,7 +33,14 @@ export default function ErrorModal({
                 </b>
                 <br />
                 {item.missing_parts_ordered ? (
-                  <span className="text-green-600 font-semibold">Zlecono produkcję</span>
+                <span className="text-green-600 font-semibold animate-pulse">
+                  Zlecono produkcję
+                  {item.missing_parts_ordered_at && (
+                     <span className="ml-2 text-xs text-gray-500">
+                      ({new Date(item.missing_parts_ordered_at).toLocaleString('pl-PL')})
+                    </span>
+                  )}
+                  </span>
                 ) : (
                   <span className="text-gray-400">Nie zlecono</span>
                 )}
