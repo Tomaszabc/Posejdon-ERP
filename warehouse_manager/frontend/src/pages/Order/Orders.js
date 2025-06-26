@@ -444,7 +444,7 @@ export default function Orders() {
 
           {/* Lista zamówień */}
           <OrderList
-            orders={filteredOrders.map(order => ({
+            orders={filteredOrders.map((order) => ({
               ...order,
               uwagi: order.uwagi || '',
             }))}

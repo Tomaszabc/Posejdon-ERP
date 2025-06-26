@@ -374,7 +374,8 @@ export default function ComponentProduction() {
                   placeholder="Wpisz nazwę lub SKU komponentu..."
                   value={
                     form.component
-                      ? components.find((c) => String(c.id) === String(form.component))?.full_name || componentSearch
+                      ? components.find((c) => String(c.id) === String(form.component))
+                          ?.full_name || componentSearch
                       : componentSearch
                   }
                   onChange={(e) => {
@@ -405,7 +406,7 @@ export default function ComponentProduction() {
                           c.full_name.toLowerCase().includes(componentSearch.toLowerCase()) ||
                           c.catalog_index.toLowerCase().includes(componentSearch.toLowerCase())
                       )
-                      .slice(0, 20)
+                      
                       .map((c) => (
                         <li
                           key={c.id}
@@ -593,8 +594,8 @@ export default function ComponentProduction() {
                       className="px-2 py-2 whitespace-nowrap text-xs text-gray-500"
                       title={order.uwagi || ''}
                     >
-                      {order.uwagi && order.uwagi.length > 8
-                        ? order.uwagi.slice(0, 8) + '...'
+                      {order.uwagi && order.uwagi.length > 800
+                        ? order.uwagi.slice(0, 800) + '...'
                         : order.uwagi || ''}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">

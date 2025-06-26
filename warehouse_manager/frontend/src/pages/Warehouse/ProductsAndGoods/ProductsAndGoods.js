@@ -622,7 +622,6 @@ export default function ProductsAndGoods() {
         )}
       </div>
 
-
       <WarehouseItemsSearch
         components={components}
         setFilteredComponents={setFilteredComponents}
