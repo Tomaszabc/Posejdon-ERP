@@ -27,7 +27,8 @@ class ProductToProductionSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'component', 'quantity', 'created_at', 'is_produced', 'produced_at',
             'component_catalog_index', 'component_full_name', 'component_r',
-            'uwagi', 'pilne', 'komentarz', 'created_by_username'
+            'uwagi', 'pilne', 'komentarz', 'created_by_username', 'missing_parts_send_to_production',
+            'missing_parts_ordered_at',
         ]
         
     def get_created_by_username(self, obj):

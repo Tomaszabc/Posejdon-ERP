@@ -194,6 +194,23 @@ export default function OrderDetail() {
                     {order.created_by_username || 'Nieznany użytkownik'}
                   </span>
                 </div>
+                <div className="flex items-center">
+                  <span className="text-sm font-medium text-gray-500 w-56">
+                    Braki zlecone do produkcji:
+                  </span>
+                  {order.missing_parts_send_to_production ? (
+                    <span className="text-green-700 font-semibold">
+                      TAK
+                      {order.missing_parts_ordered_at && (
+                        <span className="ml-2 text-gray-500 text-xs">
+                          ({formatDateTime(order.missing_parts_ordered_at)})
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-gray-400">Nie</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>

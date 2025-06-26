@@ -148,6 +148,8 @@ export default function Production() {
             show: true,
             message: data.error || 'Błąd produkcji',
             missing: data.missing || [],
+            orderId: orderToConfirm?.id,
+            missingPartsAlreadyOrdered: orderToConfirm?.missing_parts_send_to_production,
           });
           return;
         }
@@ -203,41 +205,48 @@ export default function Production() {
     setOrderToUndo(null);
   };
 
-const orderMissingComponents = async (missingList) => {
-  const token = localStorage.getItem('access');
-  const headers = { 'Content-Type': 'application/json' };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const orderMissingComponents = async (missingList) => {
+    const token = localStorage.getItem('access');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  let updatedMissing = [...errorModal.missing];
+    let updatedMissing = [...errorModal.missing];
 
-  for (const item of missingList) {
-    const comp = components.find((c) => c.catalog_index === item.sku);
-    if (!comp) continue;
+    for (const item of missingList) {
+      const comp = components.find((c) => c.catalog_index === item.sku);
+      if (!comp) continue;
 
-    // Zawsze twórz nowe zamówienie
-    await fetch(`${API_URL}/api/product-to-production/`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        component: comp.id,
-        quantity: item.missing_qty,
-        uwagi: `Automatyczne zlecenie na braki do produkcji`,
-        pilne: false,
-      }),
-    });
+      // Zawsze twórz nowe zamówienie
+      await fetch(`${API_URL}/api/product-to-production/`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          component: comp.id,
+          quantity: item.missing_qty,
+          uwagi: `Automatyczne zlecenie na braki do produkcji`,
+          pilne: false,
+        }),
+      });
 
-    updatedMissing = updatedMissing.map((m) =>
-      m.sku === item.sku ? { ...m, missing_parts_ordered: true } : m
-    );
-  }
+      updatedMissing = updatedMissing.map((m) =>
+        m.sku === item.sku ? { ...m, missing_parts_ordered: true } : m
+      );
+    }
 
-  setErrorModal((prev) => ({
-    ...prev,
-    missing: updatedMissing,
-  }));
+    setErrorModal((prev) => ({
+      ...prev,
+      missing: updatedMissing,
+    }));
 
-  fetchOrders();
-};
+    if (errorModal.orderId) {
+      await fetch(`${API_URL}/api/mark-missing-parts-ordered/${errorModal.orderId}/`, {
+        method: 'POST',
+        headers,
+      });
+    }
+
+    fetchOrders();
+  };
 
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
@@ -279,6 +288,7 @@ const orderMissingComponents = async (missingList) => {
         missing={errorModal.missing}
         onClose={() => setErrorModal({ show: false, message: '', missing: [] })}
         onOrderMissing={orderMissingComponents}
+        missingPartsAlreadyOrdered={errorModal.missingPartsAlreadyOrdered}
       />
     </div>
   );

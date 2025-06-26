@@ -1,6 +1,13 @@
 import React from 'react';
 
-export default function ErrorModal({ show, message, missing = [], onClose, onOrderMissing }) {
+export default function ErrorModal({
+  show,
+  message,
+  missing = [],
+  onClose,
+  onOrderMissing,
+  missingPartsAlreadyOrdered,
+}) {
   if (!show) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -40,14 +47,16 @@ export default function ErrorModal({ show, message, missing = [], onClose, onOrd
         >
           OK
         </button>
-        {onOrderMissing && missing?.some((m) => !m.missing_parts_ordered) && (
-          <button
-            className="mt-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold"
-            onClick={() => onOrderMissing(missing.filter((m) => !m.missing_parts_ordered))}
-          >
-            Zleć produkcję braków
-          </button>
-        )}
+        {onOrderMissing &&
+          !missingPartsAlreadyOrdered &&
+          missing?.some((m) => !m.missing_parts_ordered) && (
+            <button
+              className="mt-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold"
+              onClick={() => onOrderMissing(missing.filter((m) => !m.missing_parts_ordered))}
+            >
+              Zleć produkcję braków
+            </button>
+          )}
       </div>
     </div>
   );

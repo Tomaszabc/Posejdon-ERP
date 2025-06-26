@@ -342,16 +342,21 @@ class ProductToProductionListCreateView(generics.ListCreateAPIView):
 @api_view(['POST'])
 def produce_product_to_production(request, order_id):
     try:
+        print(f"== PRODUCE DEBUG: order_id={order_id}")
         order = ProductToProduction.objects.get(id=order_id)
+        print(f"Order: {order}")
         if not order.is_produced:
             component = order.component
+            print(f"Component: {component.full_name} (stock={component.stock})")
             parts = PartsBuilder.objects.filter(product=component)
             missing = []
             # 1. Najpierw sprawdź wszystkie stany magazynowe
             for part in parts:
                 material = part.material
                 qty_to_substract = part.quantity_needed * order.quantity
+                print(f"Material: {material.full_name}, stock={material.stock}, needed={qty_to_substract}")
                 if material.stock - qty_to_substract < 0:
+                    print(f"Brakuje: {material.full_name} ({material.catalog_index})")
                     missing.append({
                         "name": material.full_name,
                         "sku": material.catalog_index,
@@ -361,6 +366,7 @@ def produce_product_to_production(request, order_id):
                         "unit": material.unit,
                 })
             if missing:
+                print(f"== PRODUCE DEBUG: missing={missing}")
                 return Response({
                     "missing": missing,
                     "error": "Brak wystarczającej ilości materiałów."
@@ -385,8 +391,10 @@ def produce_product_to_production(request, order_id):
                     "data": {"action": "refresh"}
                 }
             ) 
+        print("== PRODUCE DEBUG: success")
         return Response({"success": True})
     except ProductToProduction.DoesNotExist:
+        print("== PRODUCE DEBUG: Order not found")
         return Response({"error": "Order not found"}, status=404)
 
 @api_view(['POST'])
@@ -608,3 +616,21 @@ def change_password(request):
     return Response({
         'detail': 'Hasło zostało zmienione pomyślnie.'
     })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def mark_missing_parts_ordered(request, order_id):
+    """
+    Ustawia flagę missing_parts_send_to_production na True dla zamówienia produkcyjnego.
+    """
+    print(f"Wywołano mark_missing_parts_ordered dla order_id={order_id}")
+    try:
+        order = ProductToProduction.objects.get(id=order_id)
+        order.missing_parts_send_to_production = True
+        order.missing_parts_ordered_at = timezone.now()
+        order.save()
+        print("Flaga ustawiona OK")
+        return Response({"success": True})
+    except ProductToProduction.DoesNotExist:
+        print("Nie znaleziono zamówienia!")
+        return Response({"error": "Nie znaleziono zamówienia produkcyjnego."}, status=404)

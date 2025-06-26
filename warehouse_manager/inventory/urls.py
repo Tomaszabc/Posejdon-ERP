@@ -49,6 +49,7 @@ urlpatterns = [
     path('api/check-materials-availability/', check_materials_availability),
     path('api/user/profile/', user_profile_api, name='user_profile_api'),
     path('api/custom/password/change/', change_password, name='custom_password_change'),
+    path('api/mark-missing-parts-ordered/<int:order_id>/', views.mark_missing_parts_ordered, name='mark-missing-parts-ordered'),
     
     # Router na końcu (obsługuje pozostałe ścieżki w tym parts-builder/)
     path('api/', include(router.urls)),

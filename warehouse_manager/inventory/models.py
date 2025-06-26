@@ -115,7 +115,8 @@ class ProductToProduction(models.Model):
     pilne = models.BooleanField(default=False)
     komentarz = models.CharField(max_length=255, blank=True, default="")
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    missing_parts_send_to_production = models.BooleanField(default=False)  # <-- DODAJ TO POLE!
+    missing_parts_send_to_production = models.BooleanField(default=False)
+    missing_parts_ordered_at = models.DateTimeField(null=True, blank=True)
    
 
     def __str__(self):
