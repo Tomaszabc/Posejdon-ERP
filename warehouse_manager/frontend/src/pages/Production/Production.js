@@ -203,52 +203,41 @@ export default function Production() {
     setOrderToUndo(null);
   };
 
-  const orderMissingComponents = async (missingList) => {
-    const token = localStorage.getItem('access');
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+const orderMissingComponents = async (missingList) => {
+  const token = localStorage.getItem('access');
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    // Kopia braków do aktualizacji statusu
-    let updatedMissing = [...errorModal.missing];
+  let updatedMissing = [...errorModal.missing];
 
-    for (const item of missingList) {
-      const comp = components.find((c) => c.catalog_index === item.sku);
-      if (!comp) continue;
+  for (const item of missingList) {
+    const comp = components.find((c) => c.catalog_index === item.sku);
+    if (!comp) continue;
 
-      const alreadyOrdered = orders.some((o) => o.component === comp.id && !o.is_produced);
-      if (alreadyOrdered) {
-        // Ustaw flagę na true
-        updatedMissing = updatedMissing.map((m) =>
-          m.sku === item.sku ? { ...m, missing_parts_ordered: true } : m
-        );
-        continue;
-      }
+    // Zawsze twórz nowe zamówienie
+    await fetch(`${API_URL}/api/product-to-production/`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        component: comp.id,
+        quantity: item.missing_qty,
+        uwagi: `Automatyczne zlecenie na braki do produkcji`,
+        pilne: false,
+      }),
+    });
 
-      await fetch(`${API_URL}/api/product-to-production/`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          component: comp.id,
-          quantity: item.missing_qty,
-          uwagi: `Automatyczne zlecenie na braki do produkcji`,
-          pilne: false,
-        }),
-      });
+    updatedMissing = updatedMissing.map((m) =>
+      m.sku === item.sku ? { ...m, missing_parts_ordered: true } : m
+    );
+  }
 
-      // Po wysłaniu zamówienia ustaw flagę na true
-      updatedMissing = updatedMissing.map((m) =>
-        m.sku === item.sku ? { ...m, missing_parts_ordered: true } : m
-      );
-    }
+  setErrorModal((prev) => ({
+    ...prev,
+    missing: updatedMissing,
+  }));
 
-    // Zaktualizuj modal z nowym statusem
-    setErrorModal((prev) => ({
-      ...prev,
-      missing: updatedMissing,
-    }));
-
-    fetchOrders();
-  };
+  fetchOrders();
+};
 
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
