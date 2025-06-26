@@ -395,7 +395,14 @@ export default function Orders() {
           )}
 
           {/* Lista zamówień */}
-          <OrderList orders={filteredOrders} openDeleteModal={openDeleteModal} />
+          <OrderList
+            orders={filteredOrders.map(order => ({
+              ...order,
+              // Dodajemy pole uwagi do każdego zamówienia (jeśli nie ma, to pusty string)
+              uwagi: order.uwagi || '',
+            }))}
+            openDeleteModal={openDeleteModal}
+          />
         </section>
       </div>
 

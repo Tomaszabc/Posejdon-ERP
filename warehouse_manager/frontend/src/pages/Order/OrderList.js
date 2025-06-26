@@ -26,6 +26,9 @@ export default function OrderList({ orders, openDeleteModal }) {
             <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Nazwa produktu
             </th>
+            <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+              Uwagi
+            </th>
             <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
               Ilość
             </th>
@@ -67,6 +70,14 @@ export default function OrderList({ orders, openDeleteModal }) {
               </td>
               <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
                 {order.component_full_name}
+              </td>
+              <td
+                className="px-2 py-2 whitespace-nowrap text-xs text-gray-500"
+                title={order.uwagi || ''}
+              >
+                {order.uwagi && order.uwagi.length > 10
+                  ? order.uwagi.slice(0, 10) + '...'
+                  : order.uwagi || ''}
               </td>
               <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
                 {order.quantity}
