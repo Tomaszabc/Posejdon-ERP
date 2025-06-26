@@ -27,7 +27,7 @@ export default function Navbar({ user, setUser }) {
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center text-white font-bold text-xl tracking-wide">
                <img
-              src="/diffuser_white.png"
+              src="/diffuser_white_small.png"
               alt="Dyfuzor"
               className="inline-block w-8 h-8 ml-2 mr-2 align-middle"
               style={{ borderRadius: '0.5rem' }}
