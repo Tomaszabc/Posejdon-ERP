@@ -184,8 +184,14 @@ export default function Orders() {
       <div className="grid grid-cols-1 xl:grid-cols-10 gap-8">
         {/* LEWA STRONA - NOWY FORMULARZ (30%) */}
         <section className="xl:col-span-3 bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 flex items-center gap-2">
             Zamów gotowy produkt (Ewelina)
+            <img
+              src="/diffuser_white_small.png"
+              alt="Dyfuzor"
+              className="inline-block w-36 h-36 ml-2 align-middle"
+              style={{ borderRadius: '0.1rem' }}
+            />
           </h1>
           {errors.length > 0 && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
