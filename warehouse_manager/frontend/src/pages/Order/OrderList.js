@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function OrderList({ orders, openDeleteModal }) {
+export default function OrderList({ orders, openDeleteModal, openUwagiModal }) {
   const navigate = useNavigate();
 
   const onlyProducts = orders.filter((order) => order.component_r === 'Produkt');
@@ -72,12 +72,16 @@ export default function OrderList({ orders, openDeleteModal }) {
                 {order.component_full_name}
               </td>
               <td
-                className="px-2 py-2 whitespace-nowrap text-xs text-gray-500"
+                className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 cursor-pointer hover:bg-gray-100 rounded transition"
                 title={order.uwagi || ''}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openUwagiModal && openUwagiModal(order);
+                }}
               >
                 {order.uwagi && order.uwagi.length > 10
                   ? order.uwagi.slice(0, 10) + '...'
-                  : order.uwagi || ''}
+                  : order.uwagi || <span className="text-gray-400 italic">Brak</span>}
               </td>
               <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500 text-center">
                 {order.quantity}

@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import OrderDeleteModal from '../../components/modals/OrderDeleteModal';
 import OrderConfirmModal from '../../components/modals/OrderConfirmModal';
 import OrderList from './OrderList';
-import { useRef } from 'react';
 import { API_URL, WS_URL } from '../../config';
 
 export default function Orders() {
-  const [form, setForm] = useState({ component: '', quantity: '', uwagi: ''  });
+  const [form, setForm] = useState({ component: '', quantity: '', uwagi: '' });
   const [orders, setOrders] = useState([]);
   const [errors, setErrors] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -26,6 +25,11 @@ export default function Orders() {
   const ws = useRef(null);
   const [productSearch, setProductSearch] = useState('');
   const [productInputFocused, setProductInputFocused] = useState(false);
+
+  // Nowe stany do edycji uwag
+  const [showUwagiModal, setShowUwagiModal] = useState(false);
+  const [editingUwagiOrder, setEditingUwagiOrder] = useState(null);
+  const [tempUwagi, setTempUwagi] = useState('');
 
   useEffect(() => {
     fetch(`${API_URL}/api/components-for-order/`)
@@ -137,6 +141,7 @@ export default function Orders() {
         setForm({
           component: '',
           quantity: '',
+          uwagi: '',
         });
         setShowConfirmModal(false);
         setShowSuccess(true);
@@ -179,6 +184,43 @@ export default function Orders() {
     });
   }
 
+  // Funkcje do edycji uwag
+  function openUwagiModal(order) {
+    setEditingUwagiOrder(order);
+    setTempUwagi(order.uwagi || '');
+    setShowUwagiModal(true);
+  }
+
+  function closeUwagiModal() {
+    setShowUwagiModal(false);
+    setEditingUwagiOrder(null);
+    setTempUwagi('');
+  }
+
+  function saveUwagi() {
+    if (!editingUwagiOrder) return;
+    const token = localStorage.getItem('access');
+    fetch(`${API_URL}/api/product-to-production/${editingUwagiOrder.id}/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ uwagi: tempUwagi }),
+    }).then((res) => {
+      if (res.ok) {
+        setOrders((prev) =>
+          prev.map((o) => (o.id === editingUwagiOrder.id ? { ...o, uwagi: tempUwagi } : o))
+        );
+        closeUwagiModal();
+      }
+    });
+  }
+
+  function clearUwagi() {
+    setTempUwagi('');
+  }
+
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
       <div className="grid grid-cols-1 xl:grid-cols-10 gap-8">
@@ -189,7 +231,7 @@ export default function Orders() {
             <img
               src="/diffuser_white_small.png"
               alt="Dyfuzor"
-              className="inline-block w-36 h-36 ml-2 align-middle"
+              className="inline-block w-16 h-16 ml-2 align-middle"
               style={{ borderRadius: '0.1rem' }}
             />
           </h1>
@@ -404,10 +446,10 @@ export default function Orders() {
           <OrderList
             orders={filteredOrders.map(order => ({
               ...order,
-              // Dodajemy pole uwagi do każdego zamówienia (jeśli nie ma, to pusty string)
               uwagi: order.uwagi || '',
             }))}
             openDeleteModal={openDeleteModal}
+            openUwagiModal={openUwagiModal}
           />
         </section>
       </div>
@@ -428,6 +470,48 @@ export default function Orders() {
           onConfirm={handleConfirmSubmit}
           onCancel={() => setShowConfirmModal(false)}
         />
+      )}
+
+      {showUwagiModal && editingUwagiOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-96 max-w-full mx-4 shadow-2xl">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Edytuj uwagi - Zamówienie #{editingUwagiOrder.id}
+            </h3>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Uwagi:</label>
+              <textarea
+                value={tempUwagi}
+                onChange={(e) => setTempUwagi(e.target.value)}
+                maxLength={255}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 resize-none"
+                placeholder="Wpisz uwagi..."
+              />
+              <div className="text-xs text-gray-500 mt-1">{tempUwagi.length}/255 znaków</div>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={clearUwagi}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Wyczyść
+              </button>
+              <button
+                onClick={closeUwagiModal}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Anuluj
+              </button>
+              <button
+                onClick={saveUwagi}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Zapisz
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showSuccess && (
