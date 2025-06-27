@@ -31,7 +31,6 @@ export default function Production() {
   const [errorModal, setErrorModal] = useState({ show: false, message: '' });
   const ws = useRef(null);
   const [components, setComponents] = useState([]);
-  
 
   useEffect(() => {
     ws.current = new window.WebSocket(`${WS_URL}/ws/warehouse/`);
@@ -166,9 +165,9 @@ export default function Production() {
         setErrorModal({ show: true, message: error.message });
       })
       .finally(() => {
-      setShowConfirmModal(false);
-      setOrderToConfirm(null);
-    });
+        setShowConfirmModal(false);
+        setOrderToConfirm(null);
+      });
   };
 
   const cancelConfirmProduce = () => {
