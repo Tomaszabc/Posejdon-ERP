@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.db.models import Q
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -643,3 +644,12 @@ def mark_missing_parts_ordered(request, order_id):
     except ProductToProduction.DoesNotExist:
         print("Nie znaleziono zamówienia!")
         return Response({"error": "Nie znaleziono zamówienia produkcyjnego."}, status=404)
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def order_list_for_modules_production_previewing_components_production(request):
+    orders = ProductToProduction.objects.filter(component__r='Towar').exclude(component__catalog_index__contains='-24-')
+    
+    serializer = ProductToProductionSerializer(orders, many=True)
+    return Response(serializer.data)

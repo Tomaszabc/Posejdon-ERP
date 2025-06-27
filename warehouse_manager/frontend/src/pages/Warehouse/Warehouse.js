@@ -629,7 +629,7 @@ export default function Warehouse() {
           </div>
         )}
       </div>
-      
+
       <WarehouseItemsSearch
         components={components}
         setFilteredComponents={setFilteredComponents}

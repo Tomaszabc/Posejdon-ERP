@@ -53,6 +53,12 @@ urlpatterns = [
     
     # Router na końcu (obsługuje pozostałe ścieżki w tym parts-builder/)
     path('api/', include(router.urls)),
+
+    path(
+        'api/order-list-for-modules-production-previewing-components-production/',
+        views.order_list_for_modules_production_previewing_components_production,
+        name='order_list_for_modules_production_previewing_components_production'
+    ),
 ]
 
 if settings.DEBUG:
