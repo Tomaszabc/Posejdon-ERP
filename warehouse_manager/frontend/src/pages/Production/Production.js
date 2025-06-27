@@ -160,13 +160,15 @@ export default function Production() {
         }
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 1000);
-        setShowConfirmModal(false);
-        setOrderToConfirm(null);
         fetchOrders();
       })
       .catch((error) => {
         setErrorModal({ show: true, message: error.message });
-      });
+      })
+      .finally(() => {
+      setShowConfirmModal(false);
+      setOrderToConfirm(null);
+    });
   };
 
   const cancelConfirmProduce = () => {
