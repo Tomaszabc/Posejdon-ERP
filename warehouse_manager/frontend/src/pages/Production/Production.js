@@ -31,6 +31,7 @@ export default function Production() {
   const [errorModal, setErrorModal] = useState({ show: false, message: '' });
   const ws = useRef(null);
   const [components, setComponents] = useState([]);
+  
 
   useEffect(() => {
     ws.current = new window.WebSocket(`${WS_URL}/ws/warehouse/`);

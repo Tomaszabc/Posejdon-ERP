@@ -315,6 +315,11 @@ class ProductToProductionListCreateView(generics.ListCreateAPIView):
         print(f"Request user: {self.request.user}")
         print(f"Is authenticated: {self.request.user.is_authenticated}")
         print(f"User type: {type(self.request.user)}")
+        component = serializer.validated_data['component']
+        quantity = serializer.validated_data['quantity']
+
+        if ProductToProduction.objects.filter(component=component, quantity=quantity, is_produced=False).exists():
+            raise ValidationError("To zamówienie już istnieje i nie zostało jeszcze wyprodukowane.")
         
         # Przypisz zalogowanego użytkownika
         order = serializer.save(created_by=self.request.user)
@@ -345,52 +350,56 @@ def produce_product_to_production(request, order_id):
         print(f"== PRODUCE DEBUG: order_id={order_id}")
         order = ProductToProduction.objects.get(id=order_id)
         print(f"Order: {order}")
-        if not order.is_produced:
-            component = order.component
-            print(f"Component: {component.full_name} (stock={component.stock})")
-            parts = PartsBuilder.objects.filter(product=component)
-            missing = []
-            # 1. Najpierw sprawdź wszystkie stany magazynowe
-            for part in parts:
-                material = part.material
-                qty_to_substract = part.quantity_needed * order.quantity
-                print(f"Material: {material.full_name}, stock={material.stock}, needed={qty_to_substract}")
-                if material.stock - qty_to_substract < 0:
-                    print(f"Brakuje: {material.full_name} ({material.catalog_index})")
-                    missing.append({
-                        "name": material.full_name,
-                        "sku": material.catalog_index,
-                        "needed": float(qty_to_substract),
-                        "available": float(material.stock),
-                        "missing_qty": float(qty_to_substract - material.stock),
-                        "unit": material.unit,
+
+        # ZABEZPIECZENIE: nie pozwól produkować drugi raz
+        if order.is_produced:
+            return Response({"error": "To zamówienie zostało już wyprodukowane."}, status=400)
+
+        component = order.component
+        print(f"Component: {component.full_name} (stock={component.stock})")
+        parts = PartsBuilder.objects.filter(product=component)
+        missing = []
+        # 1. Najpierw sprawdź wszystkie stany magazynowe
+        for part in parts:
+            material = part.material
+            qty_to_substract = part.quantity_needed * order.quantity
+            print(f"Material: {material.full_name}, stock={material.stock}, needed={qty_to_substract}")
+            if material.stock - qty_to_substract < 0:
+                print(f"Brakuje: {material.full_name} ({material.catalog_index})")
+                missing.append({
+                    "name": material.full_name,
+                    "sku": material.catalog_index,
+                    "needed": float(qty_to_substract),
+                    "available": float(material.stock),
+                    "missing_qty": float(qty_to_substract - material.stock),
+                    "unit": material.unit,
                 })
-            if missing:
-                print(f"== PRODUCE DEBUG: missing={missing}")
-                return Response({
-                    "missing": missing,
-                    "error": "Brak wystarczającej ilości materiałów."
-                }, status=400)
-            # 2. Jeśli wszystko OK, dopiero wtedy wykonaj produkcję
-            order.is_produced = True
-            order.produced_at = timezone.now()
-            order.save()
-            component.stock += order.quantity
-            component.save()
-            for part in parts:
-                material = part.material
-                qty_to_substract = part.quantity_needed * order.quantity
-                material.stock -= qty_to_substract
-                material.save()
-                 # --- DODAJ TO PO ZMIANIE STANU ---
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                "warehouse",
-                {
-                    "type": "warehouse_update",
-                    "data": {"action": "refresh"}
-                }
-            ) 
+        if missing:
+            print(f"== PRODUCE DEBUG: missing={missing}")
+            return Response({
+                "missing": missing,
+                "error": "Brak wystarczającej ilości materiałów."
+            }, status=400)
+        # 2. Jeśli wszystko OK, dopiero wtedy wykonaj produkcję
+        order.is_produced = True
+        order.produced_at = timezone.now()
+        order.save()
+        component.stock += order.quantity
+        component.save()
+        for part in parts:
+            material = part.material
+            qty_to_substract = part.quantity_needed * order.quantity
+            material.stock -= qty_to_substract
+            material.save()
+             # --- DODAJ TO PO ZMIANIE STANU ---
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "warehouse",
+            {
+                "type": "warehouse_update",
+                "data": {"action": "refresh"}
+            }
+        ) 
         print("== PRODUCE DEBUG: success")
         return Response({"success": True})
     except ProductToProduction.DoesNotExist:

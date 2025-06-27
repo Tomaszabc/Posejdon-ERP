@@ -341,7 +341,8 @@ export default function ComponentProduction() {
     ).finally(() => {
       setShowMissingModal(false);
       setMissingMaterials([]);
-      fetchOrders(); // zawsze odśwież listę zleceń
+      fetchOrders();
+      setShowConfirmModal(false); // zawsze odśwież listę zleceń
     });
   }
 
