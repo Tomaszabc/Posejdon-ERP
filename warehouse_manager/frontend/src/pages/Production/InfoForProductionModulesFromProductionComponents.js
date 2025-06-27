@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../config';
 
 export default function InfoForProductionModulesFromProductionComponents() {
   const [ignacyOrders, setIgnacyOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('access');
@@ -26,6 +28,10 @@ export default function InfoForProductionModulesFromProductionComponents() {
       });
   }, []);
 
+  const handleOrderClick = (orderId) => {
+    navigate(`/order/${orderId}`);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -37,7 +43,7 @@ export default function InfoForProductionModulesFromProductionComponents() {
   return (
     <section className="bg-white shadow-2xl rounded-3xl p-8 border border-gray-100">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">
-        Lista zleceń produkcji komponentów (podgląd Ignacego)
+        Lista zleconych do produkcji komponentów (do Ignacego):
       </h2>
       <div className="w-full overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
@@ -70,6 +76,7 @@ export default function InfoForProductionModulesFromProductionComponents() {
             {ignacyOrders.map((order) => (
               <tr
                 key={order.id}
+                onClick={() => handleOrderClick(order.id)}
                 className={
                   'hover:bg-gray-50 transition-colors cursor-pointer' +
                   (order.pilne ? ' bg-red-100' : '')
