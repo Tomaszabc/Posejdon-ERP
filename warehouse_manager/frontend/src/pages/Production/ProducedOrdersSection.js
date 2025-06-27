@@ -196,7 +196,6 @@ export default function ProducedOrdersSection({
           </table>
         </div>
       </div>
-      
     </section>
   );
 }
