@@ -629,7 +629,7 @@ export default function Warehouse() {
           </div>
         )}
       </div>
-
+      
       <WarehouseItemsSearch
         components={components}
         setFilteredComponents={setFilteredComponents}
@@ -677,7 +677,7 @@ export default function Warehouse() {
                   onClick={() => setShowDeleteConfirm(false)}
                   className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors order-2 sm:order-1"
                 >
-                  Anuluj
+                  Zamknij
                 </button>
                 <button
                   onClick={handleBatchDelete}
@@ -914,7 +914,7 @@ export default function Warehouse() {
                   onClick={() => setShowAddModal(false)}
                   className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 >
-                  Anuluj
+                  Zamknij
                 </button>
                 <button
                   type="submit"
@@ -1150,7 +1150,7 @@ export default function Warehouse() {
                   onClick={() => setShowEditModal(false)}
                   className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 >
-                  Anuluj
+                  Zamknij
                 </button>
                 <button
                   type="submit"

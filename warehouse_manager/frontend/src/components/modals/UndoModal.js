@@ -29,7 +29,7 @@ export default function UndoModal({ order, onCancel, onConfirm, show }) {
             onClick={onCancel}
             className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg font-medium transition-colors"
           >
-            Anuluj
+            Zamknij
           </button>
           <button
             type="button"

@@ -30,7 +30,7 @@ export default function OrderConfirmModal({ order, onConfirm, onCancel, componen
               onClick={onCancel}
               className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-base font-medium rounded-md shadow-sm transition-colors"
             >
-              Anuluj
+              Zamknij
             </button>
             <button
               onClick={onConfirm}
