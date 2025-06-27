@@ -50,7 +50,9 @@ urlpatterns = [
     path('api/user/profile/', user_profile_api, name='user_profile_api'),
     path('api/custom/password/change/', change_password, name='custom_password_change'),
     path('api/mark-missing-parts-ordered/<int:order_id>/', views.mark_missing_parts_ordered, name='mark-missing-parts-ordered'),
-    
+    path('api/production/produce-partial/<int:order_id>/', views.produce_order_partial, name='produce_order_partial'),
+
+
     # Router na końcu (obsługuje pozostałe ścieżki w tym parts-builder/)
     path('api/', include(router.urls)),
 

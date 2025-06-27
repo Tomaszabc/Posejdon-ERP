@@ -21,6 +21,11 @@ class ProductToProductionSerializer(serializers.ModelSerializer):
     component_catalog_index = serializers.CharField(source='component.catalog_index', read_only=True)
     component_r = serializers.CharField(source='component.r', read_only=True)
     created_by_username = serializers.SerializerMethodField()
+    produced_quantity = serializers.ReadOnlyField()
+    remaining_quantity = serializers.SerializerMethodField()
+
+    def get_remaining_quantity(self, obj):
+        return obj.quantity - obj.produced_quantity
 
     class Meta:
         model = ProductToProduction
@@ -28,7 +33,7 @@ class ProductToProductionSerializer(serializers.ModelSerializer):
             'id', 'component', 'quantity', 'created_at', 'is_produced', 'produced_at',
             'component_catalog_index', 'component_full_name', 'component_r',
             'uwagi', 'pilne', 'komentarz', 'created_by_username', 'missing_parts_send_to_production',
-            'missing_parts_ordered_at',
+            'missing_parts_ordered_at', 'produced_quantity', 'remaining_quantity',
         ]
         
     def get_created_by_username(self, obj):

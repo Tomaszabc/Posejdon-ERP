@@ -359,11 +359,15 @@ def produce_product_to_production(request, order_id):
         component = order.component
         print(f"Component: {component.full_name} (stock={component.stock})")
         parts = PartsBuilder.objects.filter(product=component)
+
+         # Oblicz ile pozostało do wyprodukowania
+        remaining_quantity = order.quantity - order.produced_quantity
+
         missing = []
         # 1. Najpierw sprawdź wszystkie stany magazynowe
         for part in parts:
             material = part.material
-            qty_to_substract = part.quantity_needed * order.quantity
+            qty_to_substract = part.quantity_needed * remaining_quantity
             print(f"Material: {material.full_name}, stock={material.stock}, needed={qty_to_substract}")
             if material.stock - qty_to_substract < 0:
                 print(f"Brakuje: {material.full_name} ({material.catalog_index})")
@@ -382,14 +386,16 @@ def produce_product_to_production(request, order_id):
                 "error": "Brak wystarczającej ilości materiałów."
             }, status=400)
         # 2. Jeśli wszystko OK, dopiero wtedy wykonaj produkcję
+        order.produced_quantity = order.quantity 
         order.is_produced = True
         order.produced_at = timezone.now()
         order.save()
-        component.stock += order.quantity
+        component.stock += remaining_quantity
         component.save()
+
         for part in parts:
             material = part.material
-            qty_to_substract = part.quantity_needed * order.quantity
+            qty_to_substract = part.quantity_needed * remaining_quantity
             material.stock -= qty_to_substract
             material.save()
              # --- DODAJ TO PO ZMIANIE STANU ---
@@ -411,21 +417,28 @@ def produce_product_to_production(request, order_id):
 def undo_product_to_production(request, order_id):
     try:
         order = ProductToProduction.objects.get(id=order_id)
-        if order.is_produced:
-            order.is_produced = False
-            order.produced_at = None
-            order.save()
+        if order.is_produced or order.produced_quantity > 0:
             component = order.component
-            component.stock -= order.quantity
+            
+            # Cofnij całą wyprodukowaną ilość
+            component.stock -= order.produced_quantity  # Zmienione!
             component.save()
 
+            # Przywróć materiały
             parts = PartsBuilder.objects.filter(product=component)
             for part in parts:
                 material = part.material
-                qty_to_restore = part.quantity_needed * order.quantity
+                qty_to_restore = part.quantity_needed * order.produced_quantity  # Zmienione!
                 material.stock += qty_to_restore
                 material.save()
-            # DODAJ TO:
+            
+            # Resetuj produkcję
+            order.produced_quantity = 0
+            order.is_produced = False
+            order.produced_at = None
+            order.save()
+            
+            # WebSocket
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 "warehouse",
@@ -434,6 +447,7 @@ def undo_product_to_production(request, order_id):
                     "data": {"action": "refresh"}
                 }
             )
+        
         return Response({"success": True})
     except ProductToProduction.DoesNotExist:
         return Response({"error": "Order not found"}, status=404)
@@ -653,3 +667,89 @@ def order_list_for_modules_production_previewing_components_production(request):
     
     serializer = ProductToProductionSerializer(orders, many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def produce_order_partial(request, order_id):
+    """
+    Częściowa produkcja zamówienia
+    """
+    try:
+        order = ProductToProduction.objects.get(id=order_id)
+        partial_quantity = int(request.data.get('quantity', 0))
+        
+        if partial_quantity <= 0:
+            return Response({"error": "Ilość musi być większa od 0"}, status=400)
+            
+        remaining = order.quantity - order.produced_quantity
+        if partial_quantity > remaining:
+            return Response({"error": f"Nie można wyprodukować więcej niż pozostało ({remaining})"}, status=400)
+        
+        # Sprawdź dostępność materiałów dla częściowej ilości
+        component = order.component
+        parts = PartsBuilder.objects.filter(product=component)
+        missing = []
+        
+        # 1. Sprawdź materiały
+        for part in parts:
+            material = part.material
+            qty_to_substract = part.quantity_needed * partial_quantity
+            if material.stock - qty_to_substract < 0:
+                missing.append({
+                    "name": material.full_name,
+                    "sku": material.catalog_index,
+                    "needed": float(qty_to_substract),
+                    "available": float(material.stock),
+                    "missing_qty": float(qty_to_substract - material.stock),
+                    "unit": material.unit,
+                })
+        
+        if missing:
+            return Response({
+                "error": "Brak wystarczających materiałów",
+                "missing": missing
+            }, status=400)
+        
+        # 2. Wykonaj częściową produkcję
+        order.produced_quantity += partial_quantity
+        
+        # Sprawdź czy zamówienie jest w pełni wyprodukowane
+        if order.produced_quantity >= order.quantity:
+            order.is_produced = True
+            order.produced_at = timezone.now()
+        
+        order.save()
+        
+        # 3. Zaktualizuj stany magazynowe
+        component.stock += partial_quantity
+        component.save()
+        
+        # 4. Odejmij materiały
+        for part in parts:
+            material = part.material
+            qty_to_substract = part.quantity_needed * partial_quantity
+            material.stock -= qty_to_substract
+            material.save()
+        
+        # 5. WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "warehouse",
+            {
+                "type": "warehouse_update",
+                "data": {"action": "refresh"}
+            }
+        )
+        
+        return Response({
+            "success": True,
+            "produced_quantity": partial_quantity,
+            "total_produced": order.produced_quantity,
+            "remaining": order.quantity - order.produced_quantity,
+            "is_completed": order.is_produced
+        })
+        
+    except ProductToProduction.DoesNotExist:
+        return Response({"error": "Zamówienie nie znalezione"}, status=404)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)

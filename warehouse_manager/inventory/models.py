@@ -117,10 +117,17 @@ class ProductToProduction(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     missing_parts_send_to_production = models.BooleanField(default=False)
     missing_parts_ordered_at = models.DateTimeField(null=True, blank=True)
+    produced_quantity = models.PositiveIntegerField(default=0)
    
 
     def __str__(self):
         return f"{self.component.full_name} ({self.component.catalog_index}) x {self.quantity}"
+    
+    def is_fully_produced(self):
+        return self.produced_quantity >= self.quantity
+
+    def remaining_quantity(self):
+        return max(0, self.quantity - self.produced_quantity)
 
 class ProductToProductionComponent(models.Model):
     product_to_production = models.ForeignKey(
