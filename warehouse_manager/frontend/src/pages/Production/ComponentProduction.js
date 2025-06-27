@@ -152,25 +152,35 @@ export default function ComponentProduction() {
   };
 
   const proceedWithProduction = () => {
+    const token = localStorage.getItem('access');
+    
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     fetch(`${API_URL}/api/production/produce/${orderToProduce.id}/`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers, // ✅ Dodaj headers z tokenem
     })
-      .then((res) => res.json().then((data) => ({ status: res.status, data })))
-      .then(({ status, data }) => {
-        if (status === 200) {
-          fetchOrders();
-        } else {
-          alert(data.error || 'Błąd podczas produkcji.');
-        }
-        setShowProduceModal(false);
-        setOrderToProduce(null);
-      })
-      .catch(() => {
-        alert('Błąd połączenia z serwerem.');
-        setShowProduceModal(false);
-        setOrderToProduce(null);
-      });
+    .then((res) => res.json().then((data) => ({ status: res.status, data })))
+    .then(({ status, data }) => {
+      if (status === 200) {
+        fetchOrders();
+      } else {
+        alert(data.error || 'Błąd podczas produkcji.');
+      }
+      setShowProduceModal(false);
+      setOrderToProduce(null);
+    })
+    .catch(() => {
+      alert('Błąd połączenia z serwerem.');
+      setShowProduceModal(false);
+      setOrderToProduce(null);
+    });
   };
 
   function handleSubmit(e) {
@@ -324,9 +334,21 @@ export default function ComponentProduction() {
   };
 
   const handlePartialProduction = (quantity) => {
+    const token = localStorage.getItem('access');
+  
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  
+  // Dodaj token jeśli istnieje
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+    
     fetch(`${API_URL}/api/production/produce-partial/${orderForPartial.id}/`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body: JSON.stringify({ quantity }),
     })
       .then((res) => res.json().then((data) => ({ status: res.status, data })))
