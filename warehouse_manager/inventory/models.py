@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -191,3 +192,10 @@ class PartsBuilder(models.Model):
     def total_cost(self):
         """Koszt materiału na 1 szt. produktu"""
         return self.material.purchase_price_net * self.quantity_needed
+    
+User = get_user_model()
+
+class ChatMessage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
