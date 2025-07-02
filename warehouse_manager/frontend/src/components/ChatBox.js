@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { WS_URL } from "../config";
 
-const ChatBox = ({ user }) => {
+const ChatBox = ({ user, onClose }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const ws = useRef(null);
@@ -35,17 +35,30 @@ const ChatBox = ({ user }) => {
 
   return (
     <div style={{
-      position: "fixed",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%,-50%)",
       width: 400,
-      zIndex: 9999,
       background: "#fff",
       borderRadius: 10,
       boxShadow: "0 2px 16px #0002",
-      padding: 20
+      padding: 20,
+      position: "relative"
     }}>
+      {/* Przycisk zamykania */}
+      <button
+        onClick={onClose}
+        style={{
+          position: "absolute",
+          top: 8,
+          right: 8,
+          background: "transparent",
+          border: "none",
+          fontSize: 22,
+          cursor: "pointer",
+          color: "#888"
+        }}
+        aria-label="Zamknij czat"
+      >
+        ×
+      </button>
       <h4 style={{ textAlign: "center" }}>Czat wewnętrzny</h4>
       <div style={{
         height: 200,

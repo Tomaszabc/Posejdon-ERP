@@ -19,7 +19,7 @@ import PartsBuilderIndex from './pages/Warehouse/PartsBuilder/PartsBuilderIndex'
 import ComponentsBuilder from './pages/Warehouse/PartsBuilder/ComponentsBuilder';
 import ProductBuilder from './pages/Warehouse/PartsBuilder/ProductBuilder';
 import ChatBox from './components/ChatBox';
-
+import ChatIcon from './components/ChatIcon';
 
 import ProductionIndex from './pages/Production/ProductionIndex';
 import ComponentProduction from './pages/Production/ComponentProduction';
@@ -28,6 +28,7 @@ import { API_URL, WS_URL } from './config';
 function App() {
   const [user, setUser] = useState(undefined);
   const [loading, setLoading] = useState(true);
+  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('access');
@@ -176,7 +177,19 @@ function App() {
           </Routes>
         </main>
         <Footer />
-        <ChatBox user={user} />
+         {/* Chat Icon w prawym dolnym rogu */}
+        {user && !showChat && <ChatIcon onClick={() => setShowChat(true)} />}
+        {/* Okno czatu */}
+        {user && showChat && (
+          <div style={{
+            position: "fixed",
+            right: 32,
+            bottom: 110,
+            zIndex: 10001,
+          }}>
+            <ChatBox user={user} onClose={() => setShowChat(false)} />
+          </div>
+        )}
       </div>
     </Router>
   );
