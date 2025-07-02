@@ -242,6 +242,32 @@ JAZZMIN_SETTINGS = {
     "show_footer": False,
     "show_powered_by": False,
     "show_jazzmin_version": False,
+
+     "side_menu": [
+        {
+            "name": "Dashboard",
+            "url": "admin:index",
+            "icon": "fas fa-tachometer-alt"
+        },
+        {
+            "app": "inventory", 
+            "label": "Magazyn", 
+            "icon": "fas fa-boxes",
+            "models": [
+                {"model": "inventory.component", "label": "Komponenty"},
+                {"model": "inventory.producttoproduction", "label": "Produkcja"},
+                {"model": "inventory.partsbuilder", "label": "PartsBuilder"},
+            ]
+        },
+        {
+            "app": "auth", 
+            "label": "Użytkownicy", 
+            "icon": "fas fa-users",
+            "models": [
+                {"model": "auth.user", "label": "Użytkownicy"},
+            ]
+        },
+    ],
 }
 
 # Dodaj konfigurację UI

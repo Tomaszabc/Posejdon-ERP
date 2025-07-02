@@ -97,6 +97,10 @@ class Component(models.Model):
 
     def __str__(self):
         return self.full_name
+    
+    class Meta:
+        verbose_name = "Komponent"
+        verbose_name_plural = "Komponenty"
 
 class DiffusorType(models.Model):
     sku = models.CharField(max_length=50, unique=True)
@@ -128,6 +132,10 @@ class ProductToProduction(models.Model):
 
     def remaining_quantity(self):
         return max(0, self.quantity - self.produced_quantity)
+    
+    class Meta:
+        verbose_name = "Produkcja"
+        verbose_name_plural = "Produkcja"
 
 class ProductToProductionComponent(models.Model):
     product_to_production = models.ForeignKey(
@@ -173,9 +181,9 @@ class PartsBuilder(models.Model):
     
     class Meta:
         db_table = 'parts_builder'
-        verbose_name = "Przepis produktu"
-        verbose_name_plural = "Przepisy produktów"
-        unique_together = ['product', 'material']  # Jeden materiał na produkt tylko raz
+        verbose_name = "Parts Builder"
+        verbose_name_plural = "Parts Builder"
+        unique_together = ['product', 'material'] 
         
     def __str__(self):
         return f"{self.product.full_name} → {self.material.full_name} ({self.quantity_needed})"
