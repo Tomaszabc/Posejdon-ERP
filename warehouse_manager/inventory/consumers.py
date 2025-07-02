@@ -1,17 +1,16 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from asgiref.sync import sync_to_async
+database_sync_to_async = sync_to_async
 
 class WarehouseConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        # Dołącz do grupy "warehouse"
         await self.channel_layer.group_add("warehouse", self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
-        # Opuść grupę "warehouse"
         await self.channel_layer.group_discard("warehouse", self.channel_name)
 
-    # Odbierz event od grupy i wyślij do klienta
     async def warehouse_update(self, event):
         await self.send(text_data=json.dumps(event["data"]))
 
@@ -25,6 +24,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
         user = self.scope["user"]
         if user.is_authenticated:
+            from .models import ChatMessage
+
+            def get_last_msgs():
+                return list(
+                    ChatMessage.objects.order_by("-timestamp").values_list("user__username", "message")[:30][::-1]
+                )
+
+            last_msgs = await database_sync_to_async(get_last_msgs)()
+            for username, message in last_msgs:
+                await self.send(text_data=json.dumps({
+                    "type": "chat",
+                    "username": username,
+                    "message": message,
+                }))
             await self.send(text_data=json.dumps({"type": "info", "message": f"{user.username} dołączył do czatu."}))
 
     async def disconnect(self, close_code):
@@ -38,6 +51,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message = data.get("message")
         if user.is_authenticated and message:
+            # Import modelu tutaj!
+            from .models import ChatMessage
+            await database_sync_to_async(ChatMessage.objects.create)(
+                user=user, message=message
+            )
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
