@@ -39,11 +39,11 @@ export default function Home() {
       const token = localStorage.getItem('access');
       const response = await fetch(`${API_URL}/api/dashboard-statistics/`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setDashboardData(data);
@@ -73,11 +73,11 @@ export default function Home() {
 
   // Dane dla wykresu słupkowego (ostatnie 7 dni)
   const barData = {
-    labels: dashboardData.daily_orders.map(item => `${item.day} ${item.date}`),
+    labels: dashboardData.daily_orders.map((item) => `${item.day} ${item.date}`),
     datasets: [
       {
         label: 'Zamówienia dziennie',
-        data: dashboardData.daily_orders.map(item => item.count),
+        data: dashboardData.daily_orders.map((item) => item.count),
         backgroundColor: '#10b981',
         borderColor: '#059669',
         borderWidth: 1,
@@ -87,11 +87,11 @@ export default function Home() {
 
   // Dane dla wykresu liniowego (ostatnie 6 miesięcy)
   const lineData = {
-    labels: dashboardData.monthly_orders.map(item => item.short_month),
+    labels: dashboardData.monthly_orders.map((item) => item.short_month),
     datasets: [
       {
         label: 'Zamówienia miesięcznie',
-        data: dashboardData.monthly_orders.map(item => item.count),
+        data: dashboardData.monthly_orders.map((item) => item.count),
         fill: false,
         borderColor: '#2563eb',
         backgroundColor: 'rgba(37, 99, 235, 0.1)',
@@ -125,17 +125,17 @@ export default function Home() {
       },
       title: {
         display: true,
-        text: 'Zamówienia w ostatnich 7 dniach'
-      }
+        text: 'Zamówienia w ostatnich 7 dniach',
+      },
     },
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
-          stepSize: 1
-        }
-      }
-    }
+          stepSize: 1,
+        },
+      },
+    },
   };
 
   const lineOptions = {
@@ -147,41 +147,51 @@ export default function Home() {
       },
       title: {
         display: true,
-        text: 'Trend zamówień w ostatnich miesiącach'
-      }
+        text: 'Trend zamówień w ostatnich miesiącach',
+      },
     },
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
-          stepSize: 1
-        }
-      }
-    }
+          stepSize: 1,
+        },
+      },
+    },
   };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">Dashboard E-Posejdon - Moduł Produkcji</h1>
-        
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          Dashboard E-Posejdon - Moduł Produkcji
+        </h1>
+
         {/* Statystyki liczbowe */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
             <h3 className="text-lg font-semibold text-gray-600">Łącznie zamówień</h3>
-            <p className="text-3xl font-bold text-blue-600">{dashboardData.statistics.total_orders}</p>
+            <p className="text-3xl font-bold text-blue-600">
+              {dashboardData.statistics.total_orders}
+            </p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
             <h3 className="text-lg font-semibold text-gray-600">Wyprodukowane</h3>
-            <p className="text-3xl font-bold text-green-600">{dashboardData.statistics.produced_orders}</p>
+            <p className="text-3xl font-bold text-green-600">
+              {dashboardData.statistics.produced_orders}
+            </p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
             <h3 className="text-lg font-semibold text-gray-600">Oczekujące</h3>
-            <p className="text-3xl font-bold text-orange-600">{dashboardData.statistics.pending_orders}</p>
+            <p className="text-3xl font-bold text-orange-600">
+              {dashboardData.statistics.pending_orders}
+            </p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
             <h3 className="text-lg font-semibold text-gray-600">Wskaźnik produkcji</h3>
-            <p className="text-3xl font-bold text-purple-600">{dashboardData.statistics.production_rate}%</p>
+            <p className="text-3xl font-bold text-purple-600">
+              {dashboardData.statistics.production_rate}%
+            </p>
           </div>
         </div>
 

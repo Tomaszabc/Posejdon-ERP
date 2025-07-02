@@ -1,7 +1,4 @@
-{% extends "admin/index.html" %} 
-{% load static %} 
-{% block content %} 
-
+{% extends "admin/index.html" %} {% load static %} {% block content %}
 
 <!-- Dodaj wykresy po istniejącej zawartości -->
 <div class="row mt-4">
@@ -49,7 +46,7 @@
           </div>
         </div>
         <!-- Statystyki liczbowe -->
-        <div class="row mt-4" id="statsRow" style="display:none;">
+        <div class="row mt-4" id="statsRow" style="display: none">
           <div class="col-md-3">
             <div class="info-box bg-info">
               <span class="info-box-icon"><i class="fas fa-shopping-cart"></i></span>
@@ -96,74 +93,87 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     fetch('/api/dashboard-statistics/', {
-      credentials: 'same-origin'
+      credentials: 'same-origin',
     })
-    .then(res => res.json())
-    .then(data => {
-      // Statystyki liczbowe
-      document.getElementById('totalOrders').textContent = data.statistics.total_orders;
-      document.getElementById('produced').textContent = data.statistics.produced_orders;
-      document.getElementById('pending').textContent = data.statistics.pending_orders;
-      document.getElementById('productionRate').textContent = data.statistics.production_rate + '%';
-      document.getElementById('statsRow').style.display = '';
+      .then((res) => res.json())
+      .then((data) => {
+        // Statystyki liczbowe
+        document.getElementById('totalOrders').textContent = data.statistics.total_orders;
+        document.getElementById('produced').textContent = data.statistics.produced_orders;
+        document.getElementById('pending').textContent = data.statistics.pending_orders;
+        document.getElementById('productionRate').textContent =
+          data.statistics.production_rate + '%';
+        document.getElementById('statsRow').style.display = '';
 
-      // Bar Chart - Zamówienia dziennie
-      new Chart(document.getElementById('barChart'), {
-        type: 'bar',
-        data: {
-          labels: data.daily_orders.map(x => x.day + ' ' + x.date),
-          datasets: [{
-            label: 'Zamówienia dziennie',
-            data: data.daily_orders.map(x => x.count),
-            backgroundColor: '#10b981',
-            borderColor: '#059669',
-            borderWidth: 1,
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { position: 'top' }, title: { display: true, text: 'Zamówienia w ostatnich 7 dniach' } },
-          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-        }
-      });
+        // Bar Chart - Zamówienia dziennie
+        new Chart(document.getElementById('barChart'), {
+          type: 'bar',
+          data: {
+            labels: data.daily_orders.map((x) => x.day + ' ' + x.date),
+            datasets: [
+              {
+                label: 'Zamówienia dziennie',
+                data: data.daily_orders.map((x) => x.count),
+                backgroundColor: '#10b981',
+                borderColor: '#059669',
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              title: { display: true, text: 'Zamówienia w ostatnich 7 dniach' },
+            },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+          },
+        });
 
-      // Line Chart - Trend miesięczny
-      new Chart(document.getElementById('lineChart'), {
-        type: 'line',
-        data: {
-          labels: data.monthly_orders.map(x => x.short_month),
-          datasets: [{
-            label: 'Zamówienia miesięcznie',
-            data: data.monthly_orders.map(x => x.count),
-            fill: false,
-            borderColor: '#2563eb',
-            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-            tension: 0.1,
-            pointBackgroundColor: '#2563eb',
-            pointBorderColor: '#1d4ed8',
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { position: 'top' }, title: { display: true, text: 'Trend zamówień w ostatnich miesiącach' } },
-          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-        }
-      });
+        // Line Chart - Trend miesięczny
+        new Chart(document.getElementById('lineChart'), {
+          type: 'line',
+          data: {
+            labels: data.monthly_orders.map((x) => x.short_month),
+            datasets: [
+              {
+                label: 'Zamówienia miesięcznie',
+                data: data.monthly_orders.map((x) => x.count),
+                fill: false,
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                tension: 0.1,
+                pointBackgroundColor: '#2563eb',
+                pointBorderColor: '#1d4ed8',
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              title: { display: true, text: 'Trend zamówień w ostatnich miesiącach' },
+            },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+          },
+        });
 
-      // Pie Chart - Status zamówień
-      new Chart(document.getElementById('pieChart'), {
-        type: 'pie',
-        data: {
-          labels: ['Wyprodukowane', 'Oczekujące'],
-          datasets: [{
-            data: [data.statistics.produced_orders, data.statistics.pending_orders],
-            backgroundColor: ['#10b981', '#f59e42'],
-            borderColor: ['#059669', '#ea580c'],
-            borderWidth: 2,
-          }]
-        }
+        // Pie Chart - Status zamówień
+        new Chart(document.getElementById('pieChart'), {
+          type: 'pie',
+          data: {
+            labels: ['Wyprodukowane', 'Oczekujące'],
+            datasets: [
+              {
+                data: [data.statistics.produced_orders, data.statistics.pending_orders],
+                backgroundColor: ['#10b981', '#f59e42'],
+                borderColor: ['#059669', '#ea580c'],
+                borderWidth: 2,
+              },
+            ],
+          },
+        });
       });
-    });
   });
 </script>
 

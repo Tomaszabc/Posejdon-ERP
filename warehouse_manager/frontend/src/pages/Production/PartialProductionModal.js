@@ -21,7 +21,7 @@ export default function PartialProductionModal({ order, show, onCancel, onConfir
         <h3 className="text-lg font-semibold text-gray-800 mb-4">
           Częściowa produkcja - #{order.id}
         </h3>
-        
+
         <div className="mb-4">
           <p className="text-sm text-gray-600 mb-2">
             <strong>{order.component_full_name}</strong>
@@ -61,7 +61,11 @@ export default function PartialProductionModal({ order, show, onCancel, onConfir
           </button>
           <button
             onClick={handleConfirm}
-            disabled={!partialQuantity || parseInt(partialQuantity) <= 0 || parseInt(partialQuantity) > remainingQty}
+            disabled={
+              !partialQuantity ||
+              parseInt(partialQuantity) <= 0 ||
+              parseInt(partialQuantity) > remainingQty
+            }
             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400"
           >
             Zatwierdź produkcję

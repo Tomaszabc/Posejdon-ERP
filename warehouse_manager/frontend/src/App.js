@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Orders from './pages/Order/Orders';
 import Navbar from './components/Navbar';
@@ -29,6 +29,10 @@ function App() {
   const [user, setUser] = useState(undefined);
   const [loading, setLoading] = useState(true);
   const [showChat, setShowChat] = useState(false);
+  const [hasUnreadChat, setHasUnreadChat] = useState(false);
+  const [showChatNotification, setShowChatNotification] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const wsRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('access');
@@ -88,6 +92,30 @@ function App() {
     }
   }, []);
 
+  // WebSocket logic - tylko raz na user
+  useEffect(() => {
+    if (!user) return;
+    wsRef.current = new WebSocket(`${WS_URL}/ws/chat/`);
+    wsRef.current.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'chat' || data.type === 'info') {
+        setChatMessages((msgs) => [...msgs, data]);
+        if (!showChat) {
+          setHasUnreadChat(true);
+          setShowChatNotification(true);
+          setTimeout(() => setShowChatNotification(false), 3000);
+        }
+      }
+    };
+    return () => wsRef.current && wsRef.current.close();
+    // eslint-disable-next-line
+  }, [user]);
+
+  // Gdy otwierasz czat, kasuj powiadomienie
+  useEffect(() => {
+    if (showChat) setHasUnreadChat(false);
+  }, [showChat]);
+
   return (
     <Router>
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-blue-50">
@@ -95,7 +123,6 @@ function App() {
         <main className="flex-1 max-w-full sm:max-w-7xl mx-auto px-2 sm:px-4 pt-20 sm:pt-24 pb-8">
           <Routes>
             <Route path="/login" element={<Login setUser={setUser} />} />
-            {/* Chronione trasy */}
             <Route
               path="/"
               element={
@@ -171,23 +198,45 @@ function App() {
             <Route path="/warehouse/parts-builder" element={<PartsBuilderIndex />} />
             <Route path="/warehouse/products" element={<ProductsAndGoods />} />
             <Route path="/order/:orderId" element={<OrderDetail />} />
-
             <Route path="/warehouse/parts-builder/parts" element={<PartsBuilder />} />
             <Route path="/warehouse/parts-builder/components" element={<ComponentsBuilder />} />
           </Routes>
         </main>
         <Footer />
-         {/* Chat Icon w prawym dolnym rogu */}
-        {user && !showChat && <ChatIcon onClick={() => setShowChat(true)} />}
+        {/* Chat Icon w prawym dolnym rogu */}
+        {user && !showChat && (
+          <ChatIcon onClick={() => setShowChat(true)} hasUnreadChat={hasUnreadChat} />
+        )}
         {/* Okno czatu */}
         {user && showChat && (
-          <div style={{
-            position: "fixed",
-            right: 32,
-            bottom: 110,
-            zIndex: 10001,
-          }}>
-            <ChatBox user={user} onClose={() => setShowChat(false)} />
+          <div
+            style={{
+              position: 'fixed',
+              right: 32,
+              bottom: 110,
+              zIndex: 10001,
+            }}
+          >
+            <ChatBox
+              user={user}
+              onClose={() => setShowChat(false)}
+              showChat={showChat}
+              setHasUnreadChat={setHasUnreadChat}
+              messages={chatMessages}
+              sendMessage={(msg) => {
+                if (wsRef.current && wsRef.current.readyState === 1) {
+                  wsRef.current.send(JSON.stringify({ message: msg }));
+                }
+              }}
+            />
+          </div>
+        )}
+        {/* Powiadomienie na środku ekranu */}
+        {showChatNotification && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+            <div className="bg-blue-600 text-white px-6 py-3 rounded shadow-lg text-lg animate-fade-in">
+              Nowa wiadomość na czacie!
+            </div>
           </div>
         )}
       </div>
