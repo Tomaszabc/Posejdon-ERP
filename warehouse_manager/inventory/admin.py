@@ -4,6 +4,11 @@ from django.contrib.auth.models import User
 from .models import (
     Component, ProductToProduction, PartsBuilder
 )
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render
+from django.db.models import Count
+from django.utils import timezone
+
 
 @admin.register(Component)
 class ComponentAdmin(admin.ModelAdmin):
