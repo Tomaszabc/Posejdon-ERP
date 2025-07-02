@@ -753,3 +753,71 @@ def produce_order_partial(request, order_id):
         return Response({"error": "Zamówienie nie znalezione"}, status=404)
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def dashboard_statistics(request):
+    """
+    Zwraca statystyki dla wykresów na stronie głównej
+    """
+    from django.db.models import Count, Q
+    from django.utils import timezone
+    from datetime import datetime, timedelta
+    
+    now = timezone.now()
+    
+    # Ostatnie 7 dni - dla wykresu słupkowego
+    daily_data = []
+    for i in range(6, -1, -1):
+        date = now - timedelta(days=i)
+        day_start = date.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = day_start + timedelta(days=1)
+        
+        count = ProductToProduction.objects.filter(
+            created_at__gte=day_start,
+            created_at__lt=day_end
+        ).count()
+        
+        daily_data.append({
+            'day': date.strftime('%a'),  # Pon, Wt, Śr, etc.
+            'date': date.strftime('%d.%m'),
+            'count': count
+        })
+    
+    # Ostatnie 6 miesięcy - dla wykresu liniowego
+    monthly_data = []
+    for i in range(5, -1, -1):
+        month_date = now - timedelta(days=30*i)
+        month_start = month_date.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if i == 0:
+            month_end = now
+        else:
+            next_month = month_start.replace(month=month_start.month + 1) if month_start.month < 12 else month_start.replace(year=month_start.year + 1, month=1)
+            month_end = next_month
+        
+        count = ProductToProduction.objects.filter(
+            created_at__gte=month_start,
+            created_at__lt=month_end
+        ).count()
+        
+        monthly_data.append({
+            'month': month_start.strftime('%B'),  # Styczeń, Luty, etc.
+            'short_month': month_start.strftime('%b'),  # Sty, Lut, etc.
+            'count': count
+        })
+    
+    # Dodatkowe statystyki
+    total_orders = ProductToProduction.objects.count()
+    produced_orders = ProductToProduction.objects.filter(is_produced=True).count()
+    pending_orders = total_orders - produced_orders
+    
+    return Response({
+        'daily_orders': daily_data,
+        'monthly_orders': monthly_data,
+        'statistics': {
+            'total_orders': total_orders,
+            'produced_orders': produced_orders,
+            'pending_orders': pending_orders,
+            'production_rate': round((produced_orders / total_orders * 100) if total_orders > 0 else 0, 1)
+        }
+    })
