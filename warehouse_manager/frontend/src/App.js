@@ -95,15 +95,19 @@ function App() {
   // WebSocket logic - tylko raz na user
   useEffect(() => {
     if (!user) return;
-    wsRef.current = new WebSocket(`${WS_URL}/ws/chat/`);
+    const token = localStorage.getItem('access');
+    wsRef.current = new WebSocket(`${WS_URL}/ws/chat/?token=${token}`); 
     wsRef.current.onmessage = (e) => {
       const data = JSON.parse(e.data);
       if (data.type === 'chat' || data.type === 'info') {
         setChatMessages((msgs) => [...msgs, data]);
-        if (!showChat) {
+        if (!showChat && data.username !== user?.username) {
           setHasUnreadChat(true);
           setShowChatNotification(true);
           setTimeout(() => setShowChatNotification(false), 3000);
+        }
+        else {
+          setHasUnreadChat(false); 
         }
       }
     };
