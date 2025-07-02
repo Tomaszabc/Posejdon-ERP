@@ -18,6 +18,8 @@ import OrderDetail from './pages/OrderDetails/OrderDetail';
 import PartsBuilderIndex from './pages/Warehouse/PartsBuilder/PartsBuilderIndex';
 import ComponentsBuilder from './pages/Warehouse/PartsBuilder/ComponentsBuilder';
 import ProductBuilder from './pages/Warehouse/PartsBuilder/ProductBuilder';
+import ChatBox from './components/ChatBox';
+
 
 import ProductionIndex from './pages/Production/ProductionIndex';
 import ComponentProduction from './pages/Production/ComponentProduction';
@@ -174,6 +176,7 @@ function App() {
           </Routes>
         </main>
         <Footer />
+        <ChatBox user={user} />
       </div>
     </Router>
   );

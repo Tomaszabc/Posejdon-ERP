@@ -8,10 +8,12 @@ https://docs.djangoproject.com/en/stable/howto/deployment/asgi/
 """
 
 import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "warehouse_manager.settings")
+from warehouse_manager.routing import application
 from django.core.asgi import get_asgi_application
 from channels.routing import get_default_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "warehouse_manager.settings")
+
 
 django_asgi_app = get_asgi_application()
 
