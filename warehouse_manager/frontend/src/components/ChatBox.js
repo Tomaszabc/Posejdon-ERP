@@ -2,7 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const ROOMS = ["Ogólny", "Biuro", "Magazyn"];
 
-const ChatBox = ({ user, onClose, showChat, setHasUnreadChat, messages, sendMessage, currentRoom, setCurrentRoom }) => {
+const ChatBox = ({
+  user,
+  onClose,
+  showChat,
+  setHasUnreadChat,
+  messages,
+  sendMessage,
+  currentRoom,
+  setCurrentRoom,
+  unreadRooms = {}, // <-- dodaj ten props
+}) => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
 

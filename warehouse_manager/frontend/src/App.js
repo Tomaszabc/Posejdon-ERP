@@ -32,7 +32,11 @@ function App() {
   const [hasUnreadChat, setHasUnreadChat] = useState(false);
   const [showChatNotification, setShowChatNotification] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
-  const [currentRoom, setCurrentRoom] = useState("Ogólny");
+  const [currentRoom, setCurrentRoom] = useState(() => {
+    // Odczytaj z localStorage lub domyślnie "Ogólny"
+    return localStorage.getItem('chatRoom') || "Ogólny";
+  });
+  const [unreadRooms, setUnreadRooms] = useState({}); // roomName: true/false
   const wsRef = useRef(null);
 
   useEffect(() => {
@@ -98,19 +102,26 @@ function App() {
     if (!user) return;
     const token = localStorage.getItem('access');
     if (wsRef.current) wsRef.current.close();
-    setChatMessages([]); // czyść wiadomości przy zmianie pokoju
+    setChatMessages([]);
     wsRef.current = new WebSocket(`${WS_URL}/ws/chat/?token=${token}&room=${encodeURIComponent(currentRoom)}`);
     wsRef.current.onmessage = (e) => {
       const data = JSON.parse(e.data);
       if (data.type === 'chat' || data.type === 'info') {
         setChatMessages((msgs) => [...msgs, data]);
-        if (!showChat && data.username !== user?.username) {
-          setHasUnreadChat(true);
-          setShowChatNotification(true);
-          setTimeout(() => setShowChatNotification(false), 3000);
+        const msgRoom = data.room || currentRoom;
+        // Jeśli wiadomość przyszła do innego pokoju niż aktualnie otwarty
+        if (msgRoom !== currentRoom) {
+          setUnreadRooms((prev) => ({
+            ...prev,
+            [msgRoom]: true,
+          }));
         }
-        else {
-          setHasUnreadChat(false); 
+        // Jeśli przyszła do aktualnego pokoju, a czat jest zamknięty
+        if (!showChat && msgRoom === currentRoom && data.username !== user?.username) {
+          setUnreadRooms((prev) => ({
+            ...prev,
+            [currentRoom]: true,
+          }));
         }
       }
     };
@@ -118,10 +129,30 @@ function App() {
     // eslint-disable-next-line
   }, [user, currentRoom]);
 
+  // Ping na ikonce czatu jeśli jakikolwiek pokój ma nieprzeczytane
+  useEffect(() => {
+    setHasUnreadChat(Object.values(unreadRooms).some(Boolean));
+  }, [unreadRooms]);
+
+  // Po otwarciu czatu lub zmianie pokoju, kasuj ping dla tego pokoju
+  useEffect(() => {
+    if (showChat) {
+      setUnreadRooms((prev) => ({
+        ...prev,
+        [currentRoom]: false,
+      }));
+    }
+  }, [showChat, currentRoom]);
+
   // Gdy otwierasz czat, kasuj powiadomienie
   useEffect(() => {
     if (showChat) setHasUnreadChat(false);
   }, [showChat]);
+
+  // Zapisuj pokój do localStorage przy każdej zmianie
+  useEffect(() => {
+    localStorage.setItem('chatRoom', currentRoom);
+  }, [currentRoom]);
 
   return (
     <Router>
@@ -237,6 +268,7 @@ function App() {
               }}
               currentRoom={currentRoom}
               setCurrentRoom={setCurrentRoom}
+              unreadRooms={unreadRooms}
             />
           </div>
         )}
