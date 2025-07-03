@@ -52,7 +52,7 @@ urlpatterns = [
     path('api/mark-missing-parts-ordered/<int:order_id>/', views.mark_missing_parts_ordered, name='mark-missing-parts-ordered'),
     path('api/production/produce-partial/<int:order_id>/', views.produce_order_partial, name='produce_order_partial'),
     path('api/dashboard-statistics/', views.dashboard_statistics, name='dashboard_statistics'),
-
+    path('api/chat/users/', views.chat_users, name='chat_users'),
 
     # Router na końcu (obsługuje pozostałe ścieżki w tym parts-builder/)
     path('api/', include(router.urls)),

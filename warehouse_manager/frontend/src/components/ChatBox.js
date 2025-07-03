@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const ROOMS = ["Ogólny", "Biuro", "Magazyn"];
 
+
 const ChatBox = ({
   user,
   onClose,
@@ -12,7 +13,10 @@ const ChatBox = ({
   currentRoom,
   setCurrentRoom,
   unreadRooms = {}, // <-- dodaj ten props
+  users = [],
+  
 }) => {
+  const [selectedUser, setSelectedUser] = useState(null);
   // Wczytaj draft z localStorage dla danego pokoju
   const [input, setInput] = useState(() => {
     return localStorage.getItem(`chatDraft_${currentRoom}`) || '';
@@ -38,7 +42,7 @@ const ChatBox = ({
     if (input.trim()) {
       try {
         console.log('Wysyłam wiadomość:', input); // DEBUG
-        sendMessage(input);
+        sendMessage(input, selectedUser);
       } catch (err) {
         console.error('Błąd przy wysyłaniu wiadomości:', err); // DEBUG
         alert('Błąd przy wysyłaniu wiadomości!');
@@ -84,6 +88,40 @@ const ChatBox = ({
         ×
       </button>
       <h4 style={{ textAlign: 'center' }}>Czat wewnętrzny</h4>
+
+<div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+  <button
+    onClick={() => setSelectedUser(null)}
+    style={{
+      fontWeight: !selectedUser ? 'bold' : 'normal',
+      background: !selectedUser ? '#2563eb' : '#eee',
+      color: !selectedUser ? '#fff' : '#333',
+      borderRadius: 8,
+      border: 'none',
+      padding: '4px 10px',
+      cursor: 'pointer',
+    }}
+  >
+    Pokój: {currentRoom}
+  </button>
+  {users.filter(u => u !== user).map(u => (
+    <button
+      key={u}
+      onClick={() => setSelectedUser(u)}
+      style={{
+        fontWeight: selectedUser === u ? 'bold' : 'normal',
+        background: selectedUser === u ? '#2563eb' : '#eee',
+        color: selectedUser === u ? '#fff' : '#333',
+        borderRadius: 8,
+        border: 'none',
+        padding: '4px 10px',
+        cursor: 'pointer',
+      }}
+    >
+      {u}
+    </button>
+  ))}
+</div>
       {/* Zakładki pokojów */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10, gap: 8 }}>
         {ROOMS.map((room) => (
@@ -103,19 +141,7 @@ const ChatBox = ({
             }}
           >
             {room}
-            {/* Ping zawsze widoczny na każdej zakładce */}
-            <span style={{
-              position: 'absolute',
-              top: 2,
-              right: 2,
-              display: 'flex',
-              height: 12,
-              width: 12,
-              pointerEvents: 'none',
-            }}>
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-            </span>
+
           </button>
         ))}
       </div>

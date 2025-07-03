@@ -14,6 +14,8 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.contrib import messages
 from django.http import JsonResponse
+from django.contrib.auth import get_user_model
+
 
 from rest_framework import viewsets, generics
 
@@ -824,3 +826,13 @@ def dashboard_statistics(request):
             'production_rate': round((produced_orders / total_orders * 100) if total_orders > 0 else 0, 1)
         }
     })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def chat_users(request):
+    """
+    Zwraca listę nazw użytkowników do czatu (bez Ciebie).
+    """
+    User = get_user_model()
+    users = User.objects.exclude(pk=request.user.pk).values_list('username', flat=True)
+    return Response({'users': list(users)})

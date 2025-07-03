@@ -38,6 +38,21 @@ function App() {
   });
   const [unreadRooms, setUnreadRooms] = useState({}); // roomName: true/false
   const wsRef = useRef(null);
+  const [users, setUsers] = useState([]); // <-- DODAJ TO
+
+  // Pobieranie listy użytkowników (przykład)
+  useEffect(() => {
+    if (!user) return;
+    fetch(`${API_URL}/api/chat/users/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access')}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(data => setUsers(data.users || []))
+      .catch(() => setUsers([]));
+  }, [user]);
 
   useEffect(() => {
     const token = localStorage.getItem('access');
@@ -279,6 +294,7 @@ function App() {
                 currentRoom={currentRoom}
                 setCurrentRoom={setCurrentRoom}
                 unreadRooms={unreadRooms}
+                users={users}
               />
             </div>
           </div>
