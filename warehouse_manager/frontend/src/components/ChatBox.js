@@ -11,13 +11,24 @@ const ChatBox = ({ user, onClose, showChat, setHasUnreadChat, messages, sendMess
   const handleSend = (e) => {
     e.preventDefault();
     if (input.trim()) {
-      sendMessage(input);
+      try {
+        console.log('Wysyłam wiadomość:', input); // DEBUG
+        sendMessage(input);
+      } catch (err) {
+        console.error('Błąd przy wysyłaniu wiadomości:', err); // DEBUG
+        alert('Błąd przy wysyłaniu wiadomości!');
+      }
       setInput('');
+    } else {
+      console.log('Nie można wysłać pustej wiadomości'); // DEBUG
     }
   };
 
-  if (!user) return null;
-
+  if (!user) {
+    console.log('Brak użytkownika, czat niewidoczny'); // DEBUG
+    return null;
+  }
+  
   return (
     <div
       style={{

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from .models import (
-    Component, ProductToProduction, PartsBuilder
+    Component, ProductToProduction, PartsBuilder, ChatMessage  # dodaj ChatMessage
 )
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
@@ -208,6 +208,13 @@ class PartsBuilderAdmin(admin.ModelAdmin):
             return f"{total:.2f} PLN"
         return "Brak ceny materiału"
     total_cost_display.short_description = "Koszt materiału na 1 szt."
+
+@admin.register(ChatMessage)
+class ChatMessageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'message', 'timestamp')
+    list_filter = ('user', 'timestamp')
+    search_fields = ('message', 'user__username')
+    readonly_fields = ('timestamp',)
 
 # Polskie nazwy kolumn w tabeli
 Component._meta.get_field('r').verbose_name = "Typ"
