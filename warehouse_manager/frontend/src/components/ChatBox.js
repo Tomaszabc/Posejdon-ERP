@@ -13,8 +13,21 @@ const ChatBox = ({
   setCurrentRoom,
   unreadRooms = {}, // <-- dodaj ten props
 }) => {
-  const [input, setInput] = useState('');
+  // Wczytaj draft z localStorage dla danego pokoju
+  const [input, setInput] = useState(() => {
+    return localStorage.getItem(`chatDraft_${currentRoom}`) || '';
+  });
   const messagesEndRef = useRef(null);
+
+  // Zmieniaj draft w localStorage przy każdej zmianie inputa
+  useEffect(() => {
+    localStorage.setItem(`chatDraft_${currentRoom}`, input);
+  }, [input, currentRoom]);
+
+  // Po zmianie pokoju wczytaj draft dla nowego pokoju
+  useEffect(() => {
+    setInput(localStorage.getItem(`chatDraft_${currentRoom}`) || '');
+  }, [currentRoom]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -31,6 +44,7 @@ const ChatBox = ({
         alert('Błąd przy wysyłaniu wiadomości!');
       }
       setInput('');
+      localStorage.removeItem(`chatDraft_${currentRoom}`);
     } else {
       console.log('Nie można wysłać pustej wiadomości'); // DEBUG
     }
