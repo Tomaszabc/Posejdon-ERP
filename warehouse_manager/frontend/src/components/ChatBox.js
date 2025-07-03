@@ -75,9 +75,23 @@ const ChatBox = ({ user, onClose, showChat, setHasUnreadChat, messages, sendMess
               fontWeight: currentRoom === room ? 'bold' : 'normal',
               cursor: 'pointer',
               marginRight: 4,
+              position: 'relative',
             }}
           >
             {room}
+            {/* Ping zawsze widoczny na każdej zakładce */}
+            <span style={{
+              position: 'absolute',
+              top: 2,
+              right: 2,
+              display: 'flex',
+              height: 12,
+              width: 12,
+              pointerEvents: 'none',
+            }}>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
           </button>
         ))}
       </div>
