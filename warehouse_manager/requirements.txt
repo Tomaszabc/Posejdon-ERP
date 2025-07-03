@@ -13,3 +13,4 @@ django-jazzmin
 django-grappelli==3.0.7
 python-dotenv
 djangorestframework-simplejwt
+dj-database-url
