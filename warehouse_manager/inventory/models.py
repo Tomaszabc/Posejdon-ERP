@@ -201,3 +201,22 @@ class ChatMessage(models.Model):
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     chat_group = models.CharField(max_length=32, default="General")
+    
+    # Nowe pola dla prywatnych wiadomości
+    recipient = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True, 
+        related_name='received_messages',
+        help_text="Odbiorca wiadomości prywatnej (None = wiadomość publiczna)"
+    )
+    is_private = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['-timestamp']
+        
+    def __str__(self):
+        if self.is_private:
+            return f"Prywatna: {self.user.username} → {self.recipient.username}: {self.message[:50]}"
+        return f"{self.chat_group}: {self.user.username}: {self.message[:50]}"

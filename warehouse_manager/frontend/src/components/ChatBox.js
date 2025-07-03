@@ -13,8 +13,9 @@ const ChatBox = ({
   setCurrentRoom,
   unreadRooms = {},
   users = [],
+  selectedUser,
+  setSelectedUser,
 }) => {
-  const [selectedUser, setSelectedUser] = useState(null);
   const [input, setInput] = useState(() => {
     return localStorage.getItem(`chatDraft_${currentRoom}`) || '';
   });
@@ -22,13 +23,15 @@ const ChatBox = ({
 
   // Zmieniaj draft w localStorage przy każdej zmianie inputa
   useEffect(() => {
-    localStorage.setItem(`chatDraft_${currentRoom}`, input);
-  }, [input, currentRoom]);
+    const storageKey = selectedUser ? `chatDraft_user_${selectedUser}` : `chatDraft_${currentRoom}`;
+    localStorage.setItem(storageKey, input);
+  }, [input, currentRoom, selectedUser]);
 
   // Po zmianie pokoju wczytaj draft dla nowego pokoju
   useEffect(() => {
-    setInput(localStorage.getItem(`chatDraft_${currentRoom}`) || '');
-  }, [currentRoom]);
+    const storageKey = selectedUser ? `chatDraft_user_${selectedUser}` : `chatDraft_${currentRoom}`;
+    setInput(localStorage.getItem(storageKey) || '');
+  }, [currentRoom, selectedUser]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -38,16 +41,15 @@ const ChatBox = ({
     e.preventDefault();
     if (input.trim()) {
       try {
-        console.log('Wysyłam wiadomość:', input); // DEBUG
+        console.log('Wysyłam wiadomość:', input);
         sendMessage(input, selectedUser);
       } catch (err) {
-        console.error('Błąd przy wysyłaniu wiadomości:', err); // DEBUG
+        console.error('Błąd przy wysyłaniu wiadomości:', err);
         alert('Błąd przy wysyłaniu wiadomości!');
       }
       setInput('');
-      localStorage.removeItem(`chatDraft_${currentRoom}`);
-    } else {
-      console.log('Nie można wysłać pustej wiadomości'); // DEBUG
+      const storageKey = selectedUser ? `chatDraft_user_${selectedUser}` : `chatDraft_${currentRoom}`;
+      localStorage.removeItem(storageKey);
     }
   };
 
@@ -104,7 +106,7 @@ const ChatBox = ({
               fontSize: 14,
             }}
           >
-            💬
+            {selectedUser ? '👤' : '💬'}
           </div>
           <h4 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
             {selectedUser ? `Czat z ${selectedUser}` : `Pokój: ${currentRoom}`}
@@ -165,22 +167,35 @@ const ChatBox = ({
                 }}
               >
                 {room}
+                {unreadRooms[room] && (
+                  <span style={{
+                    marginLeft: 4,
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: '#ff4444',
+                    display: 'inline-block'
+                  }} />
+                )}
               </button>
             ))}
           </div>
         </div>
 
         {/* User Selection */}
-        {users.filter(u => u !== user).length > 0 && (
+        {users.filter(u => u !== user.username).length > 0 && (
           <div>
             <div style={{ fontSize: 12, color: '#65676b', marginBottom: 6, fontWeight: 600 }}>
               UŻYTKOWNICY
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {users.filter(u => u !== user).map(u => (
+              {users.filter(u => u !== user.username).map(u => (
                 <button
                   key={u}
-                  onClick={() => setSelectedUser(u)}
+                  onClick={() => {
+                    setSelectedUser(u);
+                    setCurrentRoom(''); // Wyczyść pokój gdy wybierasz użytkownika
+                  }}
                   style={{
                     padding: '6px 12px',
                     borderRadius: 20,
@@ -194,6 +209,16 @@ const ChatBox = ({
                   }}
                 >
                   {u}
+                  {unreadRooms[`user_${u}`] && (
+                    <span style={{
+                      marginLeft: 4,
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      background: '#ff4444',
+                      display: 'inline-block'
+                    }} />
+                  )}
                 </button>
               ))}
             </div>
@@ -254,14 +279,26 @@ const ChatBox = ({
                   ? 'linear-gradient(135deg, #0084ff, #00a0ff)' 
                   : msg.type === 'chat' 
                     ? '#f0f0f0' 
-                    : '#e8f5e8',
+                    : msg.type === 'error'
+                      ? '#fee2e2'
+                      : '#e8f5e8',
                 color: isMyMessage(msg) ? 'white' : '#1c1e21',
                 fontSize: 14,
                 lineHeight: 1.4,
                 wordBreak: 'break-word',
               }}
             >
-              {msg.type !== 'chat' && (
+              {msg.type === 'error' && (
+                <div style={{ 
+                  fontSize: 11, 
+                  color: '#dc2626',
+                  marginBottom: 2,
+                  fontWeight: 'bold'
+                }}>
+                  Błąd
+                </div>
+              )}
+              {msg.type !== 'chat' && msg.type !== 'error' && (
                 <div style={{ 
                   fontSize: 11, 
                   opacity: 0.7, 
@@ -315,7 +352,7 @@ const ChatBox = ({
                 background: 'transparent',
                 boxSizing: 'border-box'
               }}
-              placeholder="Napisz wiadomość..."
+              placeholder={selectedUser ? `Napisz do ${selectedUser}...` : "Napisz wiadomość..."}
             />
           </div>
           <button 
