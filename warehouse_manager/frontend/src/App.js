@@ -250,26 +250,37 @@ function App() {
           <div
             style={{
               position: 'fixed',
-              right: 32,
-              bottom: 110,
+              inset: 0,
               zIndex: 10001,
+              background: 'rgba(0,0,0,0.08)', // lekko przyciemnij tło
             }}
+            onClick={() => setShowChat(false)}
           >
-            <ChatBox
-              user={user}
-              onClose={() => setShowChat(false)}
-              showChat={showChat}
-              setHasUnreadChat={setHasUnreadChat}
-              messages={chatMessages}
-              sendMessage={(msg) => {
-                if (wsRef.current && wsRef.current.readyState === 1) {
-                  wsRef.current.send(JSON.stringify({ message: msg }));
-                }
+            <div
+              style={{
+                position: 'fixed',
+                right: 32,
+                bottom: 110,
+                zIndex: 10002,
               }}
-              currentRoom={currentRoom}
-              setCurrentRoom={setCurrentRoom}
-              unreadRooms={unreadRooms}
-            />
+              onClick={e => e.stopPropagation()} // nie zamykaj po kliknięciu w ChatBox
+            >
+              <ChatBox
+                user={user}
+                onClose={() => setShowChat(false)}
+                showChat={showChat}
+                setHasUnreadChat={setHasUnreadChat}
+                messages={chatMessages}
+                sendMessage={(msg) => {
+                  if (wsRef.current && wsRef.current.readyState === 1) {
+                    wsRef.current.send(JSON.stringify({ message: msg }));
+                  }
+                }}
+                currentRoom={currentRoom}
+                setCurrentRoom={setCurrentRoom}
+                unreadRooms={unreadRooms}
+              />
+            </div>
           </div>
         )}
        
