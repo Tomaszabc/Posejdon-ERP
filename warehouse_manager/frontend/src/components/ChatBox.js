@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const ChatBox = ({ user, onClose, showChat, setHasUnreadChat, messages, sendMessage }) => {
+const ROOMS = ["Ogólny", "Biuro", "Magazyn"];
+
+const ChatBox = ({ user, onClose, showChat, setHasUnreadChat, messages, sendMessage, currentRoom, setCurrentRoom }) => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
 
@@ -58,6 +60,27 @@ const ChatBox = ({ user, onClose, showChat, setHasUnreadChat, messages, sendMess
         ×
       </button>
       <h4 style={{ textAlign: 'center' }}>Czat wewnętrzny</h4>
+      {/* Zakładki pokojów */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10, gap: 8 }}>
+        {ROOMS.map((room) => (
+          <button
+            key={room}
+            onClick={() => setCurrentRoom(room)}
+            style={{
+              padding: '4px 14px',
+              borderRadius: 8,
+              border: 'none',
+              background: currentRoom === room ? '#2563eb' : '#eee',
+              color: currentRoom === room ? '#fff' : '#333',
+              fontWeight: currentRoom === room ? 'bold' : 'normal',
+              cursor: 'pointer',
+              marginRight: 4,
+            }}
+          >
+            {room}
+          </button>
+        ))}
+      </div>
       <div
         style={{
           height: 200,

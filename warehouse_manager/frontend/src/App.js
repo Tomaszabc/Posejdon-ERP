@@ -32,6 +32,7 @@ function App() {
   const [hasUnreadChat, setHasUnreadChat] = useState(false);
   const [showChatNotification, setShowChatNotification] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
+  const [currentRoom, setCurrentRoom] = useState("Ogólny");
   const wsRef = useRef(null);
 
   useEffect(() => {
@@ -92,11 +93,13 @@ function App() {
     }
   }, []);
 
-  // WebSocket logic - tylko raz na user
+  // WebSocket logic - na user i currentRoom
   useEffect(() => {
     if (!user) return;
     const token = localStorage.getItem('access');
-    wsRef.current = new WebSocket(`${WS_URL}/ws/chat/?token=${token}`); 
+    if (wsRef.current) wsRef.current.close();
+    setChatMessages([]); // czyść wiadomości przy zmianie pokoju
+    wsRef.current = new WebSocket(`${WS_URL}/ws/chat/?token=${token}&room=${encodeURIComponent(currentRoom)}`);
     wsRef.current.onmessage = (e) => {
       const data = JSON.parse(e.data);
       if (data.type === 'chat' || data.type === 'info') {
@@ -113,7 +116,7 @@ function App() {
     };
     return () => wsRef.current && wsRef.current.close();
     // eslint-disable-next-line
-  }, [user]);
+  }, [user, currentRoom]);
 
   // Gdy otwierasz czat, kasuj powiadomienie
   useEffect(() => {
@@ -232,17 +235,12 @@ function App() {
                   wsRef.current.send(JSON.stringify({ message: msg }));
                 }
               }}
+              currentRoom={currentRoom}
+              setCurrentRoom={setCurrentRoom}
             />
           </div>
         )}
-        {/* Powiadomienie na środku ekranu */}
-        {showChatNotification && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-            <div className="bg-blue-600 text-white px-6 py-3 rounded shadow-lg text-lg animate-fade-in">
-              Nowa wiadomość na czacie!
-            </div>
-          </div>
-        )}
+       
       </div>
     </Router>
   );
