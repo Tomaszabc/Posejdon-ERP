@@ -548,6 +548,9 @@ export default function ComponentProduction() {
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
                     Nr
                   </th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">
+                    Utworzył
+                  </th>
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                     Data zlecenia
                   </th>
@@ -599,6 +602,9 @@ export default function ComponentProduction() {
                   >
                     <td className="px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
                       {order.id}
+                    </td>
+                    <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
+                      {order.created_by_username || <span className="text-gray-400 italic">Brak</span>}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
                       {new Date(order.created_at).toLocaleDateString('pl-PL', {
