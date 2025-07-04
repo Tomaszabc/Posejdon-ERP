@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from .models import (
-    Component, ProductToProduction, PartsBuilder, ChatMessage  # dodaj ChatMessage
+    Component, ProductToProduction, PartsBuilder, ChatMessage, ChatMessageRead
 )
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
@@ -215,6 +215,11 @@ class ChatMessageAdmin(admin.ModelAdmin):
     list_filter = ('user', 'timestamp')
     search_fields = ('message', 'user__username')
     readonly_fields = ('timestamp',)
+
+@admin.register(ChatMessageRead)
+class ChatMessageReadAdmin(admin.ModelAdmin):
+    list_display = ('user', 'message', 'read_at')
+    search_fields = ('user__username', 'message__id')
 
 # Polskie nazwy kolumn w tabeli
 Component._meta.get_field('r').verbose_name = "Typ"

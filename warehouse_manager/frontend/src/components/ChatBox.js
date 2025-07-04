@@ -194,44 +194,50 @@ const ChatBox = ({
             <div style={{ fontSize: 12, color: '#65676b', marginBottom: 6, fontWeight: 600 }}>
               UŻYTKOWNICY
             </div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <select
+              value={selectedUser || ''}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSelectedUser(val || null);
+                setCurrentRoom(''); // Wyczyść pokój gdy wybierasz użytkownika
+              }}
+              style={{
+                width: '100%',
+                padding: '6px 12px',
+                borderRadius: 20,
+                border: '1px solid #e4e6ea',
+                fontSize: 12,
+                fontWeight: 500,
+                color: '#65676b',
+                background: '#fff',
+                cursor: 'pointer',
+                marginBottom: 4,
+              }}
+            >
+              <option value="">-- Wybierz użytkownika --</option>
               {users
                 .filter((u) => u !== user.username)
                 .map((u) => (
-                  <button
-                    key={u}
-                    onClick={() => {
-                      setSelectedUser(u);
-                      setCurrentRoom(''); // Wyczyść pokój gdy wybierasz użytkownika
-                    }}
-                    style={{
-                      padding: '6px 12px',
-                      borderRadius: 20,
-                      border: 'none',
-                      background: selectedUser === u ? '#0084ff' : '#e4e6ea',
-                      color: selectedUser === u ? '#fff' : '#65676b',
-                      fontSize: 12,
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                    }}
-                  >
+                  <option key={u} value={u}>
                     {u}
-                    {unreadRooms[`user_${u}`] && (
-                      <span
-                        style={{
-                          marginLeft: 4,
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          background: '#ff4444',
-                          display: 'inline-block',
-                        }}
-                      />
-                    )}
-                  </button>
+                    {unreadRooms[`user_${u}`] ? ' •' : ''}
+                  </option>
                 ))}
-            </div>
+            </select>
+            {/* Kropka nieprzeczytanych wiadomości obok selecta */}
+            {selectedUser && unreadRooms[`user_${selectedUser}`] && (
+              <span
+                style={{
+                  marginLeft: 8,
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: '#ff4444',
+                  display: 'inline-block',
+                  verticalAlign: 'middle',
+                }}
+              />
+            )}
           </div>
         )}
       </div>
