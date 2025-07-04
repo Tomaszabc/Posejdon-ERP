@@ -189,7 +189,7 @@ export default function ProductBuilder() {
             />
             {productInputFocused && !selectedProduct && (
               <ul className="absolute z-10 bg-white border w-full rounded shadow max-h-48 overflow-y-auto">
-                {filteredProducts.slice(0, 20).map((prod) => (
+                {filteredProducts.map((prod) => (
                   <li
                     key={prod.id}
                     className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
@@ -239,7 +239,7 @@ export default function ProductBuilder() {
                       )
                     : modules
                   )
-                    .slice(0, 20)
+                    
                     .map((mod) => (
                       <li
                         key={mod.id}

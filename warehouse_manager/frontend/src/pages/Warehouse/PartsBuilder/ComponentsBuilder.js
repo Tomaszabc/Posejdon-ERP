@@ -179,7 +179,7 @@ export default function ComponentsBuilder() {
                       )
                   : components.filter((comp) => comp.r === 'Towar')
                 )
-                  .slice(0, 20)
+                  
                   .map((comp) => (
                     <li
                       key={comp.id}
@@ -232,7 +232,7 @@ export default function ComponentsBuilder() {
                         )
                     : materials.filter((mat) => mat.r === 'Materiał')
                   )
-                    .slice(0, 20)
+                    
                     .map((mat) => (
                       <li
                         key={mat.id}

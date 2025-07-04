@@ -185,7 +185,7 @@ export default function PartsBuilder() {
                       .filter((prod) =>
                         prod.full_name.toLowerCase().includes(productSearch.toLowerCase())
                       )
-                      .slice(0, 20) // Limit podpowiedzi do 20
+                      
                       .map((prod) => (
                         <li
                           key={prod.id}
@@ -199,7 +199,7 @@ export default function PartsBuilder() {
                           {prod.full_name}
                         </li>
                       ))
-                  : filteredProducts.slice(0, 20).map((prod) => (
+                  : filteredProducts.map((prod) => (
                       <li
                         key={prod.id}
                         className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
