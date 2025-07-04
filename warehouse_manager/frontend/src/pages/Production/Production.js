@@ -8,6 +8,9 @@ import ConfirmProductionModal from './ConfirmProductionModal';
 import UndoSuccessModal from '../../components/modals/UndoSuccessModal';
 import ErrorModal from '../../components/modals/MissingErrorModal'; // dostosuj ścieżkę
 import { API_URL, WS_URL } from '../../config';
+import MakeSelfOrder from "./MakeSelfOrder";
+import OrderConfirmModal from "../../components/modals/OrderConfirmModal";
+
 
 export default function Production() {
   // States
@@ -33,6 +36,19 @@ export default function Production() {
   const ws = useRef(null);
   const [components, setComponents] = useState([]);
   const [ignacyOrders, setIgnacyOrders] = useState([]);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [orderData, setOrderData] = useState(null);
+
+  const handleOrderSubmit = (form) => {
+    setOrderData(form);
+    setShowConfirm(true);
+  };
+    // Funkcja potwierdzająca zamówienie (np. POST do API)
+  const handleConfirm = () => {
+    // ...wyślij orderData do API...
+    setShowConfirm(false);
+    setOrderData(null);
+  };
 
   useEffect(() => {
     ws.current = new window.WebSocket(`${WS_URL}/ws/warehouse/`);
@@ -305,6 +321,10 @@ export default function Production() {
   return (
     <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <MakeSelfOrder
+          components={components}
+          onSubmit={handleOrderSubmit} // <-- tylko ta linia!
+        />
         <OrdersToProduceSection
           orders={orders}
           loading={loading}
@@ -349,6 +369,15 @@ export default function Production() {
         onOrderMissing={orderMissingComponents}
         missingPartsAlreadyOrdered={errorModal.missingPartsAlreadyOrdered}
       />
+      {showConfirm && orderData && (
+        <OrderConfirmModal
+          show={showConfirm}
+          order={orderData}
+          onCancel={() => setShowConfirm(false)}
+          onConfirm={handleConfirm}
+          components={components} // <-- dodaj to, jeśli modal tego wymaga!
+        />
+      )}
     </div>
   );
 }
