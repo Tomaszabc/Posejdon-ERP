@@ -604,7 +604,9 @@ export default function ComponentProduction() {
                       {order.id}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-                      {order.created_by_username || <span className="text-gray-400 italic">Brak</span>}
+                      {order.created_by_username || (
+                        <span className="text-gray-400 italic">Brak</span>
+                      )}
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
                       {new Date(order.created_at).toLocaleDateString('pl-PL', {
