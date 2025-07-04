@@ -402,7 +402,7 @@ def produce_product_to_production(request, order_id):
             qty_to_substract = part.quantity_needed * remaining_quantity
             material.stock -= qty_to_substract
             material.save()
-             # --- DODAJ TO PO ZMIANIE STANU ---
+
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             "warehouse",

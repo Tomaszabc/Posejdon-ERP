@@ -21,12 +21,14 @@ HEADLESS_FRONTEND_URLS = {
     "socialaccount_login_error": "http://localhost:3000",
 }
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://192.168.55.75:3000", "http://192.168.55.128:3000", "http://192.168.55.91:3000"]  # lub Twój port
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8000", "http://localhost:3000", "http://192.168.55.75:3000", "http://192.168.55.128:3000", "http://192.168.55.91:3000"]  # lub Twój port
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  "http://192.168.55.75:3000", "http://192.168.55.128:3000", "http://192.168.55.91:3000"  # jeśli React działa lokalnie
+    "http://localhost:3000",  "http://192.168.55.75:3000", "http://192.168.55.128:3000", "http://192.168.55.91:3000", "http://127.0.0.1:3000"  # jeśli React działa lokalnie
     # Dodaj tu inne domeny frontendu, jeśli masz (np. produkcyjne)
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 

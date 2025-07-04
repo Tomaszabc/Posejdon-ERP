@@ -40,10 +40,25 @@ export default function Production() {
       const msg = JSON.parse(event.data);
       if (msg.action === 'refresh') {
         fetchOrders();
+        fetchIgnacyOrders();
       }
     };
     return () => ws.current && ws.current.close();
   }, []);
+
+  // Dodaj funkcję fetchIgnacyOrders:
+const fetchIgnacyOrders = () => {
+  const token = localStorage.getItem('access');
+  fetch(`${API_URL}/api/order-list-for-modules-production-previewing-components-production/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => setIgnacyOrders(data))
+    .catch(() => setIgnacyOrders([]));
+};
 
   // Effect do filtrowania
   const filteredOrders = orders
@@ -86,6 +101,7 @@ export default function Production() {
   // Effects
   useEffect(() => {
     fetchOrders();
+    fetchIgnacyOrders();
   }, []);
 
   useEffect(() => {
@@ -142,7 +158,16 @@ export default function Production() {
   const confirmProduce = () => {
     if (!orderToConfirm) return;
 
-    fetch(`/api/production/produce/${orderToConfirm.id}/`, { method: 'POST' })
+    const token = localStorage.getItem('access');
+      fetch(`${API_URL}/api/production/produce/${orderToConfirm.id}/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : '',
+      'X-Requested-With': 'XMLHttpRequest',
+    },
+    // credentials: 'include', // jeśli używasz cookies/sesji
+  })
       .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
       .then(({ ok, data }) => {
         if (!ok) {
