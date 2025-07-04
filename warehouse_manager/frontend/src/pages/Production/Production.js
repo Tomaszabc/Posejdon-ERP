@@ -8,9 +8,8 @@ import ConfirmProductionModal from './ConfirmProductionModal';
 import UndoSuccessModal from '../../components/modals/UndoSuccessModal';
 import ErrorModal from '../../components/modals/MissingErrorModal'; // dostosuj ścieżkę
 import { API_URL, WS_URL } from '../../config';
-import MakeSelfOrder from "./MakeSelfOrder";
-import OrderConfirmModal from "../../components/modals/OrderConfirmModal";
-
+import MakeSelfOrder from './MakeSelfOrder';
+import OrderConfirmModal from '../../components/modals/OrderConfirmModal';
 
 export default function Production() {
   // States
@@ -306,66 +305,66 @@ export default function Production() {
   console.log('Aktualny stan ignacyOrders:', ignacyOrders);
 
   return (
-  <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-    {/* Grid 2x2 na desktopie, stack na mobile */}
-    <div className="grid grid-cols-1 xl:grid-cols-10 gap-6">
-      {/* 1. Górny lewy - 30% */}
-      <div className="xl:col-span-3">
-        <MakeSelfOrder components={components} />
+    <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+      {/* Grid 2x2 na desktopie, stack na mobile */}
+      <div className="grid grid-cols-1 xl:grid-cols-10 gap-6">
+        {/* 1. Górny lewy - 30% */}
+        <div className="xl:col-span-3">
+          <MakeSelfOrder components={components} />
+        </div>
+
+        {/* 2. Górny prawy - 70% */}
+        <div className="xl:col-span-7">
+          <OrdersToProduceSection
+            orders={orders}
+            loading={loading}
+            onProduce={handleAskConfirmProduce}
+          />
+        </div>
+
+        {/* 3. Dolny lewy */}
+        <div className="xl:col-span-5">
+          <InfoForProductionModulesFromProductionComponents ignacyOrders={ignacyOrders} />
+        </div>
+
+        {/* 4. Dolny prawy */}
+        <div className="xl:col-span-5">
+          <ProducedOrdersSection
+            producedOrders={producedOrders}
+            onUndo={handleUndoProduce}
+            showFilters={showFilters}
+            setShowFilters={setShowFilters}
+            filters={filters}
+            handleFilterChange={handleFilterChange}
+            handleClearFilters={handleClearFilters}
+            ORDERS_LIMIT={ORDERS_LIMIT}
+          />
+        </div>
       </div>
 
-      {/* 2. Górny prawy - 70% */}
-      <div className="xl:col-span-7">
-        <OrdersToProduceSection
-          orders={orders}
-          loading={loading}
-          onProduce={handleAskConfirmProduce}
-        />
-      </div>
-
-      {/* 3. Dolny lewy */}
-      <div className="xl:col-span-5">
-        <InfoForProductionModulesFromProductionComponents ignacyOrders={ignacyOrders} />
-      </div>
-
-      {/* 4. Dolny prawy */}
-      <div className="xl:col-span-5">
-        <ProducedOrdersSection
-          producedOrders={producedOrders}
-          onUndo={handleUndoProduce}
-          showFilters={showFilters}
-          setShowFilters={setShowFilters}
-          filters={filters}
-          handleFilterChange={handleFilterChange}
-          handleClearFilters={handleClearFilters}
-          ORDERS_LIMIT={ORDERS_LIMIT}
-        />
-      </div>
+      {/* Modalne okna */}
+      <ConfirmProductionModal
+        order={orderToConfirm}
+        show={showConfirmModal}
+        onCancel={cancelConfirmProduce}
+        onConfirm={confirmProduce}
+      />
+      <UndoModal
+        order={orderToUndo}
+        show={showUndoModal}
+        onCancel={cancelUndoProduce}
+        onConfirm={confirmUndoProduce}
+      />
+      <SuccessModal show={showSuccess} />
+      <UndoSuccessModal show={showUndoSuccess} />
+      <ErrorModal
+        show={errorModal.show}
+        message={errorModal.message}
+        missing={errorModal.missing}
+        onClose={() => setErrorModal({ show: false, message: '', missing: [] })}
+        onOrderMissing={orderMissingComponents}
+        missingPartsAlreadyOrdered={errorModal.missingPartsAlreadyOrdered}
+      />
     </div>
-
-    {/* Modalne okna */}
-    <ConfirmProductionModal
-      order={orderToConfirm}
-      show={showConfirmModal}
-      onCancel={cancelConfirmProduce}
-      onConfirm={confirmProduce}
-    />
-    <UndoModal
-      order={orderToUndo}
-      show={showUndoModal}
-      onCancel={cancelUndoProduce}
-      onConfirm={confirmUndoProduce}
-    />
-    <SuccessModal show={showSuccess} />
-    <UndoSuccessModal show={showUndoSuccess} />
-    <ErrorModal
-      show={errorModal.show}
-      message={errorModal.message}
-      missing={errorModal.missing}
-      onClose={() => setErrorModal({ show: false, message: '', missing: [] })}
-      onOrderMissing={orderMissingComponents}
-      missingPartsAlreadyOrdered={errorModal.missingPartsAlreadyOrdered}
-    />
-  </div>
-);
+  );
 }

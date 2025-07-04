@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { API_URL } from "../../config";
-import ConfirmProductionModal from "./ConfirmProductionModal";
+import React, { useState, useEffect } from 'react';
+import { API_URL } from '../../config';
+import ConfirmProductionModal from './ConfirmProductionModal';
 
 export default function MakeSelfOrder({ components: propsComponents = [], onSubmit }) {
   const [form, setForm] = useState({
-    component: "",
+    component: '',
     quantity: 1,
-    uwagi: "",
+    uwagi: '',
     pilne: false,
   });
-  const [componentSearch, setComponentSearch] = useState("");
+  const [componentSearch, setComponentSearch] = useState('');
   const [componentInputFocused, setComponentInputFocused] = useState(false);
   const [errors, setErrors] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -21,7 +21,7 @@ export default function MakeSelfOrder({ components: propsComponents = [], onSubm
     if (!propsComponents || propsComponents.length === 0) {
       fetch(`${API_URL}/api/components-for-order/`)
         .then((res) => res.json())
-        .then((data) => setComponents(data.filter((c) => c.r === "Towar" || c.r === "Produkt")));
+        .then((data) => setComponents(data.filter((c) => c.r === 'Towar' || c.r === 'Produkt')));
     } else {
       setComponents(propsComponents);
     }
@@ -31,15 +31,15 @@ export default function MakeSelfOrder({ components: propsComponents = [], onSubm
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = [];
-    if (!form.component) newErrors.push("Wybierz moduł.");
-    if (!form.quantity || form.quantity < 1) newErrors.push("Podaj ilość większą od zera.");
+    if (!form.component) newErrors.push('Wybierz moduł.');
+    if (!form.quantity || form.quantity < 1) newErrors.push('Podaj ilość większą od zera.');
     setErrors(newErrors);
     if (newErrors.length === 0) {
       setShowConfirmModal(true);
@@ -50,13 +50,13 @@ export default function MakeSelfOrder({ components: propsComponents = [], onSubm
   const handleConfirmSubmit = () => {
     setShowConfirmModal(false);
     setErrors([]);
-    const token = localStorage.getItem("access");
+    const token = localStorage.getItem('access');
     const headers = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    if (token) headers['Authorization'] = `Bearer ${token}`;
     fetch(`${API_URL}/api/product-to-production/`, {
-      method: "POST",
+      method: 'POST',
       headers,
       body: JSON.stringify({
         component: form.component,
@@ -69,24 +69,22 @@ export default function MakeSelfOrder({ components: propsComponents = [], onSubm
       .then(({ status, data }) => {
         if (status === 201) {
           setShowSuccess(true);
-          setForm({ component: "", quantity: 1, uwagi: "", pilne: false });
-          setComponentSearch("");
+          setForm({ component: '', quantity: 1, uwagi: '', pilne: false });
+          setComponentSearch('');
           setTimeout(() => setShowSuccess(false), 1200);
           if (onSubmit) onSubmit(form); // callback do odświeżenia listy, jeśli przekazany
         } else {
-          setErrors([data.error || "Błąd podczas dodawania zlecenia."]);
+          setErrors([data.error || 'Błąd podczas dodawania zlecenia.']);
         }
       })
       .catch(() => {
-        setErrors(["Błąd połączenia z serwerem."]);
+        setErrors(['Błąd połączenia z serwerem.']);
       });
   };
 
   return (
     <section className=" bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">
-        Zleć produkcję:
-      </h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-2">Zleć produkcję:</h1>
       {errors.length > 0 && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           <ul className="list-disc pl-5">
@@ -108,13 +106,13 @@ export default function MakeSelfOrder({ components: propsComponents = [], onSubm
               placeholder="Wpisz nazwę lub SKU modułu..."
               value={
                 form.component
-                  ? components.find((c) => String(c.id) === String(form.component))
-                      ?.full_name || componentSearch
+                  ? components.find((c) => String(c.id) === String(form.component))?.full_name ||
+                    componentSearch
                   : componentSearch
               }
               onChange={(e) => {
                 setComponentSearch(e.target.value);
-                setForm((prev) => ({ ...prev, component: "" }));
+                setForm((prev) => ({ ...prev, component: '' }));
               }}
               onFocus={() => setComponentInputFocused(true)}
               onBlur={() => setTimeout(() => setComponentInputFocused(false), 150)}
@@ -124,19 +122,19 @@ export default function MakeSelfOrder({ components: propsComponents = [], onSubm
               <ul
                 className="absolute z-20 bg-white border shadow-lg max-h-60 overflow-y-auto"
                 style={{
-                  minWidth: "420px",
-                  borderRadius: "1.5rem",
-                  right: "unset",
-                  left: "60",
-                  boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
-                  padding: "6px 0",
-                  marginTop: "4px",
+                  minWidth: '420px',
+                  borderRadius: '1.5rem',
+                  right: 'unset',
+                  left: '60',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+                  padding: '6px 0',
+                  marginTop: '4px',
                 }}
               >
                 {components
                   .filter(
                     (c) =>
-                      (c.r === "Towar" || c.r === "Produkt") &&
+                      (c.r === 'Towar' || c.r === 'Produkt') &&
                       (c.full_name.toLowerCase().includes(componentSearch.toLowerCase()) ||
                         c.catalog_index.toLowerCase().includes(componentSearch.toLowerCase()))
                   )
@@ -209,8 +207,8 @@ export default function MakeSelfOrder({ components: propsComponents = [], onSubm
         order={{
           id: null,
           component_catalog_index:
-            components.find((c) => c.id == form.component)?.catalog_index || "",
-          component_full_name: components.find((c) => c.id == form.component)?.full_name || "",
+            components.find((c) => c.id == form.component)?.catalog_index || '',
+          component_full_name: components.find((c) => c.id == form.component)?.full_name || '',
           quantity: form.quantity,
         }}
         show={showConfirmModal}

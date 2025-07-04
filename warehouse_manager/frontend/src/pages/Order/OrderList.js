@@ -17,7 +17,9 @@ export default function OrderList({ orders, openDeleteModal, openUwagiModal }) {
             <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
               Nr
             </th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">Utworzył</th>
+            <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">
+              Utworzył
+            </th>
 
             <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
               Data zamów.
@@ -46,7 +48,7 @@ export default function OrderList({ orders, openDeleteModal, openUwagiModal }) {
           {sortedOrders.map((order) => (
             <tr
               key={order.id}
-              className="hover:bg-gray-50 transition-colors cursor-pointer"
+              className="hover:bg-gray-50 transition-colors cursor-pointer odd:bg-gray-100"
               onClick={(e) => {
                 if (e.target.closest('button')) return;
                 navigate(`/order/${order.id}`);
@@ -57,8 +59,8 @@ export default function OrderList({ orders, openDeleteModal, openUwagiModal }) {
                 {order.id}
               </td>
               <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
-              {order.created_by_username || <span className="text-gray-400 italic">Brak</span>}
-            </td>
+                {order.created_by_username || <span className="text-gray-400 italic">Brak</span>}
+              </td>
               <td className="px-2 py-2 whitespace-nowrap text-xs text-gray-500">
                 {new Date(order.created_at).toLocaleDateString('pl-PL', {
                   day: '2-digit',

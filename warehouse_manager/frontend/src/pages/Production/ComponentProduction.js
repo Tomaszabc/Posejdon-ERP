@@ -880,7 +880,7 @@ export default function ComponentProduction() {
 
       {/* Modal do potwierdzenia produkcji istniejącego zlecenia */}
       <ConfirmProductionModal
-        order={orderToProduce} 
+        order={orderToProduce}
         show={showProduceModal}
         onCancel={() => setShowProduceModal(false)}
         onConfirm={handleProduceOrder}
