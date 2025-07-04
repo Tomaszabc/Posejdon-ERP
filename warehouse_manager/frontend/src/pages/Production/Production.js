@@ -308,31 +308,39 @@ export default function Production() {
   return (
   <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
     {/* Grid 2x2 na desktopie, stack na mobile */}
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-      {/* 1. Górny lewy */}
-      <MakeSelfOrder components={components} />
+    <div className="grid grid-cols-1 xl:grid-cols-10 gap-6">
+      {/* 1. Górny lewy - 30% */}
+      <div className="xl:col-span-3">
+        <MakeSelfOrder components={components} />
+      </div>
 
-      {/* 2. Górny prawy */}
-      <OrdersToProduceSection
-        orders={orders}
-        loading={loading}
-        onProduce={handleAskConfirmProduce}
-      />
+      {/* 2. Górny prawy - 70% */}
+      <div className="xl:col-span-7">
+        <OrdersToProduceSection
+          orders={orders}
+          loading={loading}
+          onProduce={handleAskConfirmProduce}
+        />
+      </div>
 
       {/* 3. Dolny lewy */}
-      <InfoForProductionModulesFromProductionComponents ignacyOrders={ignacyOrders} />
+      <div className="xl:col-span-5">
+        <InfoForProductionModulesFromProductionComponents ignacyOrders={ignacyOrders} />
+      </div>
 
       {/* 4. Dolny prawy */}
-      <ProducedOrdersSection
-        producedOrders={producedOrders}
-        onUndo={handleUndoProduce}
-        showFilters={showFilters}
-        setShowFilters={setShowFilters}
-        filters={filters}
-        handleFilterChange={handleFilterChange}
-        handleClearFilters={handleClearFilters}
-        ORDERS_LIMIT={ORDERS_LIMIT}
-      />
+      <div className="xl:col-span-5">
+        <ProducedOrdersSection
+          producedOrders={producedOrders}
+          onUndo={handleUndoProduce}
+          showFilters={showFilters}
+          setShowFilters={setShowFilters}
+          filters={filters}
+          handleFilterChange={handleFilterChange}
+          handleClearFilters={handleClearFilters}
+          ORDERS_LIMIT={ORDERS_LIMIT}
+        />
+      </div>
     </div>
 
     {/* Modalne okna */}
