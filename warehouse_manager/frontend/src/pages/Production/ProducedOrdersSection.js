@@ -122,7 +122,7 @@ export default function ProducedOrdersSection({
 
       {/* Tabela z zamówieniami - dodaj lepsze przewijanie na mobile */}
       <div className="overflow-x-auto -mx-6 sm:mx-0">
-        <div className="inline-block min-w-full align-middle px-6 sm:px-0">
+        <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>

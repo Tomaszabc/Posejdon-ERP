@@ -21,7 +21,7 @@ export default function InfoForProductionModulesFromProductionComponents({ ignac
       <h2 className="text-2xl font-bold text-gray-800 mb-6">
         Lista zleconych do produkcji komponentów (do Ignacego):
       </h2>
-      <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-x-auto  max-h-[500px] overflow-y-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

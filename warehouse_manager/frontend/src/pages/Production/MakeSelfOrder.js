@@ -85,7 +85,7 @@ export default function MakeSelfOrder({ components: propsComponents = [], onSubm
   return (
     <section className=" bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
       <h1 className="text-3xl font-bold text-gray-800 mb-2">
-        Zleć produkcję modułu
+        Zleć produkcję:
       </h1>
       {errors.length > 0 && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -99,7 +99,7 @@ export default function MakeSelfOrder({ components: propsComponents = [], onSubm
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Wybierz moduł
+            Wybierz potrzebny element:
           </label>
           <div className="relative">
             <input
