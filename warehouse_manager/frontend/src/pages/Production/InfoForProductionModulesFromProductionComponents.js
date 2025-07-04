@@ -49,7 +49,9 @@ export default function InfoForProductionModulesFromProductionComponents({ ignac
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {ignacyOrders.map((order) => (
+            {ignacyOrders .slice() // kopia, by nie mutować props
+            .sort((a, b) => b.id - a.id)
+            .map((order) => (
               <tr
                 key={order.id}
                 onClick={() => handleOrderClick(order.id)}
