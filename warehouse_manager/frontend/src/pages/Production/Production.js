@@ -323,7 +323,6 @@ export default function Production() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         <MakeSelfOrder
           components={components}
-          onSubmit={handleOrderSubmit} // <-- tylko ta linia!
         />
         <OrdersToProduceSection
           orders={orders}
