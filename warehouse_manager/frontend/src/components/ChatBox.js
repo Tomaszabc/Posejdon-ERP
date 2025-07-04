@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const ROOMS = ["Ogólny", "Biuro", "Magazyn"];
+const ROOMS = ['Ogólny', 'Biuro', 'Magazyn'];
 
 const ChatBox = ({
   user,
@@ -48,7 +48,9 @@ const ChatBox = ({
         alert('Błąd przy wysyłaniu wiadomości!');
       }
       setInput('');
-      const storageKey = selectedUser ? `chatDraft_user_${selectedUser}` : `chatDraft_${currentRoom}`;
+      const storageKey = selectedUser
+        ? `chatDraft_user_${selectedUser}`
+        : `chatDraft_${currentRoom}`;
       localStorage.removeItem(storageKey);
     }
   };
@@ -128,19 +130,21 @@ const ChatBox = ({
             fontSize: 16,
             transition: 'background 0.2s',
           }}
-          onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
-          onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+          onMouseEnter={(e) => (e.target.style.background = 'rgba(255, 255, 255, 0.3)')}
+          onMouseLeave={(e) => (e.target.style.background = 'rgba(255, 255, 255, 0.2)')}
         >
           ×
         </button>
       </div>
 
       {/* Room/User Tabs */}
-      <div style={{ 
-        padding: '12px 16px', 
-        borderBottom: '1px solid #e4e6ea',
-        background: '#f8f9fa'
-      }}>
+      <div
+        style={{
+          padding: '12px 16px',
+          borderBottom: '1px solid #e4e6ea',
+          background: '#f8f9fa',
+        }}
+      >
         {/* Room Selection */}
         <div style={{ marginBottom: 8 }}>
           <div style={{ fontSize: 12, color: '#65676b', marginBottom: 6, fontWeight: 600 }}>
@@ -168,14 +172,16 @@ const ChatBox = ({
               >
                 {room}
                 {unreadRooms[room] && (
-                  <span style={{
-                    marginLeft: 4,
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    background: '#ff4444',
-                    display: 'inline-block'
-                  }} />
+                  <span
+                    style={{
+                      marginLeft: 4,
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      background: '#ff4444',
+                      display: 'inline-block',
+                    }}
+                  />
                 )}
               </button>
             ))}
@@ -183,44 +189,48 @@ const ChatBox = ({
         </div>
 
         {/* User Selection */}
-        {users.filter(u => u !== user.username).length > 0 && (
+        {users.filter((u) => u !== user.username).length > 0 && (
           <div>
             <div style={{ fontSize: 12, color: '#65676b', marginBottom: 6, fontWeight: 600 }}>
               UŻYTKOWNICY
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {users.filter(u => u !== user.username).map(u => (
-                <button
-                  key={u}
-                  onClick={() => {
-                    setSelectedUser(u);
-                    setCurrentRoom(''); // Wyczyść pokój gdy wybierasz użytkownika
-                  }}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: 20,
-                    border: 'none',
-                    background: selectedUser === u ? '#0084ff' : '#e4e6ea',
-                    color: selectedUser === u ? '#fff' : '#65676b',
-                    fontSize: 12,
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  {u}
-                  {unreadRooms[`user_${u}`] && (
-                    <span style={{
-                      marginLeft: 4,
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      background: '#ff4444',
-                      display: 'inline-block'
-                    }} />
-                  )}
-                </button>
-              ))}
+              {users
+                .filter((u) => u !== user.username)
+                .map((u) => (
+                  <button
+                    key={u}
+                    onClick={() => {
+                      setSelectedUser(u);
+                      setCurrentRoom(''); // Wyczyść pokój gdy wybierasz użytkownika
+                    }}
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: 20,
+                      border: 'none',
+                      background: selectedUser === u ? '#0084ff' : '#e4e6ea',
+                      color: selectedUser === u ? '#fff' : '#65676b',
+                      fontSize: 12,
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {u}
+                    {unreadRooms[`user_${u}`] && (
+                      <span
+                        style={{
+                          marginLeft: 4,
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          background: '#ff4444',
+                          display: 'inline-block',
+                        }}
+                      />
+                    )}
+                  </button>
+                ))}
             </div>
           </div>
         )}
@@ -275,10 +285,10 @@ const ChatBox = ({
                 maxWidth: '70%',
                 padding: '8px 12px',
                 borderRadius: 18,
-                background: isMyMessage(msg) 
-                  ? 'linear-gradient(135deg, #0084ff, #00a0ff)' 
-                  : msg.type === 'chat' 
-                    ? '#f0f0f0' 
+                background: isMyMessage(msg)
+                  ? 'linear-gradient(135deg, #0084ff, #00a0ff)'
+                  : msg.type === 'chat'
+                    ? '#f0f0f0'
                     : msg.type === 'error'
                       ? '#fee2e2'
                       : '#e8f5e8',
@@ -289,32 +299,38 @@ const ChatBox = ({
               }}
             >
               {msg.type === 'error' && (
-                <div style={{ 
-                  fontSize: 11, 
-                  color: '#dc2626',
-                  marginBottom: 2,
-                  fontWeight: 'bold'
-                }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: '#dc2626',
+                    marginBottom: 2,
+                    fontWeight: 'bold',
+                  }}
+                >
                   Błąd
                 </div>
               )}
               {msg.type !== 'chat' && msg.type !== 'error' && (
-                <div style={{ 
-                  fontSize: 11, 
-                  opacity: 0.7, 
-                  marginBottom: 2,
-                  fontStyle: 'italic'
-                }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    opacity: 0.7,
+                    marginBottom: 2,
+                    fontStyle: 'italic',
+                  }}
+                >
                   Informacja systemowa
                 </div>
               )}
               {!isMyMessage(msg) && msg.type === 'chat' && (
-                <div style={{ 
-                  fontSize: 11, 
-                  fontWeight: 600, 
-                  marginBottom: 2,
-                  color: '#0084ff'
-                }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    marginBottom: 2,
+                    color: '#0084ff',
+                  }}
+                >
                   {msg.username}
                 </div>
               )}
@@ -326,37 +342,41 @@ const ChatBox = ({
       </div>
 
       {/* Input Area */}
-      <div style={{ 
-        padding: '12px 16px', 
-        borderTop: '1px solid #e4e6ea',
-        background: '#f8f9fa'
-      }}>
+      <div
+        style={{
+          padding: '12px 16px',
+          borderTop: '1px solid #e4e6ea',
+          background: '#f8f9fa',
+        }}
+      >
         <form onSubmit={handleSend} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ 
-            flex: 1, 
-            position: 'relative',
-            background: 'white',
-            borderRadius: 20,
-            border: '1px solid #e4e6ea',
-            overflow: 'hidden'
-          }}>
+          <div
+            style={{
+              flex: 1,
+              position: 'relative',
+              background: 'white',
+              borderRadius: 20,
+              border: '1px solid #e4e6ea',
+              overflow: 'hidden',
+            }}
+          >
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              style={{ 
+              style={{
                 width: '100%',
                 padding: '10px 16px',
                 border: 'none',
                 outline: 'none',
                 fontSize: 14,
                 background: 'transparent',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
               }}
-              placeholder={selectedUser ? `Napisz do ${selectedUser}...` : "Napisz wiadomość..."}
+              placeholder={selectedUser ? `Napisz do ${selectedUser}...` : 'Napisz wiadomość...'}
             />
           </div>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={!input.trim()}
             style={{
               width: 32,

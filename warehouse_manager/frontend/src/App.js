@@ -34,7 +34,7 @@ function App() {
   const [chatMessages, setChatMessages] = useState([]);
   const [currentRoom, setCurrentRoom] = useState(() => {
     // Odczytaj z localStorage lub domyślnie "Ogólny"
-    return localStorage.getItem('chatRoom') || "Ogólny";
+    return localStorage.getItem('chatRoom') || 'Ogólny';
   });
   const [unreadRooms, setUnreadRooms] = useState({}); // roomName: true/false
   const wsRef = useRef(null);
@@ -50,8 +50,8 @@ function App() {
         'Content-Type': 'application/json',
       },
     })
-      .then(res => res.json())
-      .then(data => setUsers(data.users || []))
+      .then((res) => res.json())
+      .then((data) => setUsers(data.users || []))
       .catch(() => setUsers([]));
   }, [user]);
 
@@ -119,7 +119,7 @@ function App() {
     const token = localStorage.getItem('access');
     if (wsRef.current) wsRef.current.close();
     setChatMessages([]);
-    
+
     // Buduj URL WebSocket
     let wsUrl = `${WS_URL}/ws/chat/?token=${token}`;
     if (selectedUser) {
@@ -127,24 +127,24 @@ function App() {
     } else {
       wsUrl += `&room=${encodeURIComponent(currentRoom)}`;
     }
-    
+
     wsRef.current = new WebSocket(wsUrl);
     wsRef.current.onmessage = (e) => {
       const data = JSON.parse(e.data);
       if (data.type === 'chat' || data.type === 'info' || data.type === 'error') {
         setChatMessages((msgs) => [...msgs, data]);
-        
+
         // Obsługa nieprzeczytanych wiadomości
         const msgRoom = selectedUser ? `user_${selectedUser}` : currentRoom;
         const currentContext = selectedUser ? `user_${selectedUser}` : currentRoom;
-        
+
         if (msgRoom !== currentContext) {
           setUnreadRooms((prev) => ({
             ...prev,
             [msgRoom]: true,
           }));
         }
-        
+
         if (!showChat && msgRoom === currentContext && data.username !== user?.username) {
           setUnreadRooms((prev) => ({
             ...prev,
@@ -292,7 +292,7 @@ function App() {
                 bottom: 110,
                 zIndex: 10002,
               }}
-              onClick={e => e.stopPropagation()} // nie zamykaj po kliknięciu w ChatBox
+              onClick={(e) => e.stopPropagation()} // nie zamykaj po kliknięciu w ChatBox
             >
               <ChatBox
                 user={user}
@@ -315,7 +315,6 @@ function App() {
             </div>
           </div>
         )}
-       
       </div>
     </Router>
   );

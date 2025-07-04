@@ -47,18 +47,18 @@ export default function Production() {
   }, []);
 
   // Dodaj funkcję fetchIgnacyOrders:
-const fetchIgnacyOrders = () => {
-  const token = localStorage.getItem('access');
-  fetch(`${API_URL}/api/order-list-for-modules-production-previewing-components-production/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => setIgnacyOrders(data))
-    .catch(() => setIgnacyOrders([]));
-};
+  const fetchIgnacyOrders = () => {
+    const token = localStorage.getItem('access');
+    fetch(`${API_URL}/api/order-list-for-modules-production-previewing-components-production/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setIgnacyOrders(data))
+      .catch(() => setIgnacyOrders([]));
+  };
 
   // Effect do filtrowania
   const filteredOrders = orders
@@ -159,15 +159,15 @@ const fetchIgnacyOrders = () => {
     if (!orderToConfirm) return;
 
     const token = localStorage.getItem('access');
-      fetch(`${API_URL}/api/production/produce/${orderToConfirm.id}/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : '',
-      'X-Requested-With': 'XMLHttpRequest',
-    },
-    // credentials: 'include', // jeśli używasz cookies/sesji
-  })
+    fetch(`${API_URL}/api/production/produce/${orderToConfirm.id}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : '',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      // credentials: 'include', // jeśli używasz cookies/sesji
+    })
       .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
       .then(({ ok, data }) => {
         if (!ok) {
@@ -324,7 +324,7 @@ const fetchIgnacyOrders = () => {
 
       {/* Nowy komponent z tabelą */}
       <div className="mt-8">
-        <InfoForProductionModulesFromProductionComponents  ignacyOrders={ignacyOrders} />
+        <InfoForProductionModulesFromProductionComponents ignacyOrders={ignacyOrders} />
       </div>
 
       {/* Modalne okna */}
