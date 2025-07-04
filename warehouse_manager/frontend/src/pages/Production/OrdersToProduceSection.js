@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { formatDateTime } from './utils';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../../config';
 
 export default function OrdersToProduceSection({ orders, loading, onProduce }) {
   const navigate = useNavigate();
@@ -12,9 +13,12 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
       const map = {};
       for (const order of orders) {
         try {
-          const res = await fetch('/api/check-materials-availability/', {
+          const res = await fetch(`${API_URL}/api/check-materials-availability/`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('access')}`,
+            },
             body: JSON.stringify({ component: order.component, quantity: order.quantity }),
           });
           map[order.id] = !res.ok; // true jeśli są braki
