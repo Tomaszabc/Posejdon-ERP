@@ -207,7 +207,7 @@ const ChatBox = ({
                 type="text"
                 placeholder="Wyszukaj użytkownika..."
                 value={userSearch || ''}
-                onChange={e => {
+                onChange={(e) => {
                   setUserSearch(e.target.value);
                   setSelectedUser(null);
                 }}
@@ -243,9 +243,9 @@ const ChatBox = ({
                   }}
                 >
                   {users
-                    .filter(u => u !== user.username)
-                    .filter(u => u.toLowerCase().includes((userSearch || '').toLowerCase()))
-                    .map(u => (
+                    .filter((u) => u !== user.username)
+                    .filter((u) => u.toLowerCase().includes((userSearch || '').toLowerCase()))
+                    .map((u) => (
                       <li
                         key={u}
                         style={{
@@ -259,7 +259,7 @@ const ChatBox = ({
                         }}
                         onMouseDown={() => {
                           setSelectedUser(u);
-                           setUserSearch('');
+                          setUserSearch('');
                           setCurrentRoom('');
                           setUserInputFocused(false);
                         }}

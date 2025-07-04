@@ -1,4 +1,4 @@
-const { defineConfig } = require("cypress");
+const { defineConfig } = require('cypress');
 const { exec } = require('child_process');
 
 module.exports = defineConfig({

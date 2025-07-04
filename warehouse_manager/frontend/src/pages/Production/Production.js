@@ -310,6 +310,11 @@ export default function Production() {
           loading={loading}
           onProduce={handleAskConfirmProduce}
         />
+
+        {/* Nowy komponent z tabelą */}
+        <div className="mt-8">
+          <InfoForProductionModulesFromProductionComponents ignacyOrders={ignacyOrders} />
+        </div>
         <ProducedOrdersSection
           producedOrders={producedOrders}
           onUndo={handleUndoProduce}
@@ -321,12 +326,6 @@ export default function Production() {
           ORDERS_LIMIT={ORDERS_LIMIT}
         />
       </div>
-
-      {/* Nowy komponent z tabelą */}
-      <div className="mt-8">
-        <InfoForProductionModulesFromProductionComponents ignacyOrders={ignacyOrders} />
-      </div>
-
       {/* Modalne okna */}
       <ConfirmProductionModal
         order={orderToConfirm}

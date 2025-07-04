@@ -277,7 +277,7 @@ export default function Orders() {
                           c.full_name.toLowerCase().includes(productSearch.toLowerCase()) ||
                           c.catalog_index.toLowerCase().includes(productSearch.toLowerCase())
                       )
-                      
+
                       .map((c) => (
                         <li
                           key={c.id}

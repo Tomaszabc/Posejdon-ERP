@@ -158,11 +158,11 @@ function App() {
   }, [user, currentRoom, selectedUser]);
 
   // Ping na ikonce czatu jeśli jakikolwiek pokój ma nieprzeczytane
-useEffect(() => {
-  const hasUnread = Object.values(unreadRooms).some(Boolean);
-  console.log('unreadRooms:', unreadRooms, 'hasUnreadChat:', hasUnread);
-  setHasUnreadChat(hasUnread);
-}, [unreadRooms]);
+  useEffect(() => {
+    const hasUnread = Object.values(unreadRooms).some(Boolean);
+    console.log('unreadRooms:', unreadRooms, 'hasUnreadChat:', hasUnread);
+    setHasUnreadChat(hasUnread);
+  }, [unreadRooms]);
 
   // Po otwarciu czatu lub zmianie pokoju/użytkownika, kasuj ping
   useEffect(() => {

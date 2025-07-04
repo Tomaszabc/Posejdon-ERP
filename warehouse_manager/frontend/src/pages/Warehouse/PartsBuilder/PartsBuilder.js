@@ -185,7 +185,7 @@ export default function PartsBuilder() {
                       .filter((prod) =>
                         prod.full_name.toLowerCase().includes(productSearch.toLowerCase())
                       )
-                      
+
                       .map((prod) => (
                         <li
                           key={prod.id}

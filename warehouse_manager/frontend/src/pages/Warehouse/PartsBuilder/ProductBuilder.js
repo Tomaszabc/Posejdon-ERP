@@ -238,21 +238,19 @@ export default function ProductBuilder() {
                         mod.full_name.toLowerCase().includes(moduleSearch.toLowerCase())
                       )
                     : modules
-                  )
-                    
-                    .map((mod) => (
-                      <li
-                        key={mod.id}
-                        className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
-                        onClick={() => {
-                          setSelectedModule(mod.id);
-                          setModuleSearch(mod.full_name);
-                          setModuleInputFocused(false);
-                        }}
-                      >
-                        🧩 {mod.full_name}
-                      </li>
-                    ))}
+                  ).map((mod) => (
+                    <li
+                      key={mod.id}
+                      className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
+                      onClick={() => {
+                        setSelectedModule(mod.id);
+                        setModuleSearch(mod.full_name);
+                        setModuleInputFocused(false);
+                      }}
+                    >
+                      🧩 {mod.full_name}
+                    </li>
+                  ))}
                 </ul>
               )}
             </div>

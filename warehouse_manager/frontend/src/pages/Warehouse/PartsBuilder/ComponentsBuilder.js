@@ -178,21 +178,19 @@ export default function ComponentsBuilder() {
                         comp.full_name.toLowerCase().includes(componentSearch.toLowerCase())
                       )
                   : components.filter((comp) => comp.r === 'Towar')
-                )
-                  
-                  .map((comp) => (
-                    <li
-                      key={comp.id}
-                      className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
-                      onClick={() => {
-                        setSelectedComponent(comp.id);
-                        setComponentSearch(comp.full_name);
-                        setComponentInputFocused(false);
-                      }}
-                    >
-                      📦 {comp.full_name}
-                    </li>
-                  ))}
+                ).map((comp) => (
+                  <li
+                    key={comp.id}
+                    className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
+                    onClick={() => {
+                      setSelectedComponent(comp.id);
+                      setComponentSearch(comp.full_name);
+                      setComponentInputFocused(false);
+                    }}
+                  >
+                    📦 {comp.full_name}
+                  </li>
+                ))}
               </ul>
             )}
           </div>
@@ -231,21 +229,19 @@ export default function ComponentsBuilder() {
                           mat.full_name.toLowerCase().includes(materialSearch.toLowerCase())
                         )
                     : materials.filter((mat) => mat.r === 'Materiał')
-                  )
-                    
-                    .map((mat) => (
-                      <li
-                        key={mat.id}
-                        className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
-                        onClick={() => {
-                          setSelectedMaterial(mat.id);
-                          setMaterialSearch(mat.full_name);
-                          setMaterialInputFocused(false);
-                        }}
-                      >
-                        🧱 {mat.full_name}
-                      </li>
-                    ))}
+                  ).map((mat) => (
+                    <li
+                      key={mat.id}
+                      className="px-3 py-2 cursor-pointer hover:bg-ocean-100 text-black"
+                      onClick={() => {
+                        setSelectedMaterial(mat.id);
+                        setMaterialSearch(mat.full_name);
+                        setMaterialInputFocused(false);
+                      }}
+                    >
+                      🧱 {mat.full_name}
+                    </li>
+                  ))}
                 </ul>
               )}
             </div>
