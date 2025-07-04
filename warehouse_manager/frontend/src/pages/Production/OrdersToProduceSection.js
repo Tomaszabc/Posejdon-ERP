@@ -72,7 +72,7 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
               {sortedOrders.map((order) => (
                 <tr
                   key={order.id}
-                  className="hover:bg-ocean-50 transition-colors cursor-pointer"
+                  className="hover:bg-ocean-50 transition-colors cursor-pointer  odd:bg-gray-100"
                   onClick={(e) => {
                     if (e.target.closest('button')) return;
                     navigate(`/order/${order.id}`);

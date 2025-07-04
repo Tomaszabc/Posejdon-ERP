@@ -148,8 +148,8 @@ export default function ProducedOrdersSection({
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {sortedProducedOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-1 sm:px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
+                <tr key={order.id} className="hover:bg-gray-50 transition-colors odd:bg-gray-100 ">
+                  <td className="px-1 sm:px-2 py-2 whitespace-nowrap text-xs font-medium text-gray-900 ">
                     {order.id}
                   </td>
                   <td className="px-1 sm:px-2 py-2 whitespace-nowrap text-xs text-gray-500">

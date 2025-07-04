@@ -582,7 +582,7 @@ export default function ComponentProduction() {
                   <tr
                     key={order.id}
                     className={
-                      'hover:bg-gray-50 transition-colors cursor-pointer' +
+                      'hover:bg-gray-50 transition-colors cursor-pointer  odd:bg-gray-100' +
                       (order.pilne ? ' bg-red-100' : '')
                     }
                     onClick={(e) => {

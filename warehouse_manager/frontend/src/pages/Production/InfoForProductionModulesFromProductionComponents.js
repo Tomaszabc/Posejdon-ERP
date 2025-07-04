@@ -48,7 +48,7 @@ export default function InfoForProductionModulesFromProductionComponents({ ignac
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-gray-200 ">
             {ignacyOrders
               .slice() // kopia, by nie mutować props
               .sort((a, b) => b.id - a.id)
@@ -57,7 +57,7 @@ export default function InfoForProductionModulesFromProductionComponents({ ignac
                   key={order.id}
                   onClick={() => handleOrderClick(order.id)}
                   className={
-                    'hover:bg-gray-50 transition-colors cursor-pointer' +
+                    'hover:bg-gray-50 transition-colors cursor-pointer  odd:bg-gray-100' +
                     (order.pilne ? ' bg-red-100' : '')
                   }
                   title="Kliknij, aby zobaczyć szczegóły zamówienia"
