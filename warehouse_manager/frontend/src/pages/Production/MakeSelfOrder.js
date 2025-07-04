@@ -83,7 +83,7 @@ export default function MakeSelfOrder({ components: propsComponents = [], onSubm
   };
 
   return (
-    <section className="xl:col-span-2 bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
+    <section className=" bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
       <h1 className="text-3xl font-bold text-gray-800 mb-2">
         Zleć produkcję modułu
       </h1>

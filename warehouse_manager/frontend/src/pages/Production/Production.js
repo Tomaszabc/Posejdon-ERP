@@ -36,19 +36,6 @@ export default function Production() {
   const ws = useRef(null);
   const [components, setComponents] = useState([]);
   const [ignacyOrders, setIgnacyOrders] = useState([]);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [orderData, setOrderData] = useState(null);
-
-  const handleOrderSubmit = (form) => {
-    setOrderData(form);
-    setShowConfirm(true);
-  };
-    // Funkcja potwierdzająca zamówienie (np. POST do API)
-  const handleConfirm = () => {
-    // ...wyślij orderData do API...
-    setShowConfirm(false);
-    setOrderData(null);
-  };
 
   useEffect(() => {
     ws.current = new window.WebSocket(`${WS_URL}/ws/warehouse/`);
@@ -319,64 +306,58 @@ export default function Production() {
   console.log('Aktualny stan ignacyOrders:', ignacyOrders);
 
   return (
-    <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <MakeSelfOrder
-          components={components}
-        />
-        <OrdersToProduceSection
-          orders={orders}
-          loading={loading}
-          onProduce={handleAskConfirmProduce}
-        />
+  <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+    {/* Grid 2x2 na desktopie, stack na mobile */}
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      {/* 1. Górny lewy */}
+      <MakeSelfOrder components={components} />
 
-        {/* Nowy komponent z tabelą */}
-        <div className="mt-8">
-          <InfoForProductionModulesFromProductionComponents ignacyOrders={ignacyOrders} />
-        </div>
-        <ProducedOrdersSection
-          producedOrders={producedOrders}
-          onUndo={handleUndoProduce}
-          showFilters={showFilters}
-          setShowFilters={setShowFilters}
-          filters={filters}
-          handleFilterChange={handleFilterChange}
-          handleClearFilters={handleClearFilters}
-          ORDERS_LIMIT={ORDERS_LIMIT}
-        />
-      </div>
-      {/* Modalne okna */}
-      <ConfirmProductionModal
-        order={orderToConfirm}
-        show={showConfirmModal}
-        onCancel={cancelConfirmProduce}
-        onConfirm={confirmProduce}
+      {/* 2. Górny prawy */}
+      <OrdersToProduceSection
+        orders={orders}
+        loading={loading}
+        onProduce={handleAskConfirmProduce}
       />
-      <UndoModal
-        order={orderToUndo}
-        show={showUndoModal}
-        onCancel={cancelUndoProduce}
-        onConfirm={confirmUndoProduce}
+
+      {/* 3. Dolny lewy */}
+      <InfoForProductionModulesFromProductionComponents ignacyOrders={ignacyOrders} />
+
+      {/* 4. Dolny prawy */}
+      <ProducedOrdersSection
+        producedOrders={producedOrders}
+        onUndo={handleUndoProduce}
+        showFilters={showFilters}
+        setShowFilters={setShowFilters}
+        filters={filters}
+        handleFilterChange={handleFilterChange}
+        handleClearFilters={handleClearFilters}
+        ORDERS_LIMIT={ORDERS_LIMIT}
       />
-      <SuccessModal show={showSuccess} />
-      <UndoSuccessModal show={showUndoSuccess} />
-      <ErrorModal
-        show={errorModal.show}
-        message={errorModal.message}
-        missing={errorModal.missing}
-        onClose={() => setErrorModal({ show: false, message: '', missing: [] })}
-        onOrderMissing={orderMissingComponents}
-        missingPartsAlreadyOrdered={errorModal.missingPartsAlreadyOrdered}
-      />
-      {showConfirm && orderData && (
-        <OrderConfirmModal
-          show={showConfirm}
-          order={orderData}
-          onCancel={() => setShowConfirm(false)}
-          onConfirm={handleConfirm}
-          components={components} // <-- dodaj to, jeśli modal tego wymaga!
-        />
-      )}
     </div>
-  );
+
+    {/* Modalne okna */}
+    <ConfirmProductionModal
+      order={orderToConfirm}
+      show={showConfirmModal}
+      onCancel={cancelConfirmProduce}
+      onConfirm={confirmProduce}
+    />
+    <UndoModal
+      order={orderToUndo}
+      show={showUndoModal}
+      onCancel={cancelUndoProduce}
+      onConfirm={confirmUndoProduce}
+    />
+    <SuccessModal show={showSuccess} />
+    <UndoSuccessModal show={showUndoSuccess} />
+    <ErrorModal
+      show={errorModal.show}
+      message={errorModal.message}
+      missing={errorModal.missing}
+      onClose={() => setErrorModal({ show: false, message: '', missing: [] })}
+      onOrderMissing={orderMissingComponents}
+      missingPartsAlreadyOrdered={errorModal.missingPartsAlreadyOrdered}
+    />
+  </div>
+);
 }
