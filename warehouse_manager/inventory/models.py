@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.conf import settings
 
 
 class Product(models.Model):
@@ -220,3 +221,16 @@ class ChatMessage(models.Model):
         if self.is_private:
             return f"Prywatna: {self.user.username} → {self.recipient.username}: {self.message[:50]}"
         return f"{self.chat_group}: {self.user.username}: {self.message[:50]}"
+
+class ChatMessageRead(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    message = models.ForeignKey('ChatMessage', on_delete=models.CASCADE)
+    read_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'message')
+        verbose_name = "Odczytana wiadomość czatu"
+        verbose_name_plural = "Odczytane wiadomości czatu"
+
+    def __str__(self):
+        return f"{self.user.username} przeczytał {self.message.id} ({self.read_at})"
