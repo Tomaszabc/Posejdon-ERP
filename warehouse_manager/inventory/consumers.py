@@ -5,6 +5,7 @@ from urllib.parse import parse_qs
 import unicodedata
 from django.contrib.auth import get_user_model
 database_sync_to_async = sync_to_async
+from django.utils import timezone
 
 # Mapowanie nazw pokoi: wyświetlana -> techniczna
 ROOM_NAME_MAP = {
@@ -113,16 +114,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             chat_group=self.room_db_name,
                             is_private=False
                         ).order_by("-timestamp").values_list(
-                            "user__username", "message"
+                            "user__username", "message", "timestamp"
                         )[:30][::-1]
                     )
 
                 last_msgs = await database_sync_to_async(get_last_msgs)()
-                for username, message in last_msgs:
+                for username, message, timestamp in last_msgs:
                     await self.send(text_data=json.dumps({
                         "type": "chat",
                         "username": username,
                         "message": message,
+                        "timestamp": timestamp.isoformat() if timestamp else None,
                     }))
                 
                 await self.send(text_data=json.dumps({
@@ -191,4 +193,5 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "type": "chat",
             "username": event["username"],
             "message": event["message"],
+            "timestamp": timezone.now().isoformat(),
         }))

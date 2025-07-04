@@ -19,6 +19,8 @@ const ChatBox = ({
   const [input, setInput] = useState(() => {
     return localStorage.getItem(`chatDraft_${currentRoom}`) || '';
   });
+  const [userSearch, setUserSearch] = useState('');
+  const [userInputFocused, setUserInputFocused] = useState(false);
   const messagesEndRef = useRef(null);
 
   // Zmieniaj draft w localStorage przy każdej zmianie inputa
@@ -66,6 +68,12 @@ const ChatBox = ({
 
   const isMyMessage = (msg) => {
     return msg.username === user;
+  };
+
+  const formatDate = (dateStr) => {
+    const d = new Date(dateStr);
+    const pad = (n) => String(n).padStart(2, '0');
+    return ` ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} ${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${String(d.getFullYear()).slice(-4)}`;
   };
 
   return (
@@ -194,37 +202,87 @@ const ChatBox = ({
             <div style={{ fontSize: 12, color: '#65676b', marginBottom: 6, fontWeight: 600 }}>
               UŻYTKOWNICY
             </div>
-            <select
-              value={selectedUser || ''}
-              onChange={(e) => {
-                const val = e.target.value;
-                setSelectedUser(val || null);
-                setCurrentRoom(''); // Wyczyść pokój gdy wybierasz użytkownika
-              }}
-              style={{
-                width: '100%',
-                padding: '6px 12px',
-                borderRadius: 20,
-                border: '1px solid #e4e6ea',
-                fontSize: 12,
-                fontWeight: 500,
-                color: '#65676b',
-                background: '#fff',
-                cursor: 'pointer',
-                marginBottom: 4,
-              }}
-            >
-              <option value="">-- Wybierz użytkownika --</option>
-              {users
-                .filter((u) => u !== user.username)
-                .map((u) => (
-                  <option key={u} value={u}>
-                    {u}
-                    {unreadRooms[`user_${u}`] ? ' •' : ''}
-                  </option>
-                ))}
-            </select>
-            {/* Kropka nieprzeczytanych wiadomości obok selecta */}
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                placeholder="Wyszukaj użytkownika..."
+                value={userSearch || ''}
+                onChange={e => {
+                  setUserSearch(e.target.value);
+                  setSelectedUser(null);
+                }}
+                onFocus={() => setUserInputFocused(true)}
+                onBlur={() => setTimeout(() => setUserInputFocused(false), 150)}
+                style={{
+                  width: '100%',
+                  padding: '6px 12px',
+                  borderRadius: 20,
+                  border: '1px solid #e4e6ea',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: '#65676b',
+                  background: '#fff',
+                  marginBottom: 4,
+                }}
+              />
+              {userInputFocused && (
+                <ul
+                  style={{
+                    position: 'absolute',
+                    zIndex: 10,
+                    background: '#fff',
+                    border: '1px solid #e4e6ea',
+                    width: '100%',
+                    borderRadius: 12,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+                    maxHeight: 180,
+                    overflowY: 'auto',
+                    margin: 0,
+                    padding: 0,
+                    listStyle: 'none',
+                  }}
+                >
+                  {users
+                    .filter(u => u !== user.username)
+                    .filter(u => u.toLowerCase().includes((userSearch || '').toLowerCase()))
+                    .map(u => (
+                      <li
+                        key={u}
+                        style={{
+                          padding: '8px 12px',
+                          cursor: 'pointer',
+                          background: selectedUser === u ? '#e4e6ea' : '#fff',
+                          color: '#222',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                        }}
+                        onMouseDown={() => {
+                          setSelectedUser(u);
+                           setUserSearch('');
+                          setCurrentRoom('');
+                          setUserInputFocused(false);
+                        }}
+                      >
+                        {u}
+                        {unreadRooms[`user_${u}`] && (
+                          <span
+                            style={{
+                              marginLeft: 6,
+                              width: 8,
+                              height: 8,
+                              borderRadius: '50%',
+                              background: '#ff4444',
+                              display: 'inline-block',
+                            }}
+                          />
+                        )}
+                      </li>
+                    ))}
+                </ul>
+              )}
+            </div>
+            {/* Kropka nieprzeczytanych wiadomości obok inputa */}
             {selectedUser && unreadRooms[`user_${selectedUser}`] && (
               <span
                 style={{
@@ -341,6 +399,10 @@ const ChatBox = ({
                 </div>
               )}
               <div>{msg.message}</div>
+              {/* DATA POD WIADOMOŚCIĄ */}
+              <div style={{ fontSize: 10, color: '#888', marginTop: 4, textAlign: 'right' }}>
+                {msg.timestamp ? formatDate(msg.timestamp) : ''}
+              </div>
             </div>
           </div>
         ))}
