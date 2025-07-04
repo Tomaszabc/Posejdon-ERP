@@ -279,6 +279,7 @@ const fetchIgnacyOrders = () => {
     }
 
     fetchOrders();
+    fetchIgnacyOrders();
   };
 
   useEffect(() => {
@@ -323,7 +324,7 @@ const fetchIgnacyOrders = () => {
 
       {/* Nowy komponent z tabelą */}
       <div className="mt-8">
-        <InfoForProductionModulesFromProductionComponents />
+        <InfoForProductionModulesFromProductionComponents  ignacyOrders={ignacyOrders} />
       </div>
 
       {/* Modalne okna */}

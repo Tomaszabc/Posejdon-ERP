@@ -1,41 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../../config';
 
-export default function InfoForProductionModulesFromProductionComponents() {
-  const [ignacyOrders, setIgnacyOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function InfoForProductionModulesFromProductionComponents({ ignacyOrders = [] }) {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem('access');
-    fetch(`${API_URL}/api/order-list-for-modules-production-previewing-components-production/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('Dane z endpointu Ignacego:', data);
-        setIgnacyOrders(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Błąd pobierania danych:', err);
-        setIgnacyOrders([]);
-        setLoading(false);
-      });
-  }, []);
 
   const handleOrderClick = (orderId) => {
     navigate(`/order/${orderId}`);
   };
 
-  if (loading) {
+  if (!ignacyOrders || ignacyOrders.length === 0) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="text-gray-500">Brak zleconych do produkcji komponentów.</div>
       </div>
     );
   }
