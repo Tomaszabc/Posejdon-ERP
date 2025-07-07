@@ -323,9 +323,6 @@ class ProductToProductionListCreateView(generics.ListCreateAPIView):
         component = serializer.validated_data['component']
         quantity = serializer.validated_data['quantity']
 
-        if ProductToProduction.objects.filter(component=component, quantity=quantity, is_produced=False).exists():
-            raise ValidationError("To zamówienie już istnieje i nie zostało jeszcze wyprodukowane.")
-        
         # Przypisz zalogowanego użytkownika
         order = serializer.save(created_by=self.request.user)
         print(f"Order created with created_by: {order.created_by}")
