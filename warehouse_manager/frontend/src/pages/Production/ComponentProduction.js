@@ -581,7 +581,9 @@ export default function ComponentProduction() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {orders.map((order) => (
+                {orders
+                .slice(0, 100)
+                .map((order) => (
                   <tr
                     key={order.id}
                     className={
