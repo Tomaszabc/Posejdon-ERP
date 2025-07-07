@@ -144,6 +144,7 @@ export default function Orders() {
           quantity: '',
           uwagi: '',
         });
+        setProductSearch('');
         setShowConfirmModal(false);
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 1000);
