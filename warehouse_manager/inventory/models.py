@@ -181,7 +181,8 @@ class PartsBuilder(models.Model):
     notes = models.TextField(blank=True, help_text="Dodatkowe uwagi")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+    missing_parts_ordered = models.BooleanField(default=False)
+
     class Meta:
         db_table = 'parts_builder'
         verbose_name = "Parts Builder"
