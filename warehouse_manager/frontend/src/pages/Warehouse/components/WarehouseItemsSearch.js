@@ -7,14 +7,16 @@ export default function WarehouseItemsSearch({ components, setFilteredComponents
     const value = e.target.value;
     setQuery(value);
 
+    const onlyMaterials = components.filter((comp) => comp.r === 'Materiał');
+    
     if (!value) {
-      setFilteredComponents(components);
+      setFilteredComponents(onlyMaterials);
       return;
     }
 
     const lower = value.toLowerCase();
     setFilteredComponents(
-      components.filter((comp) =>
+      onlyMaterials.filter((comp) =>
         searchFields.some((field) => (comp[field] || '').toString().toLowerCase().includes(lower))
       )
     );
