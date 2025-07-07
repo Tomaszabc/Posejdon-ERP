@@ -36,7 +36,7 @@ export default function OrdersToProduceSection({ orders, loading, onProduce }) {
 
   return (
     <section className="bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Produkty do produkcji (Zuza):</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-2">Produkty do produkcji:</h1>
       {loading ? (
         <div>Ładowanie...</div>
       ) : sortedOrders.length > 0 ? (

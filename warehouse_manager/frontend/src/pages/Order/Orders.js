@@ -229,7 +229,7 @@ export default function Orders() {
         {/* LEWA STRONA - NOWY FORMULARZ (30%) */}
         <section className="xl:col-span-3 bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 flex items-center gap-2">
-            Zamów gotowy produkt (Ewelina)
+            Zamów gotowy produkt
             <img
               src="/diffuser_white_small.png"
               alt="Dyfuzor"

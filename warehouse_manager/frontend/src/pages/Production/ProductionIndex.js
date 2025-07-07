@@ -26,7 +26,7 @@ export default function ProductionIndex() {
               </g>
             </svg>
           </div>
-          <h2 className="text-xl font-semibold mb-2 text-center">Produkcja wyrobów (Zuza)</h2>
+          <h2 className="text-xl font-semibold mb-2 text-center">Produkcja wyrobów</h2>
           <p className="text-gray-600 text-center">Przejdź do produkcji gotowych wyrobów.</p>
         </div>
         <div
