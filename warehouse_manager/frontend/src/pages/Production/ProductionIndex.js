@@ -46,7 +46,7 @@ export default function ProductionIndex() {
               </g>
             </svg>
           </div>
-          <h2 className="text-xl font-semibold mb-2 text-center">Produkcja komponentów (Ignacy)</h2>
+          <h2 className="text-xl font-semibold mb-2 text-center">Produkcja komponentów</h2>
           <p className="text-gray-600 text-center">Przejdź do produkcji komponentów.</p>
         </div>
       </div>
