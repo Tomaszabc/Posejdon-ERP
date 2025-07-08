@@ -1,3 +1,5 @@
+Testowe readme
+
 Formatowanie:
 npx prettier --write .
 
