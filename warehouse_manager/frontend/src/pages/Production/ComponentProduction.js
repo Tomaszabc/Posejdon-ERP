@@ -414,9 +414,7 @@ export default function ComponentProduction() {
       <div className="grid grid-cols-1 xl:grid-cols-10 gap-8">
         {/* LEWA STRONA - NOWY FORMULARZ */}
         <section className="xl:col-span-2 bg-white shadow-2xl rounded-3xl p-4 border border-gray-100 h-fit">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Zleć produkcję komponentu
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Zleć produkcję komponentu</h1>
           {errors.length > 0 && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
               <ul className="list-disc pl-5">
@@ -581,9 +579,7 @@ export default function ComponentProduction() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {orders
-                .slice(0, 100)
-                .map((order) => (
+                {orders.slice(0, 100).map((order) => (
                   <tr
                     key={order.id}
                     className={

@@ -20,10 +20,10 @@ from django.contrib.auth import get_user_model
 from rest_framework import viewsets, generics
 
 from .models import (
-    Order, Component, DiffusorType, ProductToProduction, PartsBuilder
+     Component, ProductToProduction, PartsBuilder
 )
 from .serializers import (
-    OrderSerializer, ComponentSerializer, DiffusorTypeSerializer,
+     ComponentSerializer, 
     ProductToProductionSerializer,  PartsBuilderSerializer
 )
 from asgiref.sync import async_to_sync
@@ -40,42 +40,7 @@ import logging
 def index(request):
     return render(request, "inventory/index.html")
 
-def product_order(request):
-    diameters = [d[0] for d in Product.DIAMETER_CHOICES]
-    shapes = [s[0] for s in Product.SHAPE_CHOICES]
-    sizes = [s[0] for s in Product.SIZE_CHOICES]
-    colors = [c[0] for c in Product.COLOR_CHOICES]
-    errors = {}
 
-    if request.method == "POST":
-        order = Order(
-            diameter=request.POST.get("diffuser_diameter"),
-            shape=request.POST.get("diffuser_shape"),
-            size=request.POST.get("diffuser_size"),
-            color=request.POST.get("diffuser_color"),
-            quantity_to_assemble=request.POST.get("quantity_to_assemble") or 0,
-        )
-        try:
-            order.full_clean()
-            order.save()
-            messages.success(request, "Zamówienie zostało dodane!")
-            return redirect("inventory:product_order")
-        except ValidationError as e:
-            errors = e.message_dict
-
-    orders = Order.objects.order_by("-created_at")[:10]
-    return render(
-        request,
-        "inventory/product_order.html",
-        {
-            "diameters": diameters,
-            "shapes": shapes,
-            "sizes": sizes,
-            "colors": colors,
-            "orders": orders,
-            "errors": errors,
-        },
-    )
 
 @login_required
 def user_profile(request):
@@ -136,9 +101,7 @@ def product_production(request):
 # --- DRF ViewSets & API views ---
 
 # Orders
-class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all().order_by('-created_at')
-    serializer_class = OrderSerializer
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

@@ -33,35 +33,35 @@ from django.conf import settings
 #         return f"{self.product.name} - {self.stock_level}"
 
 
-class Order(models.Model):
-    diameter = models.CharField(max_length=10, blank=True)
-    shape = models.CharField(max_length=20, blank=True)
-    size = models.CharField(max_length=2, blank=True)
-    color = models.CharField(max_length=50, blank=True)
-    quantity_to_assemble = models.PositiveIntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    is_produced = models.BooleanField(default=False)
-    produced_at = models.DateTimeField(null=True, blank=True)
+# class Order(models.Model):
+#     diameter = models.CharField(max_length=10, blank=True)
+#     shape = models.CharField(max_length=20, blank=True)
+#     size = models.CharField(max_length=2, blank=True)
+#     color = models.CharField(max_length=50, blank=True)
+#     quantity_to_assemble = models.PositiveIntegerField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     is_produced = models.BooleanField(default=False)
+#     produced_at = models.DateTimeField(null=True, blank=True)
 
-    def clean(self):
-        errors = {}
-        if not self.diameter:
-            errors["diameter"] = "Średnica jest wymagana."
-        if not self.shape:
-            errors["shape"] = "Kształt jest wymagany."
-        if not self.size:
-            errors["size"] = "Rozmiar jest wymagany."
-        if not self.color:
-            errors["color"] = "Kolor jest wymagany."
-        if not self.quantity_to_assemble or self.quantity_to_assemble <= 0:
-            errors["quantity_to_assemble"] = (
-                "Ilość musi być liczbą dodatnią większą od zera."
-            )
-        if errors:
-            raise ValidationError(errors)
+#     def clean(self):
+#         errors = {}
+#         if not self.diameter:
+#             errors["diameter"] = "Średnica jest wymagana."
+#         if not self.shape:
+#             errors["shape"] = "Kształt jest wymagany."
+#         if not self.size:
+#             errors["size"] = "Rozmiar jest wymagany."
+#         if not self.color:
+#             errors["color"] = "Kolor jest wymagany."
+#         if not self.quantity_to_assemble or self.quantity_to_assemble <= 0:
+#             errors["quantity_to_assemble"] = (
+#                 "Ilość musi być liczbą dodatnią większą od zera."
+#             )
+#         if errors:
+#             raise ValidationError(errors)
 
-    def __str__(self):
-        return f"Zamówienie: {self.diameter}, {self.shape}, {self.size}, {self.color}, ilość: {self.quantity_to_assemble}"
+#     def __str__(self):
+#         return f"Zamówienie: {self.diameter}, {self.shape}, {self.size}, {self.color}, ilość: {self.quantity_to_assemble}"
 
 class Component(models.Model):
     r = models.CharField(max_length=10, blank=True, null=True)  # R
@@ -105,12 +105,12 @@ class Component(models.Model):
         verbose_name = "Komponent"
         verbose_name_plural = "Komponenty"
 
-class DiffusorType(models.Model):
-    sku = models.CharField(max_length=50, unique=True)
-    name = models.CharField(max_length=200)
+# class DiffusorType(models.Model):
+#     sku = models.CharField(max_length=50, unique=True)
+#     name = models.CharField(max_length=200)
 
-    def __str__(self):
-        return f"{self.sku} – {self.name}"
+#     def __str__(self):
+#         return f"{self.sku} – {self.name}"
 
 class ProductToProduction(models.Model):
     component = models.ForeignKey(Component, on_delete=models.CASCADE)
