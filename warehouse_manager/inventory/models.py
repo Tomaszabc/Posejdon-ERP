@@ -5,32 +5,32 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 
-class Product(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    diameter = models.DecimalField(max_digits=6, decimal_places=2)
+# class Product(models.Model):
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     diameter = models.DecimalField(max_digits=6, decimal_places=2)
 
 
-    def __str__(self):
-        return f"{self.shape} {self.size} {self.color} ({self.diameter} mm)"
+#     def __str__(self):
+#         return f"{self.shape} {self.size} {self.color} ({self.diameter} mm)"
 
 
-class Supplier(models.Model):
-    name = models.CharField(max_length=255)
-    contact_email = models.EmailField()
-    phone_number = models.CharField(max_length=20, blank=True)
+# class Supplier(models.Model):
+#     name = models.CharField(max_length=255)
+#     contact_email = models.EmailField()
+#     phone_number = models.CharField(max_length=20, blank=True)
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
-class Inventory(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
-    stock_level = models.PositiveIntegerField(default=0)
+# class Inventory(models.Model):
+#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+#     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+#     stock_level = models.PositiveIntegerField(default=0)
 
-    def __str__(self):
-        return f"{self.product.name} - {self.stock_level}"
+#     def __str__(self):
+#         return f"{self.product.name} - {self.stock_level}"
 
 
 class Order(models.Model):

@@ -20,7 +20,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import viewsets, generics
 
 from .models import (
-    Product, Order, Component, DiffusorType, ProductToProduction, PartsBuilder
+    Order, Component, DiffusorType, ProductToProduction, PartsBuilder
 )
 from .serializers import (
     OrderSerializer, ComponentSerializer, DiffusorTypeSerializer,
