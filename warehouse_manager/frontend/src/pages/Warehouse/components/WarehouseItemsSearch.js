@@ -8,7 +8,7 @@ export default function WarehouseItemsSearch({ components, setFilteredComponents
     setQuery(value);
 
     const onlyMaterials = components.filter((comp) => comp.r === 'Materiał');
-    
+
     if (!value) {
       setFilteredComponents(onlyMaterials);
       return;
