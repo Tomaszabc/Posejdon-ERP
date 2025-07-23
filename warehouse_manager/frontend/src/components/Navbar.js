@@ -5,6 +5,8 @@ export default function Navbar({ user, setUser }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [salesDropdownOpen, setSalesDropdownOpen] = useState(false);
   const [mobileSalesDropdownOpen, setMobileSalesDropdownOpen] = useState(false);
+  const [panelDropdownOpen, setPanelDropdownOpen] = useState(false);
+  const [mobilePanelDropdownOpen, setMobilePanelDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   function handleLogout(e) {
@@ -18,6 +20,17 @@ export default function Navbar({ user, setUser }) {
   function capitalize(str) {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  // Funkcja obsługująca kliknięcie w opcje panelu
+  function handlePanelClick(type) {
+    if (type === "admin") {
+      window.open("https://pomoc.eposejdon.pl/panel_administratora", "_blank");
+    } else if (type === "main") {
+      window.open("https://pomoc.eposejdon.pl", "_blank");
+    }
+    setPanelDropdownOpen(false);
+    setMobilePanelDropdownOpen(false);
   }
 
   return (
@@ -83,6 +96,47 @@ export default function Navbar({ user, setUser }) {
                         >
                           Przeglądaj Sprzedaż
                         </a>
+                      </div>
+                    )}
+                  </div>
+                  {/* Panel dropdown desktop */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setPanelDropdownOpen((v) => !v)}
+                      className="text-ocean-200 hover:text-white px-4 py-2 rounded-lg flex items-center focus:outline-none"
+                    >
+                      System Ticketowy
+                      <svg
+                        className="ml-2 w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+                    {panelDropdownOpen && (
+                      <div
+                        className="absolute left-0 mt-2 w-56 bg-white text-gray-800 rounded-lg shadow-lg z-40"
+                        onMouseLeave={() => setPanelDropdownOpen(false)}
+                      >
+                        <button
+                          onClick={() => handlePanelClick("admin")}
+                          className="block w-full text-left px-4 py-2 hover:bg-ocean-100"
+                        >
+                          Panel administratora
+                        </button>
+                        <button
+                          onClick={() => handlePanelClick("main")}
+                          className="block w-full text-left px-4 py-2 hover:bg-ocean-100"
+                        >
+                          Główny
+                        </button>
                       </div>
                     )}
                   </div>
@@ -221,6 +275,46 @@ export default function Navbar({ user, setUser }) {
                   )}
                 </div>
 
+                {/* Panel dropdown mobile */}
+                <div>
+                  <button
+                    onClick={() => setMobilePanelDropdownOpen((v) => !v)}
+                    className="w-full text-left block px-4 py-2 rounded-lg hover:bg-ocean-800 flex items-center focus:outline-none"
+                  >
+                    System Ticketowy
+                    <svg
+                      className="ml-2 w-4 h-4 inline"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                  {mobilePanelDropdownOpen && (
+                    <div className="pl-4 mt-2 space-y-1">
+                      <button
+                        onClick={() => handlePanelClick("admin")}
+                        className="block w-full text-left px-4 py-2 rounded-lg hover:bg-ocean-700"
+                      >
+                        Panel administratora
+                      </button>
+                      <button
+                        onClick={() => handlePanelClick("main")}
+                        className="block w-full text-left px-4 py-2 rounded-lg hover:bg-ocean-700"
+                      >
+                        Główny
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Dodane brakujące linki */}
                 <Link
                   to="/warehouse"
                   className="block px-4 py-2 rounded-lg hover:bg-ocean-800"
@@ -233,7 +327,7 @@ export default function Navbar({ user, setUser }) {
                   className="block px-4 py-2 rounded-lg hover:bg-ocean-800"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Zamówienia
+                  Zamówienie
                 </Link>
                 <Link
                   to="/production"
@@ -242,6 +336,7 @@ export default function Navbar({ user, setUser }) {
                 >
                   Produkcja
                 </Link>
+
                 <Link
                   to="/user"
                   className="block px-4 py-2 rounded-lg hover:bg-ocean-800 flex items-center"
