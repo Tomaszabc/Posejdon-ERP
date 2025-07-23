@@ -1,4 +1,4 @@
 @echo off
 cd /d %~dp0
-docker compose watch
+docker compose up --build
 pause
