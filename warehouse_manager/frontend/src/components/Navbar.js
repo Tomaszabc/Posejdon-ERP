@@ -135,7 +135,7 @@ export default function Navbar({ user, setUser }) {
                           onClick={() => handlePanelClick("main")}
                           className="block w-full text-left px-4 py-2 hover:bg-ocean-100"
                         >
-                          Główny
+                          System zgłoszeń
                         </button>
                       </div>
                     )}
@@ -308,7 +308,7 @@ export default function Navbar({ user, setUser }) {
                         onClick={() => handlePanelClick("main")}
                         className="block w-full text-left px-4 py-2 rounded-lg hover:bg-ocean-700"
                       >
-                        Główny
+                        System zgłoszeń
                       </button>
                     </div>
                   )}
