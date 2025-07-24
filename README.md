@@ -5,7 +5,7 @@ Uruchom plik znajdujący się w folderze aplikacji:
 warehouse_manager\start_eposejdon_windows.bat - dla Windows
 warehouse_manager\start_eposejdon_mac_linux.sh - dla Linux/Mac
 
-Do połączenia z bazą danych należy być zalogowanym do odpowiedniego firmowego WiFi. Baza danych Postgresql znajduje się na serwerze lokalnym który udostępnia ją do sieci firmowej.
+Do połączenia z bazą danych należy być zalogowanym do odpowiedniego firmowego WiFi. Baza danych Postgresql znajduje się na serwerze lokalnym który udostępnia ją do sieci firmowej.cd
 
 
 Uruchomienie aplikacji:
@@ -33,5 +33,5 @@ docker run -p 6379:6379 redis
 Formatowanie:
 npx prettier --write .
 
-Frontend to React. Backend Python.
+Frontend to React. Backend Python. WebSockety - Redis.
 

@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const ROOMS = ['Ogólny', 'Biuro', 'Magazyn'];
 
+
+
 const ChatBox = ({
   user,
   onClose,
@@ -57,6 +59,14 @@ const ChatBox = ({
     }
   };
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 500);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 500);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   if (!user) {
     console.log('Brak użytkownika, czat niewidoczny'); // DEBUG
     return null;
@@ -76,18 +86,28 @@ const ChatBox = ({
     return ` ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} ${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${String(d.getFullYear()).slice(-4)}`;
   };
 
+
+
   return (
     <div
       style={{
-        width: 380,
-        height: 500,
+        width: isMobile ? '100vw' : 380,
+        height: isMobile ? '100vh' : 500,
+        maxWidth: 380,
+        maxHeight: isMobile ? '100vh' : 600,
         background: '#fff',
-        borderRadius: 12,
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+        borderRadius: isMobile ? 0 : 12,
+        boxShadow: isMobile ? 'none' : '0 8px 32px rgba(0, 0, 0, 0.12)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
         border: '1px solid #e4e6ea',
+        position: isMobile ? 'fixed' : 'relative',
+        left: isMobile ? 0 : undefined,
+        top: isMobile ? 0 : undefined,
+        right: isMobile ? 0 : undefined,
+        bottom: isMobile ? 0 : undefined,
+        zIndex: 10003,
       }}
     >
       {/* Header */}
