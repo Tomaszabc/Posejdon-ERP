@@ -26,7 +26,8 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost:8000",
                            "http://192.168.55.75:3000",
                              "http://192.168.55.128:3000",
                                "http://192.168.55.91:3000",
-                                 "http://192.168.55.5:3000"]  # lub Twój port
+                                 "http://192.168.55.5:3000",
+                                 "http://192.168.55.5:8000"]  # lub Twój port
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
