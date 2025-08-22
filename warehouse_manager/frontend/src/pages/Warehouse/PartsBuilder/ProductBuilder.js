@@ -30,16 +30,7 @@ export default function ProductBuilder() {
 
   useEffect(() => {
     fetchProducts().then((data) => setProducts(data.filter((p) => p.r === 'Produkt')));
-    fetchComponents().then((data) =>
-      setModules(
-        data.filter(
-          (c) =>
-            (c.r === 'Towar' || c.r === 'Moduł' || c.r === 'Produkt') &&
-            c.catalog_index &&
-            c.catalog_index.includes('-24-')
-        )
-      )
-    );
+      fetchComponents().then((data) => setModules(data));
   }, []);
 
   useEffect(() => {
