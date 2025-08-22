@@ -9,18 +9,18 @@ export default function WarehouseItemsSearch({ components, setFilteredComponents
 
     const onlyMaterials = components.filter((comp) => comp.r === 'Materiał');
 
-    if (!value) {
-      setFilteredComponents(onlyMaterials);
-      return;
-    }
+  if (!value) {
+    setFilteredComponents(components); // przywróć pełną listę
+    return;
+  }
 
     const lower = value.toLowerCase();
-    setFilteredComponents(
-      onlyMaterials.filter((comp) =>
-        searchFields.some((field) => (comp[field] || '').toString().toLowerCase().includes(lower))
-      )
-    );
-  };
+  setFilteredComponents(
+    components.filter((comp) =>
+      searchFields.some((field) => (comp[field] || '').toString().toLowerCase().includes(lower))
+    )
+  );
+};
 
   return (
     <div className="mb-4" style={{ maxWidth: 300 }}>
