@@ -626,6 +626,7 @@ export default function ProductsAndGoods() {
         components={components}
         setFilteredComponents={setFilteredComponents}
         searchFields={['full_name', 'catalog_index', 'producer', 'short_name']}
+        baseFilter={(comp) => comp.r === 'Materiał'}
       />
 
       {/* Modal potwierdzenia usunięcia */}

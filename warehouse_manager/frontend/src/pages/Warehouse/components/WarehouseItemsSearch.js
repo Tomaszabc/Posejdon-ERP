@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 
-export default function WarehouseItemsSearch({ components, setFilteredComponents, searchFields }) {
+export default function WarehouseItemsSearch({ components, setFilteredComponents, searchFields, baseFilter }) {
   const [query, setQuery] = useState('');
 
   const handleSearch = (e) => {
     const value = e.target.value;
     setQuery(value);
 
-    const filtered = components.filter((comp) => comp.r !== 'Materiał');
+    const filtered = baseFilter ? components.filter(baseFilter) : components;
 
   if (!value) {
     setFilteredComponents(filtered); // przywróć pełną listę
     return;
   }
 
-    const lower = value.toLowerCase();
+  const lower = value.toLowerCase();
   setFilteredComponents(
     filtered.filter((comp) =>
       searchFields.some((field) => (comp[field] || '').toString().toLowerCase().includes(lower))
