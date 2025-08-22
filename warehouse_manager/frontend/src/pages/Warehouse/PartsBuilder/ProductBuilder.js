@@ -226,7 +226,8 @@ export default function ProductBuilder() {
                 <ul className="absolute z-10 bg-white border w-full rounded shadow max-h-48 overflow-y-auto">
                   {(moduleSearch
                     ? modules.filter((mod) =>
-                        mod.full_name.toLowerCase().includes(moduleSearch.toLowerCase())
+                        mod.full_name.toLowerCase().includes(moduleSearch.toLowerCase()) ||
+                        (mod.catalog_index || '').toLowerCase().includes(moduleSearch.toLowerCase())
                       )
                     : modules
                   ).map((mod) => (
@@ -240,6 +241,9 @@ export default function ProductBuilder() {
                       }}
                     >
                       🧩 {mod.full_name}
+                       {mod.catalog_index && (
+                          <span className="ml-2 text-xs text-gray-500">[{mod.catalog_index}]</span>
+                        )}
                     </li>
                   ))}
                 </ul>
