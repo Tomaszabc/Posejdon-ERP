@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
+import Fuse from 'fuse.js';
 
 export default function WarehouseItemsSearch({ components, setFilteredComponents, searchFields, baseFilter }) {
   const [query, setQuery] = useState('');
+
+  // Konfiguracja Fuse.js
+  const fuse = new Fuse(
+    baseFilter ? components.filter(baseFilter) : components,
+    {
+      keys: searchFields,
+      threshold: 0.4, // im niższy, tym bardziej "dokładne" dopasowanie
+    }
+  );
 
   const handleSearch = (e) => {
     const value = e.target.value;
@@ -9,18 +19,15 @@ export default function WarehouseItemsSearch({ components, setFilteredComponents
 
     const filtered = baseFilter ? components.filter(baseFilter) : components;
 
-  if (!value) {
-    setFilteredComponents(filtered); // przywróć pełną listę
-    return;
-  }
+    if (!value) {
+      setFilteredComponents(filtered);
+      return;
+    }
 
-  const lower = value.toLowerCase();
-  setFilteredComponents(
-    filtered.filter((comp) =>
-      searchFields.some((field) => (comp[field] || '').toString().toLowerCase().includes(lower))
-    )
-  );
-};
+    // Fuse.js wyszukiwanie
+    const results = fuse.search(value).map(result => result.item);
+    setFilteredComponents(results);
+  };
 
   return (
     <div className="mb-4" style={{ maxWidth: 300 }}>
