@@ -165,7 +165,7 @@ class PartsBuilder(models.Model):
         Component,
         on_delete=models.CASCADE,
         related_name='used_in_products',
-        limit_choices_to={'r__in': ['Materiał', 'Towar']},
+        limit_choices_to={'r__in': ['Materiał', 'Towar', 'Produkt']},
         help_text="Materiał użyty w produkcie"
     )
 
