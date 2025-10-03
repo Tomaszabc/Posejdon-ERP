@@ -170,7 +170,7 @@ export default function Home() {
         {/* Statystyki liczbowe */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-            <h3 className="text-lg font-semibold text-gray-600">Łącznie zamówień</h3>
+            <h3 className="text-lg font-semibold text-gray-600">Zamówienia produkcyjne</h3>
             <p className="text-3xl font-bold text-blue-600">
               {dashboardData.statistics.total_orders}
             </p>

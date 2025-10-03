@@ -89,7 +89,7 @@ export default function Navbar({ user, setUser }) {
                           Uruchom dodatek WfSync
                         </a>
                         <a
-                          href="https://panel.baselinker.com/login.php"
+                          href="https://analytics.base.com/?index"
                           target="_blank"
                           rel="noopener"
                           className="block px-4 py-2 hover:bg-ocean-100"
@@ -264,7 +264,7 @@ export default function Navbar({ user, setUser }) {
                         Uruchom dodatek WfSync
                       </a>
                       <a
-                        href="https://panel.baselinker.com/login.php"
+                        href="https://analytics.base.com/?index"
                         target="_blank"
                         rel="noopener"
                         className="block px-4 py-2 rounded-lg hover:bg-ocean-700"
